@@ -1,5 +1,6 @@
 #!/bin/bash
-# just read single permutation(2 line),
+# arg1: totoal face num.
+# just read single permutation(2 line), input the changed face
 # output once trans status(and it's inverse).
 
 num=$1
