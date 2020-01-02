@@ -1,21 +1,21 @@
 #include <bits/stdc++.h>
-using namespace std;
-//using std::cin;
-//using std::cout;
-//using std::vector;
-//using std::queue;
-//using std::set;
-//using std::reverse;
-//using std::copy;
-//using std::ostream_iterator;
-//using std::initializer_list;
-//using std::for_each;
-//using std::transform;
-//using std::accumulate;
-//using std::generate;
-//using std::is_permutation;
-//using std::find_if;
-//using std::find_if_not;
+//using namespace std;
+using std::cin;
+using std::cout;
+using std::vector;
+using std::queue;
+using std::set;
+using std::reverse;
+using std::copy;
+using std::ostream_iterator;
+using std::initializer_list;
+using std::for_each;
+using std::transform;
+using std::accumulate;
+using std::generate;
+using std::is_permutation;
+using std::find_if;
+using std::find_if_not;
 //using std::gcd;
 //using std::lcm;
 typedef long long ll;
@@ -40,21 +40,24 @@ public:
 	static void init() {
 		origin.assign(dn, 1);
 		partial_sum(origin.begin(), origin.end(), origin.begin());
+		for (int i = 0; i < origin.size(); ++i) {
+			cout << origin[i] << " \n"[i == origin.size() - 1];
+		}
 	}
-	int mat[2][dn + 5];
+	vector<int> mat[2] = {vector<int>(dn + 1, 0), vector<int>(dn + 1, 0)};
 	ull hs[2];
-	vector<int> cycle[2][dn + 5];
+	vector<int> cycle[2][dn + 1];
 	int cycn, period;
 	permutation() {
 		auto fn = [=, i = 1](void) mutable { return i++; };
-		generate(mat[0] + 1, mat[0] + 1 + dn, fn);
+		generate(mat[0].begin() + 1, mat[0].begin() + 1 + dn, fn);
 		gall();
 	}
 	permutation(vector<int> &&p) { assign(p); }
 	permutation(vector<int> &&pre, vector<int> &&nxt) { assign(pre, nxt); }
 	void assign(vector<int> &&p) {
 		assert(is_permutation(origin.begin(), origin.end(), p.begin()));
-		copy(p.begin(), p.end(), mat[0] + 1);
+		copy(p.begin(), p.end(), mat[0].begin() + 1);
 		gall();
 	}
 	void assign(vector<int> &&pre, vector<int> &&nxt) {
@@ -69,16 +72,16 @@ public:
 		gall();
 	}
 	void compos(permutation<dn> &rhs, int tp) {
-		auto fn = [=](int x) { return x[rhs.mat[tp]]; };
-		transform(mat[0] + 1, mat[0] + 1 + dn, mat[0] + 1, fn);
+		auto fn = [=](int x) { return rhs.mat[tp][x]; };
+		transform(mat[0].begin() + 1, mat[0].begin() + 1 + dn, mat[0].begin() + 1, fn);
 		gall();
 	}
 	void print() {
 		cout << "\n!!! permutation's status: " << this << '\n';
-		cout << "is perm? " << is_permutation(origin.begin(), origin.end(), mat[0] + 1) << '\n';
+		cout << "is perm? " << is_permutation(origin.begin(), origin.end(), mat[0].begin() + 1) << '\n';
 		cout << "period: " << period << '\n';
 		for (int i = 0; i < 2; ++i) {
-			copy(mat[i] + 1, mat[i] + 1 + dn, ostream_iterator<int>(cout, " "));
+			copy(mat[i].begin() + 1, mat[i].begin() + 1 + dn, ostream_iterator<int>(cout, " "));
 			cout << '\n';
 			cout << "hs[" << i << "]: " << hs[i] << '\n';
 			for_each(cycle[i] + 1, cycle[i] + 1 + cycn, [=](auto &v) {
@@ -98,14 +101,14 @@ private:
 	void ghs() {
 		auto fn = [=](ull pre, ull now) { return pre * seed + now; };
 		for (int i = 0; i < 2; ++i)
-			hs[i] = accumulate(mat[i] + 1, mat[i] + 1 + dn, 0llu, fn);
+			hs[i] = accumulate(mat[i].begin() + 1, mat[i].begin() + 1 + dn, 0llu, fn);
 	}
 	void ginv() {
 		auto fn = [=, i = 1](int x) mutable { mat[1][x] = i++; };
-		for_each(mat[0] + 1, mat[0] + 1 + dn, fn);
+		for_each(mat[0].begin() + 1, mat[0].begin() + 1 + dn, fn);
 	}
 	void gcyc() {
-		bool vis[dn + 5];
+		bool vis[dn + 1];
 		cycn = 0;
 		period = 1;
 		memset(vis, 0, sizeof vis);
@@ -221,11 +224,15 @@ void preprocess()
 	ccc.face[2].assign(
 			{10,11,12,4,5,6,7,8,9,1,2,3,13,14,15,16,17,18,21,20,19,30,23,24,25,26,27,28,29,22});
 	ccc.level_bfs(ccc.face, 100233, ccc.buf);
+	ccc.face[0].print();
+	ccc.face[1].print();
+	ccc.face[2].print();
 	memset(mmp, 0, sizeof mmp);
 	for (int ci = 0; ci < ccc.buf.size(); ++ci) {
 		auto xp = ccc.buf[ci];
 		mmp[xp.cycn]++;
 	}
+	cout << "permutation all: " << ccc.buf.size() << '\n';
 }
 
 void solve()
@@ -250,6 +257,6 @@ int
 main()
 {
 	preprocess();
-	solve();
+	//solve();
 	return 0;
 }
