@@ -94,26 +94,61 @@ const int inf32 = 1 << 30;
 const ll inf64 = 1ll << 60;
 const double pi = acos(-1);
 const double eps = 1e-6;
-ul bitcount(ul x) {return __builtin_popcount(x);}
-ul clz(ul x) {return __builtin_clz(x);}
-ul ctz(ul x) {return __builtin_ctz(x);}
-ul clo(ul x) {return x ? 1 << (32 - 1 - clz(x)) : 0;}
-ul cto(ul x) {return x ? 1 << ctz(x) : 0;}
-ull bitcountll(ull x) {return __builtin_popcountll(x);}
-ull clzll(ull x) {return __builtin_clzll(x);}
-ull ctzll(ull x) {return __builtin_ctzll(x);}
-ull cloll(ull x) {return x ? 1 << (64 - 1 - clz(x)) : 0;}
-ull ctoll(ull x) {return x ? 1 << ctz(x) : 0;}
-ul roundup_pow_of_2(ul x) {return x ? clo(x) << 1 : 0;}
-ul rounddown_pow_of_2(ul x) {return x ? clo(x) : 0;}
-bool is_power_of_2(ull x) {return x && !(x & (x - 1));}
-void range_normalize(ll &l, ll &r) {if (r < l) swap(l, r);}
-ull length(ull l, ull r) {return r - l + 1;}
-bool inrange(ll x, ll l, ll r) {return r < l ? false : l <= x && x <= r;}
-ull midpoint(ull l, ull r) {return l + ((r - l) >> 1);}
-ll presum_point(vector<ll> &sum, int i) {return i ? sum[i] : 0;}
+template<typename tp>
+int bitcount(tp x) {
+	bool isll = sizeof(x) - 4;
+	if (isll) {
+		return __builtin_popcountll(x);
+	} else {
+		return __builtin_popcount(x);
+	}
+}
+template<typename tp>
+int clz(tp x) {
+	bool isll = sizeof(x) - 4;
+	if (isll) {
+		return __builtin_clzll(x);
+	} else {
+		return __builtin_clz(x);
+	}
+}
+template<typename tp>
+int ctz(tp x) {
+	bool isll = sizeof(x) - 4;
+	if (isll) {
+		return __builtin_ctzll(x);
+	} else {
+		return __builtin_ctz(x);
+	}
+}
+template<typename tp>
+int clo(tp x) {
+	bool isll = sizeof(x) - 4;
+	if (isll) {
+		return x ? 1 << (64 - 1 - __builtin_clzll(x)) : 0;
+	} else {
+		return x ? 1 << (32 - 1 - __builtin_clz(x)) : 0;
+	}
+}
+template<typename tp>
+int cto(tp x) {
+	bool isll = sizeof(x) - 4;
+	if (isll) {
+		return x ? 1 << __builtin_ctzll(x) : 0;
+	} else {
+		return x ? 1 << __builtin_ctz(x) : 0;
+	}
+}
+ull roundup_pow_of_2(ull x) { return x ? clo(x) << 1 : 0; }
+ull rounddown_pow_of_2(ull x) { return x ? clo(x) : 0; }
+bool is_power_of_2(ull x) { return x && !(x & (x - 1)); }
+void range_normalize(ll &l, ll &r) { if (r < l) swap(l, r); }
+ull length(ull l, ull r) { return (r < l) ? 0 : r - l + 1; }
+bool inrange(ll x, ll l, ll r) { return r < l ? false : l <= x && x <= r; }
+ull midpoint(ull l, ull r) { return l + ((r - l) >> 1); }
+ll presum_point(vector<ll> &sum, int i) { return i ? sum[i] : 0; }
 ll presum_range(vector<ll> &sum, int l, int r)
-{return sum[r] - presum_point(sum, l - 1);}
+{ return sum[r] - presum_point(sum, l - 1); }
 void presum_preprocess(
 						vector<ll> &sum, vector<ll> &data,
 						int l, int r, int st)
@@ -124,9 +159,9 @@ void presum_preprocess(
 		sum[i] = presum_point(sum, i - 1) + data[d];
 	}
 }
-ll premul_point(vector<ll> &mul, int i) {return i ? mul[i] : 1;}
+ll premul_point(vector<ll> &mul, int i) { return i ? mul[i] : 1; }
 ll premul_range(vector<ll> &mul, int l, int r)
-{return mul[r] / premul_point(mul, l - 1);}
+{ return mul[r] / premul_point(mul, l - 1); }
 void premul_preprocess(
 						vector<ll> &mul, vector<ll> &data,
 						int l, int r, int st)
@@ -137,8 +172,8 @@ void premul_preprocess(
 		mul[i] = premul_point(mul, i - 1) * data[d];
 	}
 }
-ll div_roundup(ll x, ll div) {return (x + div - 1) / div;}
-ll div_rounddown(ll x, ll div) {return x / div;}
+ll div_roundup(ll x, ll div) { return (x + div - 1) / div; }
+ll div_rounddown(ll x, ll div) { return x / div; }
 ll round_shift(ll x, ll dist, ll l, ll r)
 {
 	int len = length(l, r);
