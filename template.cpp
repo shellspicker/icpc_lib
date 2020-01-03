@@ -7,9 +7,7 @@
  * 快速读入, istream.rdbuf->sgetn(buf, sizeof(buf)), 配合readint...
  * 开栈.
  * debug辅助.
- * builtin位操作, 有ll版本, 加上.
  * efg_cvt, 浮点数截断.
- * 前缀和, 前缀积, 可加dist,dir. 写成template.
  * mt19937...
  * 模运算类.
  * http://codeforces.com/contest/1261/submission/65651526
@@ -84,8 +82,11 @@ using std::next_permutation;
 #define endl '\n'
 #define tail(len) ((len) - 1)
 #define offset(st, off) ((st) + (off))
-#define range(st, len) (st), (st) + tail(len)
-#define range_r(ed, len) (ed) - tail(len), (ed)
+#define mirror(len, i) offset(tail((len)), -(i))
+#define range(st, len) (st), offset((st), tail((len)))
+#define range_r(ed, len) offset((ed), -tail((len))), (ed)
+#define range_mirror_point(len, a, b) mirror((len), (b)), mirror((len), (a))
+#define range_mirror(len, st, off) range_mirror_point((len), (st), offset((st), tail((off))))
 typedef unsigned long ul;
 typedef long long ll;
 typedef unsigned long long ull;
@@ -142,35 +143,77 @@ int cto(tp x) {
 ull roundup_pow_of_2(ull x) { return x ? clo(x) << 1 : 0; }
 ull rounddown_pow_of_2(ull x) { return x ? clo(x) : 0; }
 bool is_power_of_2(ull x) { return x && !(x & (x - 1)); }
-void range_normalize(ll &l, ll &r) { if (r < l) swap(l, r); }
 ull length(ull l, ull r) { return (r < l) ? 0 : r - l + 1; }
 bool inrange(ll x, ll l, ll r) { return r < l ? false : l <= x && x <= r; }
 ull midpoint(ull l, ull r) { return l + ((r - l) >> 1); }
-ll presum_point(vector<ll> &sum, int i) { return i ? sum[i] : 0; }
-ll presum_range(vector<ll> &sum, int l, int r)
-{ return sum[r] - presum_point(sum, l - 1); }
+template<typename tp>
+void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
+/*
+ * dir: find in left or right.
+ * contain: can be equal or not.
+ * whatever, key can be not found, thus return index will flow,
+ * be careful to check return point, if must.
+ * one way to check the return point is
+ * check point in range and compare with key.
+ * dir: 0, contain: 0. -> (. left flow.
+ * dir: 0, contain: 1. -> [. right flow.
+ * dir: 1, contain: 0. -> ). right flow.
+ * dir: 1, contain: 1. -> ]. left flow.
+ */
+template<typename tp>
+int binary_search(
+		vector<tp> &v, int lo, int hi, tp key, bool dir, bool contain)
+{
+	range_normalize(lo, hi);
+	while (lo <= hi) {
+		int mid = midpoint(lo, hi), now = v[mid];
+		if (!dir) {
+			if (now < key)
+				lo = mid + 1;
+			else
+				hi = mid - 1;
+		} else {
+			if (key < now)
+				hi = mid - 1;
+			else
+				lo = mid + 1;
+		}
+	}
+	return dir ^ contain ? lo : hi;
+}
+template<typename tp>
+tp presum_point(vector<tp> &sum, int i) { return 0 <= i ? sum[i] : 0; }
+template<typename tp>
+tp presum_range(vector<tp> &sum, int l, int r)
+{
+	return sum[r] - presum_point(sum, l - 1);
+}
+template<typename tp>
 void presum_preprocess(
-						vector<ll> &sum, vector<ll> &data,
+						vector<tp> &sum, vector<tp> &data,
 						int l, int r, int st)
 {
 	int len = length(l, r);
 	sum.resize(sum.size() + len);
-	for (long i = st, d = l; d <= r; ++i, ++d) {
+	for (long i = st, d = l; d <= r; ++i, ++d)
 		sum[i] = presum_point(sum, i - 1) + data[d];
-	}
 }
-ll premul_point(vector<ll> &mul, int i) { return i ? mul[i] : 1; }
-ll premul_range(vector<ll> &mul, int l, int r)
-{ return mul[r] / premul_point(mul, l - 1); }
+template<typename tp>
+tp premul_point(vector<tp> &mul, int i) { return 0 <= i ? mul[i] : 1; }
+template<typename tp>
+tp premul_range(vector<tp> &mul, int l, int r)
+{
+	return mul[r] / premul_point(mul, l - 1);
+}
+template<typename tp>
 void premul_preprocess(
-						vector<ll> &mul, vector<ll> &data,
+						vector<tp> &mul, vector<tp> &data,
 						int l, int r, int st)
 {
 	int len = length(l, r);
 	mul.resize(mul.size() + len);
-	for (long i = st, d = l; d <= r; ++i, ++d) {
+	for (long i = st, d = l; d <= r; ++i, ++d)
 		mul[i] = premul_point(mul, i - 1) * data[d];
-	}
 }
 ll div_roundup(ll x, ll div) { return (x + div - 1) / div; }
 ll div_rounddown(ll x, ll div) { return x / div; }
@@ -190,7 +233,8 @@ ll pow_mod(ll x, ll n, ll mod)
 {
 	ll res = 1;
 	while (n > 0) {
-		if (n & 1) res = mul_mod(res, x, mod);
+		if (n & 1)
+			res = mul_mod(res, x, mod);
 		x = mul_mod(x, x, mod);
 		n >>= 1;
 	}
@@ -220,7 +264,7 @@ size_t hash_val(const std::vector<tp> &vec)
 		combine(seed, x);
 	}
 	return seed;
-};
+}
 template<typename ...tp>
 size_t hash_val(const tp &...args)
 {
@@ -276,7 +320,7 @@ public:
 		cout.setf(ios::fixed);
 		cout.precision(20);
 		if (multicase)
-			cin >> testcase;
+			read(testcase);
 		for (int ti = 1; ti <= testcase && gao.in(); ++ti) {
 			gao.deal();
 			if (blankline && 1 < ti)
