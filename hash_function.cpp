@@ -15,14 +15,6 @@ void hash_val(size_t &seed, tp &val, const other &...args)
 	hash_val(seed, args...);
 }
 
-template<typename ...tp>
-size_t hash_val(const tp &...args)
-{
-	size_t seed = 0;
-	hash_val(seed, args...);
-	return seed;
-}
-
 template<typename tp>
 size_t hash_val(const std::vector<tp> &vec)
 {
@@ -32,6 +24,15 @@ size_t hash_val(const std::vector<tp> &vec)
 	}
 	return seed;
 };
+
+template<typename ...tp>
+size_t hash_val(const tp &...args)
+{
+	size_t seed = 0;
+	hash_val(seed, args...);
+	return seed;
+}
+
 
 int main()
 {

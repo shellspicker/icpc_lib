@@ -22,12 +22,12 @@ c[$1]++
 print $0
 }
 END {
-for (d = 1; d <= dn; ++d)
+for (d = 0; d <= dn; ++d)
 	if (!c[d])
 		print d,d
 }' > $tmpfile
 
-cat $tmpfile | sort -nk1 | awk '{printf "%2s ", $2} END {printf "\n"}'
-cat $tmpfile | sort -nk2 | awk '{printf "%2s ", $1} END {printf "\n"}'
+cat $tmpfile | sort -nk1 | awk '{printf "%2s,", $2} END {printf "\n"}'
+cat $tmpfile | sort -nk2 | awk '{printf "%2s,", $1} END {printf "\n"}'
 
 rm -f $tmpfile
