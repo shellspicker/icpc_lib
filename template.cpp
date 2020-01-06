@@ -167,7 +167,6 @@ using std::logical_not;
 using std::bit_and;
 using std::bit_or;
 using std::bit_xor;
-using std::bit_not;
 #define fup_s(i, a, b, s) for (long i = a, c = b; i <= c; i += s)
 #define fwn_s(i, a, b, s) for (long i = b, c = a; c <= i; i -= s)
 #define fup(i, a, b) fup_s(i, a, b, 1)
