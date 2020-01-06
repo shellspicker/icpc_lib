@@ -1,14 +1,17 @@
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse4")
-#include <cstdio>
+#include <cstddef>
 #include <cstdlib>
+#include <cassert>
+#include <cctype>
 #include <cstring>
 #include <cmath>
-#include <cassert>
+#include <cstdio>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
 #include <numeric>
+#include <random>
 #include <vector>
 #include <deque>
 #include <set>
@@ -36,6 +39,10 @@ using std::stringstream;
 using std::cin;
 using std::cout;
 using std::string;
+using std::tuple;
+using std::tie;
+using std::get;
+using std::pair;
 using std::vector;
 using std::deque;
 using std::stack;
@@ -51,20 +58,123 @@ using std::unordered_map;
 using std::unordered_multiset;
 using std::unordered_multimap;
 using std::initializer_list;
+using std::all_of;
+using std::any_of;
+using std::none_of;
 using std::for_each;
-using std::swap;
-using std::generate;
+using std::count;
+using std::count_if;
+using std::mismatch;
+using std::find;
+using std::find_if;
+using std::find_if_not;
+using std::find_end;
+using std::find_first_of;
+using std::adjacent_find;
+using std::search;
+using std::search_n;
+using std::copy;
+using std::copy_if;
+using std::copy_n;
+using std::copy_backward;
+using std::move;
+using std::move_backward;
+using std::fill;
+using std::fill_n;
 using std::transform;
+using std::generate;
+using std::generate_n;
+using std::remove;
+using std::remove_if;
+using std::remove_copy;
+using std::remove_copy_if;
+using std::replace;
+using std::replace_if;
+using std::replace_copy;
+using std::replace_copy_if;
+using std::swap;
+using std::swap_ranges;
+using std::iter_swap;
+using std::reverse;
+using std::reverse_copy;
+using std::rotate;
+using std::rotate_copy;
+using std::shuffle;
+using std::unique;
+using std::unique_copy;
+using std::is_partitioned;
+using std::partition;
+using std::partition_copy;
+using std::stable_partition;
+using std::partition_point;
+using std::is_sorted;
+using std::is_sorted_until;
+using std::sort;
+using std::partial_sort;
+using std::partial_sort_copy;
+using std::stable_sort;
+using std::nth_element;
+using std::lower_bound;
+using std::upper_bound;
+using std::binary_search;
+using std::equal_range;
+using std::merge;
+using std::inplace_merge;
+using std::includes;
+using std::set_difference;
+using std::set_intersection;
+using std::set_symmetric_difference;
+using std::set_union;
+using std::is_heap;
+using std::is_heap_until;
+using std::make_heap;
+using std::push_heap;
+using std::pop_heap;
+using std::sort_heap;
+using std::max;
+using std::max_element;
+using std::min;
+using std::min_element;
+using std::minmax;
+using std::minmax_element;
+using std::equal;
+using std::lexicographical_compare;
+using std::is_permutation;
+using std::next_permutation;
+using std::prev_permutation;
+using std::iota;
 using std::accumulate;
+using std::inner_product;
 using std::adjacent_difference;
 using std::partial_sum;
-using std::is_permutation;
-using std::prev_permutation;
-using std::next_permutation;
+using std::begin;
+using std::end;
+using std::plus;
+using std::minus;
+using std::multiplies;
+using std::divides;
+using std::modulus;
+using std::negate;
+using std::equal_to;
+using std::not_equal_to;
+using std::greater;
+using std::less;
+using std::greater_equal;
+using std::less_equal;
+using std::logical_and;
+using std::logical_or;
+using std::logical_not;
+using std::bit_and;
+using std::bit_or;
+using std::bit_xor;
+using std::bit_not;
 #define fup_s(i, a, b, s) for (long i = a, c = b; i <= c; i += s)
 #define fwn_s(i, a, b, s) for (long i = b, c = a; c <= i; i -= s)
 #define fup(i, a, b) fup_s(i, a, b, 1)
 #define fwn(i, a, b) fwn_s(i, a, b, 1)
+#define it_each(obj) (obj).begin(), (obj).end()
+#define it_i(obj, i) (obj).begin() + (i)
+#define it_range(obj, l, r) it_i(obj, l), it_i(obj, r)
 #define endl '\n'
 #define tail(len) ((len) - 1)
 #define offset(st, off) ((st) + (off))
@@ -148,7 +258,7 @@ void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
  */
 template<typename tp>
 int binary_search(
-		vector<tp> &v, int lo, int hi, tp key, bool dir, bool contain)
+		const vector<tp> &v, int lo, int hi, tp key, bool dir, bool contain)
 {
 	range_normalize(lo, hi);
 	while (lo <= hi) {
@@ -168,15 +278,15 @@ int binary_search(
 	return dir ^ contain ? lo : hi;
 }
 template<typename tp>
-tp presum_point(vector<tp> &sum, int i) { return 0 <= i ? sum[i] : 0; }
+tp presum_point(const vector<tp> &sum, int i) { return 0 <= i ? sum[i] : 0; }
 template<typename tp>
-tp presum_range(vector<tp> &sum, int l, int r)
+tp presum_range(const vector<tp> &sum, int l, int r)
 {
 	return sum[r] - presum_point(sum, l - 1);
 }
 template<typename tp>
 void presum_preprocess(
-						vector<tp> &sum, vector<tp> &data,
+						vector<tp> &sum, const vector<tp> &data,
 						int l, int r, int st)
 {
 	int len = length(l, r);
@@ -185,15 +295,15 @@ void presum_preprocess(
 		sum[i] = presum_point(sum, i - 1) + data[d];
 }
 template<typename tp>
-tp premul_point(vector<tp> &mul, int i) { return 0 <= i ? mul[i] : 1; }
+tp premul_point(const vector<tp> &mul, int i) { return 0 <= i ? mul[i] : 1; }
 template<typename tp>
-tp premul_range(vector<tp> &mul, int l, int r)
+tp premul_range(const vector<tp> &mul, int l, int r)
 {
 	return mul[r] / premul_point(mul, l - 1);
 }
 template<typename tp>
 void premul_preprocess(
-						vector<tp> &mul, vector<tp> &data,
+						vector<tp> &mul, const vector<tp> &data,
 						int l, int r, int st)
 {
 	int len = length(l, r);
@@ -226,6 +336,42 @@ ll pow_mod(ll x, ll n, ll mod)
 	}
 	return res;
 }
+template<typename tp, class twist = std::mt19937_64>
+class random_int {
+	std::uniform_int_distribution<tp> fuck;
+	using param_type = decltype(fuck.param());
+	twist shit{std::random_device{}()};
+public:
+	void set_range(tp l, tp r) {
+		fuck.param(param_type {l, r});
+	}
+	pair<tp, tp> get_range() {
+		assert(fuck.a() == fuck.min());
+		assert(fuck.b() == fuck.max());
+		return {fuck.a(), fuck.b()};
+	}
+	tp operator()() {
+		return fuck(shit);
+	}
+};
+template<typename tp, class twist = std::mt19937_64>
+class random_real {
+	std::uniform_real_distribution<tp> fuck;
+	using param_type = decltype(fuck.param());
+	twist shit{std::random_device{}()};
+public:
+	void set_range(tp l, tp r) {
+		fuck.param(param_type {l, r});
+	}
+	pair<tp, tp> get_range() {
+		assert(fuck.a() == fuck.min());
+		assert(fuck.b() == fuck.max());
+		return {fuck.a(), fuck.b()};
+	}
+	tp operator()() {
+		return fuck(shit);
+	}
+};
 ull random(ull mod)
 {
 	return (ull)(mod * (rand() / (double)RAND_MAX));
@@ -257,6 +403,42 @@ size_t hash_val(const tp &...args)
 	size_t seed = 0;
 	hash_val(seed, args...);
 	return seed;
+}
+void bkdr_hash_preprocess(const string &seq, vector<ull> &hash, ull seed, int i = 0)
+{
+	if (hash.size() < i + seq.size())
+		hash.resize(i + seq.size());
+	for (auto h : seq) {
+		hash[i] = presum_point(hash, i - 1) * seed + h;
+	}
+}
+template<typename tp>
+void bkdr_hash_preprocess(const vector<tp> &seq, vector<ull> &hash, ull seed, int i = 0)
+{
+	if (hash.size() < i + seq.size())
+		hash.resize(i + seq.size());
+	for (auto h : seq) {
+		hash[i] = presum_point(hash, i - 1) * seed + h;
+	}
+}
+ull bkdr_hash_once(const string &seq, ull seed)
+{
+	ull hash = 0;
+	for (auto h : seq)
+		hash = hash * seed + h;
+	return hash;
+}
+template<typename tp>
+ull bkdr_hash_once(const vector<tp> &seq, ull seed)
+{
+	ull hash = 0;
+	for (auto h : seq)
+		hash = hash * seed + h;
+	return hash;
+}
+ull hash_range(const vector<ull> &hash, const vector<ull> &exp, int l, int r)
+{
+	return hash[r] - presum_point(hash, l - 1) * exp[length(l, r)];
 }
 int fdu(double x)
 {

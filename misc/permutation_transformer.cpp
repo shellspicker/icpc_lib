@@ -1,7 +1,7 @@
 template<size_t dn>
 class permutation
 {
-	static int origin[dn + 1];
+	static int origin[dn];
 	void gall() { ghs(); ginv(); gcyc(); }
 	void ghs() {
 		for (int i = 0; i < 2; ++i)
@@ -12,7 +12,7 @@ class permutation
 		for_each(mat[0], mat[0] + dn, fn);
 	}
 	void gcyc() {
-		bool vis[dn + 1];
+		bool vis[dn];
 		cycn = 0;
 		period = 1;
 		memset(vis, 0, sizeof vis);
@@ -35,16 +35,14 @@ class permutation
 	}
 public:
 	static void init() {
-		auto fn = [=, i = 0](void) mutable { return i++; };
-		generate(origin, origin + dn, fn);
+		iota(origin, origin + dn, 0);
 	}
-	int mat[2][dn + 1];
+	int mat[2][dn];
 	ull hs[2];
-	vector<int> cycle[2][dn + 1];
+	vector<int> cycle[2][dn];
 	int cycn, period;
 	permutation() {
-		auto fn = [=, i = 0](void) mutable { return i++; };
-		generate(mat[0], mat[0] + dn, fn);
+		iota(mat[0], mat[0] + dn, 0);
 		gall();
 	}
 	permutation(vector<int> &&p) { assign(p); }
@@ -55,7 +53,7 @@ public:
 		gall();
 	}
 	void assign(vector<int> &&pre, vector<int> &&nxt) {
-		auto fn = [](int x) { return 0 <= x && x <= dn - 1; };
+		auto fn = [](int x) { return inrange(x, 0, dn - 1); };
 		assert(find_if_not(pre.begin(), pre.end(), fn) == pre.end());
 		assert(find_if_not(nxt.begin(), nxt.end(), fn) == nxt.end());
 		assert(is_permutation(pre.begin(), pre.end(), nxt.begin()));
