@@ -23,16 +23,8 @@
 #include <bitset>
 #include <tr2/dynamic_bitset>
 #include <ext/pb_ds/assoc_container.hpp>
-using namespace __gnu_pbds;
-template<typename tp>
-using ordered_set = tree<
-						tp, null_type, std::less<tp>, rb_tree_tag,
-						tree_order_statistics_node_update>;
-template<typename key, typename val>
-using ordered_map = tree<
-						key, val, std::less<key>, rb_tree_tag,
-						tree_order_statistics_node_update>;
 using std::ios;
+using std::ios_base;
 using std::istream;
 using std::ostream;
 using std::stringstream;
@@ -167,6 +159,21 @@ using std::logical_not;
 using std::bit_and;
 using std::bit_or;
 using std::bit_xor;
+using std::hash;
+using std::mt19937;
+using std::mt19937_64;
+using std::random_device;
+using std::uniform_int_distribution;
+using std::uniform_real_distribution;
+using namespace __gnu_pbds;
+template<typename key>
+using ordered_set = __gnu_pbds::tree<
+						key, __gnu_pbds::null_type, less<key>, __gnu_pbds::rb_tree_tag,
+						__gnu_pbds::tree_order_statistics_node_update>;
+template<typename key, typename val>
+using ordered_map = __gnu_pbds::tree<
+						key, val, less<key>, __gnu_pbds::rb_tree_tag,
+						__gnu_pbds::tree_order_statistics_node_update>;
 #define fup_s(i, a, b, s) for (long i = a, c = b; i <= c; i += s)
 #define fwn_s(i, a, b, s) for (long i = b, c = a; c <= i; i -= s)
 #define fup(i, a, b) fup_s(i, a, b, 1)
@@ -326,6 +333,8 @@ ull mul_mod(ull a, ull b, ull mod)
 }
 ll pow_mod(ll x, ll n, ll mod)
 {
+	if (mod == 1)
+		return 0;
 	ll res = 1;
 	while (n > 0) {
 		if (n & 1)
@@ -335,11 +344,11 @@ ll pow_mod(ll x, ll n, ll mod)
 	}
 	return res;
 }
-template<typename tp, class twist = std::mt19937_64>
+template<typename tp, class twist = mt19937_64>
 class random_int {
-	std::uniform_int_distribution<tp> fuck;
+	uniform_int_distribution<tp> fuck;
 	using param_type = decltype(fuck.param());
-	twist shit{std::random_device{}()};
+	twist shit{random_device{}()};
 public:
 	void set_range(tp l, tp r) {
 		fuck.param(param_type {l, r});
@@ -353,11 +362,11 @@ public:
 		return fuck(shit);
 	}
 };
-template<typename tp, class twist = std::mt19937_64>
+template<typename tp, class twist = mt19937_64>
 class random_real {
-	std::uniform_real_distribution<tp> fuck;
+	uniform_real_distribution<tp> fuck;
 	using param_type = decltype(fuck.param());
-	twist shit{std::random_device{}()};
+	twist shit{random_device{}()};
 public:
 	void set_range(tp l, tp r) {
 		fuck.param(param_type {l, r});
@@ -378,7 +387,7 @@ ull random(ull mod)
 template<typename tp>
 void combine(size_t &seed, const tp &x)
 {
-	seed ^= std::hash<tp>()(x) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+	seed ^= hash<tp>()(x) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 void hash_val(size_t &seed) {}
 template<typename tp, typename ...other>
@@ -388,7 +397,7 @@ void hash_val(size_t &seed, tp &val, const other &...args)
 	hash_val(seed, args...);
 }
 template<typename tp>
-size_t hash_val(const std::vector<tp> &vec)
+size_t hash_val(const vector<tp> &vec)
 {
 	size_t seed = 0;
 	for (auto x : vec) {
@@ -464,8 +473,9 @@ void read_vec(vector<tp> &v, size_t n)
 
 class data {
 public:
-	bool in() {
-		return !cin.eof();
+	istream &in() {
+		cin.setstate(ios_base::badbit);
+		return cin;
 	}
 	void deal() {
 	}
