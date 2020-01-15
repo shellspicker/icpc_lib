@@ -1,6 +1,8 @@
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse4")
 #include <cstddef>
+#include <cstdint>
+#include <climits>
 #include <cstdlib>
 #include <cassert>
 #include <cctype>
@@ -472,9 +474,12 @@ void read_vec(vector<tp> &v, size_t n)
 }
 
 class data {
+	istream &ioend() {
+		cin.setstate(ios_base::badbit);
+		return cin;
+	}
 public:
 	istream &in() {
-		cin.setstate(ios_base::badbit);
 		return cin;
 	}
 	void deal() {
