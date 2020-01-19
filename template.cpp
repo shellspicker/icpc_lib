@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <climits>
 #include <cstdlib>
+#include <cstdarg>
 #include <cassert>
 #include <cctype>
 #include <cstring>
@@ -11,7 +12,7 @@
 #include <cstdio>
 #include <iostream>
 #include <sstream>
-#include <ultility>
+#include <utility>
 #include <algorithm>
 #include <numeric>
 #include <random>
