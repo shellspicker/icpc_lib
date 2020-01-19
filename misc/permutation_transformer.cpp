@@ -45,14 +45,14 @@ public:
 		iota(mat[0], mat[0] + dn, 0);
 		gall();
 	}
-	permutation(vector<int> &&p) { assign(p); }
-	permutation(vector<int> &&pre, vector<int> &&nxt) { assign(pre, nxt); }
-	void assign(vector<int> &&p) {
+	permutation(const vector<int> &p) { assign(p); }
+	permutation(const vector<int> &pre, const vector<int> &nxt) { assign(pre, nxt); }
+	void assign(const vector<int> &p) {
 		assert(is_permutation(origin, origin + dn, p.begin()));
 		copy(p.begin(), p.end(), mat[0]);
 		gall();
 	}
-	void assign(vector<int> &&pre, vector<int> &&nxt) {
+	void assign(const vector<int> &pre, const vector<int> &nxt) {
 		auto fn = [](int x) { return inrange(x, 0, dn - 1); };
 		assert(find_if_not(pre.begin(), pre.end(), fn) == pre.end());
 		assert(find_if_not(nxt.begin(), nxt.end(), fn) == nxt.end());
