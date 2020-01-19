@@ -12,7 +12,7 @@
 - [ ] 开栈.
 - [ ] debug辅助.
 - [ ] efg_cvt, 浮点数截断.
-- [ ] mt19937...
+- [x] mt19937...
 - [ ] [模运算类 by tourist.](http://codeforces.com/contest/1261/submission/65651526) 
 用于连续运算取模. 另外也可以写成栈解析表达式, 传入字符串用sprintf来搞.
 - [ ] 整理一份全局符号表.

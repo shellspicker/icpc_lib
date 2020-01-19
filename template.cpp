@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <iostream>
 #include <sstream>
+#include <ultility>
 #include <algorithm>
 #include <numeric>
 #include <random>
@@ -33,6 +34,8 @@ using std::stringstream;
 using std::cin;
 using std::cout;
 using std::string;
+using std::move;
+using std::forward;
 using std::tuple;
 using std::tie;
 using std::get;
@@ -176,6 +179,7 @@ template<typename key, typename val>
 using ordered_map = __gnu_pbds::tree<
 						key, val, less<key>, __gnu_pbds::rb_tree_tag,
 						__gnu_pbds::tree_order_statistics_node_update>;
+#define DEBUG(...) cout << __LINE__ << ": "; debug_line(__VA_ARGS__)
 #define fup_s(i, a, b, s) for (long i = a, c = b; i <= c; i += s)
 #define fwn_s(i, a, b, s) for (long i = b, c = a; c <= i; i -= s)
 #define fup(i, a, b) fup_s(i, a, b, 1)
@@ -199,6 +203,14 @@ const int inf32 = 1 << 30;
 const ll inf64 = 1ll << 60;
 const double pi = acos(-1);
 const double eps = 1e-6;
+template<typename tp>
+void print(const tp &x) { cout << x << ' '; }
+template<typename ...tp>
+void debug_line(tp &&...args)
+{
+	initializer_list<int> {(print(forward<tp>(args)), 0)...};
+	cout << endl;
+}
 template<typename tp>
 int bitcount(tp x) {
 	bool isll = sizeof(x) - 4;
