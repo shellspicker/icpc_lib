@@ -18,6 +18,7 @@
 #include <random>
 #include <vector>
 #include <deque>
+#include <list>
 #include <set>
 #include <map>
 #include <unordered_set>
@@ -43,6 +44,7 @@ using std::get;
 using std::pair;
 using std::vector;
 using std::deque;
+using std::list;
 using std::stack;
 using std::queue;
 using std::bitset;
