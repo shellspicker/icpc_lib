@@ -10,7 +10,7 @@
 - [ ] 二维, 三维数组的遍历方向数组. 二维的4向, 8向; 三维的6向, 26向(可能不需要)...
 - [ ] 快速读入, istream.rdbuf->sgetn(buf, sizeof(buf)), 配合readint...
 - [ ] 开栈.
-- [ ] debug辅助.
+- [x] debug辅助.
 - [ ] efg_cvt, 浮点数截断.
 - [x] mt19937...
 - [ ] [模运算类 by tourist.](http://codeforces.com/contest/1261/submission/65651526) 
@@ -34,6 +34,7 @@
 - [ ] dfs可以带goto.
 - [ ] 尺取法, 尝试各种题, 写md. 写法用当前点为搜索点的形式.
 - [ ] 二叉树的非递归morris遍历. 也可以知道无父结点怎么找中序遍历的前后结点.
+- [ ] 基数排序, 计数排序.
 
 ## other
 
@@ -41,5 +42,4 @@
 - [ ] 可变参数模板, 能方便写什么东西? 已经有了hash_val.
 - [ ] cppreference里面能用到的函数都列一遍, 做个lib整理.
 - [ ] github上的3份很好的模板都合并过来.
-
 
