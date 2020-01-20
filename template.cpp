@@ -209,8 +209,102 @@ void print(const tp &x) { cout << x << ' '; }
 template<typename ...tp>
 void debug_line(tp &&...args)
 {
-	initializer_list<int> {(print(forward<tp>(args)), 0)...};
+	initializer_list<int>{(print(forward<tp>(args)), 0)...};
 	cout << endl;
+}
+/*
+ * calc expression for basic arithmetic.
+ * not judge illegal situation.
+ * not use stringstream(it may be slow).
+ * skip space use `isblank`, not `isspace`, so just read one-line.
+ * if read multi-line expression... use `isspace`, good luck.
+ * originally, i envisage use that to do complex mod calculation, but now
+ * not implement. if to implement, write like a class.
+ */
+template<typename tp>
+tp parse_calc_exp(const string &exp)
+{
+	tp sum = 0;
+	stack<char> cop;
+	stack<tp> nop;
+	int cur = 0, len = exp.length();
+	char ch;
+	auto calc = [](stack<char> &cop, stack<tp> &nop) {
+		tp ret, e1, e2;
+		char op;
+		op = cop.top(); cop.pop();
+		e2 = nop.top(); nop.pop();
+		e1 = nop.top(); nop.pop();
+		switch (op) {
+			case '+':
+				ret = e1 + e2;
+				break;
+			case '-':
+				ret = e1 - e2;
+				break;
+			case '*':
+				ret = e1 * e2;
+				break;
+			case '/':
+				ret = e1 / e2;
+				break;
+			case '%':
+				ret = e1 % e2;
+				break;
+			case '^':
+				ret = pow(e1, e2);
+				break;
+		}
+		nop.push(ret);
+	};
+	auto can_push = [](char lef, char rig) {
+		bool ok;
+		string sl(1, lef), sr(1, rig);
+		ok = rig != ')' && (lef == '(' || rig == '('
+			|| (sl.find_first_of("+-") != -1 && sr.find_first_of("*/%^") != -1));
+		return ok;
+	};
+	while (cur < len) {
+		char ch;
+		while (isblank(ch = exp[cur]))
+			cur++;
+		if (isdigit(ch)) {
+			int ed = exp.find_first_not_of("0123456789", cur);
+			if (ed == string::npos)
+				ed = len;
+			if (sizeof(tp) - 4)
+				nop.push(stoll(exp.substr(cur, offset(ed, -cur))));
+			else
+				nop.push(stoi(exp.substr(cur, offset(ed, -cur))));
+			cur = ed;
+		} else {
+			if (ch == ')') {
+				while (!cop.empty() && cop.top() != '(')
+					calc(cop, nop);
+				cop.pop();
+			} else {
+				if (ch != '(')
+					while (!cop.empty() && !can_push(cop.top(), ch))
+						calc(cop, nop);
+				cop.push(ch);
+			}
+			cur++;
+		}
+	}
+	fup (i, 1, cop.size())
+		calc(cop, nop);
+	return nop.top();
+}
+template<typename tp>
+tp va_exp(const char *fmt, ...)
+{
+	char buf[1024];
+	va_list args;
+	va_start(args, fmt);
+	vsprintf(buf, fmt, args);
+	va_end(args);
+	cout << buf << endl;
+	return parse_calc_exp<tp>(buf);
 }
 template<typename tp>
 int bitcount(tp x) {
@@ -459,7 +553,7 @@ ull bkdr_hash_once(const vector<tp> &seq, ull seed)
 		hash = hash * seed + h;
 	return hash;
 }
-ull hash_range(const vector<ull> &hash, const vector<ull> &exp, int l, int r)
+ull bkdr_hash_range(const vector<ull> &hash, const vector<ull> &exp, int l, int r)
 {
 	return hash[r] - presum_point(hash, l - 1) * exp[length(l, r)];
 }
