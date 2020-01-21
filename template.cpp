@@ -198,7 +198,7 @@ using ordered_map = __gnu_pbds::tree<
 #define range_r(ed, len) offset((ed), -tail((len))), (ed)
 #define range_mirror_point(len, a, b) mirror((len), (b)), mirror((len), (a))
 #define range_mirror(len, st, off) range_mirror_point((len), (st), offset((st), tail((off))))
-typedef unsigned long ul;
+typedef unsigned int uint;
 typedef long long ll;
 typedef unsigned long long ull;
 typedef long double ldb;
@@ -457,38 +457,40 @@ ll pow_mod(ll x, ll n, ll mod)
 }
 template<typename tp, class twist = mt19937_64>
 class random_int {
-	uniform_int_distribution<tp> fuck;
-	using param_type = decltype(fuck.param());
-	twist shit{random_device{}()};
+	using dist = uniform_int_distribution<tp>;
+	using param_type = typename dist::param_type;
+	dist segment;
+	twist gen{random_device{}()};
 public:
-	void set_range(tp l, tp r) {
-		fuck.param(param_type {l, r});
+	void set(tp l, tp r) {
+		segment.param(param_type{l, r});
 	}
-	pair<tp, tp> get_range() {
-		assert(fuck.a() == fuck.min());
-		assert(fuck.b() == fuck.max());
-		return {fuck.a(), fuck.b()};
+	pair<tp, tp> get() {
+		assert(segment.a() == segment.min());
+		assert(segment.b() == segment.max());
+		return {segment.a(), segment.b()};
 	}
 	tp operator()() {
-		return fuck(shit);
+		return segment(gen);
 	}
 };
 template<typename tp, class twist = mt19937_64>
 class random_real {
-	uniform_real_distribution<tp> fuck;
-	using param_type = decltype(fuck.param());
-	twist shit{random_device{}()};
+	using dist = uniform_real_distribution<tp>;
+	using param_type = typename dist::param_type;
+	dist segment;
+	twist gen{random_device{}()};
 public:
-	void set_range(tp l, tp r) {
-		fuck.param(param_type {l, r});
+	void set(tp l, tp r) {
+		segment.param(param_type{l, r});
 	}
-	pair<tp, tp> get_range() {
-		assert(fuck.a() == fuck.min());
-		assert(fuck.b() == fuck.max());
-		return {fuck.a(), fuck.b()};
+	pair<tp, tp> get() {
+		assert(segment.a() == segment.min());
+		assert(segment.b() == segment.max());
+		return {segment.a(), segment.b()};
 	}
 	tp operator()() {
-		return fuck(shit);
+		return segment(gen);
 	}
 };
 ull random(ull mod)
