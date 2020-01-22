@@ -226,14 +226,21 @@ void debug_line(tp &&...args)
 template<typename tp>
 tp parse_calc_exp(const string &exp)
 {
-	tp sum = 0;
 	stack<char> cop;
 	stack<tp> nop;
-	int cur = 0, len = exp.length();
+	int cur = 0, len = exp.length(), minus = 1;
 	char ch;
-	auto calc = [](stack<char> &cop, stack<tp> &nop) {
+	bool flag = 0;
+	auto push_num = [&](stack<tp> &nop, tp x) {
+		nop.push(x);
+		flag = 1;
+	};
+	auto calc = [&](stack<char> &cop, stack<tp> &nop) {
 		tp ret, e1, e2;
 		char op;
+		bool ok = 1 <= cop.size() && 2 <= nop.size();
+		if (!ok)
+			return;
 		op = cop.top(); cop.pop();
 		e2 = nop.top(); nop.pop();
 		e1 = nop.top(); nop.pop();
@@ -256,33 +263,44 @@ tp parse_calc_exp(const string &exp)
 			case '^':
 				ret = pow(e1, e2);
 				break;
+			default:
+				ok = 0;
+				break;
 		}
-		nop.push(ret);
+		if (ok)
+			push_num(nop, ret);
 	};
 	auto can_push = [](char lef, char rig) {
 		bool ok;
-		string sl(1, lef), sr(1, rig);
+		string plus("+-"), multiply("*/%^");
 		ok = rig != ')' && (lef == '(' || rig == '('
-			|| (sl.find_first_of("+-") != -1 && sr.find_first_of("*/%^") != -1));
+			|| (plus.find(lef) != -1ull && multiply.find(rig) != -1ull));
 		return ok;
 	};
 	while (cur < len) {
-		char ch;
 		while (isblank(ch = exp[cur]))
 			cur++;
 		if (isdigit(ch)) {
-			int ed = exp.find_first_not_of("0123456789", cur);
-			if (ed == string::npos)
+			size_t ed = exp.find_first_not_of("0123456789", cur);
+			if (ed == -1ull)
 				ed = len;
 			if (sizeof(tp) - 4)
-				nop.push(stoll(exp.substr(cur, offset(ed, -cur))));
+				push_num(nop, stoll(exp.substr(cur, offset(ed, -cur))) * minus);
 			else
-				nop.push(stoi(exp.substr(cur, offset(ed, -cur))));
+				push_num(nop, stoi(exp.substr(cur, offset(ed, -cur))) * minus);
+			minus = 1;
 			cur = ed;
 		} else {
+			if (ch == '-' && !flag) {
+				flag = 0;
+				minus *= -1;
+				goto end;
+			}
 			if (ch == ')') {
 				while (!cop.empty() && cop.top() != '(')
 					calc(cop, nop);
+				if (cop.empty())
+					goto end;
 				cop.pop();
 			} else {
 				if (ch != '(')
@@ -290,11 +308,17 @@ tp parse_calc_exp(const string &exp)
 						calc(cop, nop);
 				cop.push(ch);
 			}
+end:
 			cur++;
 		}
 	}
-	fup (i, 1, cop.size())
-		calc(cop, nop);
+	while (!cop.empty()) {
+		if (cop.top() == '(')
+			cop.pop();
+		else
+			calc(cop, nop);
+	}
+	assert(nop.size() == 1);
 	return nop.top();
 }
 template<typename tp>
@@ -304,8 +328,8 @@ tp va_exp(const char *fmt, ...)
 	va_list args;
 	va_start(args, fmt);
 	vsprintf(buf, fmt, args);
+	vprintf(fmt, args);
 	va_end(args);
-	cout << buf << endl;
 	return parse_calc_exp<tp>(buf);
 }
 template<typename tp>
