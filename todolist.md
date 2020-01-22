@@ -13,7 +13,7 @@
 - [x] debug辅助.
 - [ ] efg_cvt, 浮点数截断.
 - [x] mt19937...
-- [ ] [模运算类 by tourist.](http://codeforces.com/contest/1261/submission/65651526) 
+- [x] [模运算类 by tourist.](http://codeforces.com/contest/1261/submission/65651526) 
 用于连续运算取模. 另外也可以写成栈解析表达式, 传入字符串用sprintf来搞.
 - [ ] 整理一份全局符号表.
 
@@ -34,12 +34,12 @@
 - [ ] dfs可以带goto.
 - [ ] 尺取法, 尝试各种题, 写md. 写法用当前点为搜索点的形式.
 - [ ] 二叉树的非递归morris遍历. 也可以知道无父结点怎么找中序遍历的前后结点.
-- [ ] 基数排序, 计数排序.
+- [x] 基数排序, 计数排序.
 
 ## other
 
 - [ ] 自实现allocator, 可用于vector的那种. 参考cppreference里的vector::reserve.
-- [ ] 可变参数模板, 能方便写什么东西? 已经有了hash_val.
+- [x] 可变参数模板, 能方便写什么东西? 已经有了hash_val.
 - [ ] cppreference里面能用到的函数都列一遍, 做个lib整理.
 - [ ] github上的3份很好的模板都合并过来.
 
