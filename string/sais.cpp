@@ -27,7 +27,6 @@
 #include <queue>
 #include <bitset>
 #include <tr2/dynamic_bitset>
-#include <ext/pb_ds/assoc_container.hpp>
 using std::ios;
 using std::ios_base;
 using std::istream;
@@ -173,15 +172,6 @@ using std::mt19937_64;
 using std::random_device;
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
-using namespace __gnu_pbds;
-template<typename key>
-using ordered_set = __gnu_pbds::tree<
-						key, __gnu_pbds::null_type, less<key>, __gnu_pbds::rb_tree_tag,
-						__gnu_pbds::tree_order_statistics_node_update>;
-template<typename key, typename val>
-using ordered_map = __gnu_pbds::tree<
-						key, val, less<key>, __gnu_pbds::rb_tree_tag,
-						__gnu_pbds::tree_order_statistics_node_update>;
 #define DEBUG(...) cout << __LINE__ << ": "; debug_line(__VA_ARGS__)
 #define fup_s(i, a, b, s) for (long i = a, c = b; i <= c; i += s)
 #define fwn_s(i, a, b, s) for (long i = b, c = a; c <= i; i -= s)
@@ -622,6 +612,9 @@ public:
 		lcp.resize(sz);
 		rk.assign(it_each(origin));
 		getsa(rk, sa);
+		for (auto x : sa)
+			cout << x << ' ';
+		cout << endl;
 	}
 	sais(const string &str) {
 		origin.assign(str);
@@ -636,14 +629,38 @@ public:
 	bool is_lms_char(vector<bool> &type, int i) {
 		return !type[i] && 0 < i && type[i - 1];
 	}
-	bool is_lms_equal(vector<bool> &type, int p1, int p2) {
+	bool is_lms_equal(vector<int> &text, vector<bool> &type, int p1, int p2) {
 		do {
-			if (origin[p1] != origin[p2])
+			if (text[p1] != text[p2])
 				return 0;
 			p1++, p2++;
 		} while(!is_lms_char(type, p1) && !is_lms_char(type, p2));
-		return origin[p1] == origin[p2];
+		return text[p1] == text[p2];
 	}
+	void reset_bk(
+			vector<int> &bk,
+			vector<int> &lbk,
+			vector<int> &sbk) {
+		lbk[0] = sbk[0] = 0;
+		fup (x, 1, bk.size() - 1) {
+			lbk[x] = bk[x - 1];
+			sbk[x] = bk[x] - 1;
+		}
+	}
+	void push_lbk(
+			vector<int> &text,
+			vector<int> &sa,
+			vector<int> &lbk,
+			int pos) {
+		sa[lbk[text[pos]]++] = pos;
+	};
+	void push_sbk(
+			vector<int> &text,
+			vector<int> &sa,
+			vector<int> &sbk,
+			int pos) {
+		sa[sbk[text[pos]]--] = pos;
+	};
 	void induced_sort(
 			vector<int> &text,
 			vector<int> &sa,
@@ -652,52 +669,34 @@ public:
 			vector<int> &bk,
 			vector<int> &lbk,
 			vector<int> &sbk) {
-		int vmx = *max_element(it_each(sa));
-		bk.resize(vmx + 1);
-		lbk.resize(vmx + 1);
-		sbk.resize(vmx + 1);
-		fill(it_each(bk), 0);
-		for (auto x : sa)
-			bk[x]++;
-		lbk[0] = sbk[0] = 0;
-		partial_sum(it_each(bk), bk.begin());
-		fup (x, 1, vmx) {
-			lbk[x] = bk[x - 1];
-			sbk[x] = bk[x] - 1;
-		}
 		fill(it_each(sa), -1);
-		fwn (i, 0, lms.size() - 1) {
-			int pos = lms[i];
-			sa[sbk[text[pos]]--] = pos;
-		}
-		fup (x, 1, vmx)
-			sbk[x] = bk[x] - 1;
-		fup (i, 0, sa.size() - 1) {
-			int x = sa[i];
-			if (0 < x && !type[x - 1]) {
-				int y = sa[x - 1];
-				sa[lbk[text[y]]++] = y;
-			}
-		}
-		fwn (i, 0, sa.size() - 1) {
-			int x = sa[i];
-			if (0 < x && type[x - 1]) {
-				int y = sa[x - 1];
-				sa[sbk[text[y]]--] = y;
-			}
-		}
+		reset_bk(bk, lbk, sbk);
+		fwn (i, 0, lms.size() - 1)
+			push_sbk(text, sa, sbk, lms[i]);
+		fup (i, 0, sa.size() - 1) if (0 < sa[i] && type[sa[i] - 1])
+			push_lbk(text, sa, lbk, sa[i] - 1);
+		reset_bk(bk, lbk, sbk);
+		fwn (i, 0, sa.size() - 1) if (0 < sa[i] && !type[sa[i] - 1])
+			push_sbk(text, sa, sbk, sa[i] - 1);
 	}
 	void getsa(vector<int> &text, vector<int> &sa) {
 		int len = text.size();
 		vector<int> bk, lbk, sbk, lms;
 		vector<bool> type(len);
+		int vmx = *max_element(it_each(text));
+		bk.resize(vmx + 1);
+		lbk.resize(vmx + 1);
+		sbk.resize(vmx + 1);
+		fill(it_each(bk), 0);
+		for (auto x : text)
+			bk[x]++;
+		partial_sum(it_each(bk), bk.begin());
 		type.back() = 0;
-		fwn (i, 0, len - 1) {
-			bool &&o = type[i];
+		fwn (i, 0, len - 2) {
 			if (text[i] == text[i + 1])
-				o = type[i + 1];
+				type[i] = type[i + 1];
 			else
-				o = text[i] > text[i + 1];
+				type[i] = text[i] > text[i + 1];
 		}
 		fup (i, 1, len - 1)
 			if (is_lms_char(type, i))
@@ -706,11 +705,11 @@ public:
 		vector<int> rr(len);
 		int cc = 1, last = -1;
 		fill(it_each(rr), -1);
-		fup (i, 0, len - 1) {
+		fup (i, 1, len - 1) {
 			int pos = sa[i];
 			if (is_lms_char(type, pos)) {
 				if (last != -1) {
-					if (is_lms_equal(type, pos, last))
+					if (is_lms_equal(text, type, pos, last))
 						cc++;
 				}
 				rr[pos] = cc;
@@ -719,7 +718,16 @@ public:
 		}
 		rr.back() = 0;
 		bool flag = cc == lms.size();
-		vector<int> sa1(lms.size()), text1(lms.size());
+		vector<int> text1(lms.size()), sa1(lms.size());
+		copy_if(it_each(rr), text1.begin(), [](int x) { return x != -1; });
+		if (flag) {
+			fup (i, 0, lms.size() - 1)
+				sa1[text1[i]] = i;
+		} else {
+			getsa(text1, sa1);
+		}
+		transform(it_each(sa1), sa1.begin(), [&](int x) { return lms[x]; });
+		copy(it_each(sa1), lms.begin());
 		induced_sort(text, sa, type, lms, bk, lbk, sbk);
 	}
 };
@@ -769,6 +777,10 @@ public:
 
 __attribute__((optimize("-Ofast"))) int main()
 {
-	task gao(0, 0, 0);
+	sais("GATAGACA"); // 8 7 5 3 1 6 4 0 2.
+	sais("abracadabra"); // 11 10 7 0 3 5 8 1 4 6 9 2.
+	// this test is error, output 6 4 1, but answer is 4 6 1...
+	sais("AGATGAGATACGCGGT"); // 16 9 5 0 7 2 10 12 4 6 1 11 13 14 15 8 3.
+	sais("mmiissiissiippii"); // 16 15 14 10 6 2 11 7 3 1 0 13 12 9 5 8 4.
 	return 0;
 }
