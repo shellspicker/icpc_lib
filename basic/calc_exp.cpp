@@ -1,6 +1,5 @@
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse4")
-#include <ctime>
 #include <cstddef>
 #include <cstdint>
 #include <climits>
@@ -189,7 +188,7 @@ using std::uniform_real_distribution;
 #define range_r(ed, len) offset((ed), -tail((len))), (ed)
 #define range_mirror_point(len, a, b) mirror((len), (b)), mirror((len), (a))
 #define range_mirror(len, st, off) range_mirror_point((len), (st), offset((st), tail((off))))
-typedef unsigned long ul;
+typedef unsigned int uint;
 typedef long long ll;
 typedef unsigned long long ull;
 typedef long double ldb;
@@ -197,6 +196,132 @@ const int inf32 = 1 << 30;
 const ll inf64 = 1ll << 60;
 const double pi = acos(-1);
 const double eps = 1e-6;
+template<typename tp>
+void print(const tp &x) { cout << x << ' '; }
+template<typename ...tp>
+void debug_line(tp &&...args)
+{
+	initializer_list<int>{(print(forward<tp>(args)), 0)...};
+	cout << endl;
+}
+/*
+ * calc expression for basic arithmetic.
+ * not judge illegal situation.
+ * not use stringstream(it may be slow).
+ * skip space use `isblank`, not `isspace`, so just read one-line.
+ * if read multi-line expression... use `isspace`, good luck.
+ * originally, i envisage use that to do complex mod calculation, but now
+ * not implement. if to implement, write like a class.
+ */
+template<typename tp>
+tp parse_calc_exp(const string &exp)
+{
+	stack<char> cop;
+	stack<tp> nop;
+	int cur = 0, len = exp.length(), minus = 1;
+	char ch;
+	bool flag = 0;
+	auto push_num = [&](stack<tp> &nop, tp x) {
+		nop.push(x);
+		flag = 1;
+	};
+	auto calc = [&](stack<char> &cop, stack<tp> &nop) {
+		tp ret, e1, e2;
+		char op;
+		bool ok = 1 <= cop.size() && 2 <= nop.size();
+		if (!ok)
+			return;
+		op = cop.top(); cop.pop();
+		e2 = nop.top(); nop.pop();
+		e1 = nop.top(); nop.pop();
+		switch (op) {
+			case '+':
+				ret = e1 + e2;
+				break;
+			case '-':
+				ret = e1 - e2;
+				break;
+			case '*':
+				ret = e1 * e2;
+				break;
+			case '/':
+				ret = e1 / e2;
+				break;
+			case '%':
+				ret = e1 % e2;
+				break;
+			case '^':
+				ret = pow(e1, e2);
+				break;
+			default:
+				ok = 0;
+				break;
+		}
+		if (ok)
+			push_num(nop, ret);
+	};
+	auto can_push = [](char lef, char rig) {
+		bool ok;
+		string plus("+-"), multiply("*/%^");
+		ok = rig != ')' && (lef == '(' || rig == '('
+			|| (plus.find(lef) != -1ull && multiply.find(rig) != -1ull));
+		return ok;
+	};
+	while (cur < len) {
+		while (isblank(ch = exp[cur]))
+			cur++;
+		if (isdigit(ch)) {
+			size_t ed = exp.find_first_not_of("0123456789", cur);
+			if (ed == -1ull)
+				ed = len;
+			if (sizeof(tp) - 4)
+				push_num(nop, stoll(exp.substr(cur, offset(ed, -cur))) * minus);
+			else
+				push_num(nop, stoi(exp.substr(cur, offset(ed, -cur))) * minus);
+			minus = 1;
+			cur = ed;
+		} else {
+			if (ch == '-' && !flag) {
+				flag = 0;
+				minus *= -1;
+				goto end;
+			}
+			if (ch == ')') {
+				while (!cop.empty() && cop.top() != '(')
+					calc(cop, nop);
+				if (cop.empty())
+					goto end;
+				cop.pop();
+			} else {
+				if (ch != '(')
+					while (!cop.empty() && !can_push(cop.top(), ch))
+						calc(cop, nop);
+				cop.push(ch);
+			}
+end:
+			cur++;
+		}
+	}
+	while (!cop.empty()) {
+		if (cop.top() == '(')
+			cop.pop();
+		else
+			calc(cop, nop);
+	}
+	assert(nop.size() == 1);
+	return nop.top();
+}
+template<typename tp>
+tp va_exp(const char *fmt, ...)
+{
+	char buf[1024];
+	va_list args;
+	va_start(args, fmt);
+	vsprintf(buf, fmt, args);
+	vprintf(fmt, args);
+	va_end(args);
+	return parse_calc_exp<tp>(buf);
+}
 template<typename tp>
 int bitcount(tp x) {
 	bool isll = sizeof(x) - 4;
@@ -264,7 +389,7 @@ void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
  */
 template<typename tp>
 int binary_search(
-		vector<tp> &v, int lo, int hi, tp key, bool dir, bool contain)
+		const vector<tp> &v, int lo, int hi, tp key, bool dir, bool contain)
 {
 	range_normalize(lo, hi);
 	while (lo <= hi) {
@@ -284,15 +409,15 @@ int binary_search(
 	return dir ^ contain ? lo : hi;
 }
 template<typename tp>
-tp presum_point(vector<tp> &sum, int i) { return 0 <= i ? sum[i] : 0; }
+tp presum_point(const vector<tp> &sum, int i) { return 0 <= i ? sum[i] : 0; }
 template<typename tp>
-tp presum_range(vector<tp> &sum, int l, int r)
+tp presum_range(const vector<tp> &sum, int l, int r)
 {
 	return sum[r] - presum_point(sum, l - 1);
 }
 template<typename tp>
 void presum_preprocess(
-						vector<tp> &sum, vector<tp> &data,
+						vector<tp> &sum, const vector<tp> &data,
 						int l, int r, int st)
 {
 	int len = length(l, r);
@@ -301,15 +426,15 @@ void presum_preprocess(
 		sum[i] = presum_point(sum, i - 1) + data[d];
 }
 template<typename tp>
-tp premul_point(vector<tp> &mul, int i) { return 0 <= i ? mul[i] : 1; }
+tp premul_point(const vector<tp> &mul, int i) { return 0 <= i ? mul[i] : 1; }
 template<typename tp>
-tp premul_range(vector<tp> &mul, int l, int r)
+tp premul_range(const vector<tp> &mul, int l, int r)
 {
 	return mul[r] / premul_point(mul, l - 1);
 }
 template<typename tp>
 void premul_preprocess(
-						vector<tp> &mul, vector<tp> &data,
+						vector<tp> &mul, const vector<tp> &data,
 						int l, int r, int st)
 {
 	int len = length(l, r);
@@ -333,6 +458,8 @@ ull mul_mod(ull a, ull b, ull mod)
 }
 ll pow_mod(ll x, ll n, ll mod)
 {
+	if (mod == 1)
+		return 0;
 	ll res = 1;
 	while (n > 0) {
 		if (n & 1)
@@ -342,239 +469,6 @@ ll pow_mod(ll x, ll n, ll mod)
 	}
 	return res;
 }
-ull random(ull mod)
-{
-	return (ull)(mod * (rand() / (double)RAND_MAX));
-}
-template<typename tp>
-void combine(size_t &seed, const tp &x)
-{
-	seed ^= std::hash<tp>()(x) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-}
-void hash_val(size_t &seed) {}
-template<typename tp, typename ...other>
-void hash_val(size_t &seed, tp &val, const other &...args)
-{
-	combine(seed, val);
-	hash_val(seed, args...);
-}
-template<typename tp>
-size_t hash_val(const std::vector<tp> &vec)
-{
-	size_t seed = 0;
-	for (auto x : vec) {
-		combine(seed, x);
-	}
-	return seed;
-}
-template<typename ...tp>
-size_t hash_val(const tp &...args)
-{
-	size_t seed = 0;
-	hash_val(seed, args...);
-	return seed;
-}
-int fdu(double x)
-{
-	return fabs(x) < eps ? 0 : x <= -eps ? -1 : 1;
-}
-// like ecvt, fcvt, gcvt...
-double fcut(double x, int xp)
-{
-	return 1.L * (ll)(x * pow(10, xp)) / pow(10, xp);
-}
-template<typename tp>
-void read(tp &x)
-{
-	cin >> x;
-}
-template<typename tp>
-void read_vec(vector<tp> &v, size_t n)
-{
-	v.resize(n);
-	fup(i, 0, v.size() - 1) {
-		cin >> v[i];
-	}
-}
-
-class data {
-public:
-	bool in() {
-		return !cin.eof();
-	}
-	void deal() {
-	}
-	void out() {
-	}
-} gkd;
-
-class task {
-	int testcase = 1 << 30;
-	stringstream tid;
-	data &gao = gkd;
-public:
-	task(
-		bool multicase = false,
-		bool testid = false,
-		bool blankline = false) {
-		ios::sync_with_stdio(0);
-		cin.tie(0);
-		cout.setf(ios::fixed);
-		cout.precision(20);
-		if (multicase)
-			read(testcase);
-		for (int ti = 1; ti <= testcase && gao.in(); ++ti) {
-			gao.deal();
-			if (blankline && 1 < ti)
-				cout << endl;
-			tid << "Case #" << ti << ": ";
-			if (testid)
-				cout << tid.str();
-			gao.out();
-			tid.str("");
-		}
-	}
-};
-
-typedef uint32_t uint;
-template<typename tp>
-void counting_sort(vector<tp> &v, tp chunk, uint blk)
-{
-	auto bit = [=](tp x) {
-		return x >> ctz(chunk) & (blk - 1);
-	};
-	vector<tp> cnt(blk, 0), cp(v.size());
-	for (auto x : v)
-		cnt[bit(x)]++;
-	partial_sum(cnt.begin(), cnt.end(), cnt.begin());
-	fwn (i, 0, v.size() - 1) {
-		tp &x = v[i];
-		cp[--cnt[bit(x)]] = x;
-	}
-	copy(cp.begin(), cp.end(), v.begin());
-}
-template<typename tp>
-void radix_sort_slow_divide(vector<tp> &v, uint blk = 1 << 8)
-{
-	if (std::is_signed<tp>::value) {
-		typedef typename std::make_unsigned<tp>::type utp;
-		auto is_minus = [](tp x) { return x < 0; };
-		size_t sz = count_if(v.begin(), v.end(), is_minus);
-		vector<utp> ne(sz), po(v.size() - sz);
-		copy_if(v.begin(), v.end(), ne.begin(), is_minus);
-		remove_copy_if(v.begin(), v.end(), po.begin(), is_minus);
-		radix_sort_slow_divide(ne, blk);
-		radix_sort_slow_divide(po, blk);
-		copy(ne.begin(), ne.end(), v.begin());
-		copy(po.begin(), po.end(), v.begin() + sz);
-	} else {
-		tp chunk = 1;
-		for (;; chunk <<= ctz(blk)) {
-			counting_sort(v, chunk, blk);
-			if (chunk << ctz(blk) < chunk)
-				break;
-		}
-	}
-}
-template<typename tp>
-void radix_sort_slow_normal(vector<tp> &v, uint blk = 1 << 8)
-{
-	if (std::is_signed<tp>::value) {
-		typedef typename std::make_unsigned<tp>::type utp;
-		auto is_minus = [](tp x) { return x < 0; };
-		vector<utp> cp(v.size());
-		copy(v.begin(), v.end(), cp.begin());
-		radix_sort_slow_normal(cp, blk);
-		size_t fd = find_if(cp.begin(), cp.end(), is_minus) - cp.begin();
-		copy(cp.begin(), cp.begin() + fd, v.end() - fd);
-		copy(cp.begin() + fd, cp.end(), v.begin());
-	} else {
-		tp chunk = 1;
-		for (;; chunk <<= ctz(blk)) {
-			counting_sort(v, chunk, blk);
-			if (chunk << ctz(blk) < chunk)
-				break;
-		}
-	}
-}
-/*
- * use blk 1 << 8
- */
-template<typename tp>
-void radix_sort_fast_divide(vector<tp> &v, uint blk = 1 << 8)
-{
-	if (std::is_signed<tp>::value) {
-		typedef typename std::make_unsigned<tp>::type utp;
-		auto is_minus = [](tp x) { return x < 0; };
-		size_t sz = count_if(v.begin(), v.end(), is_minus);
-		vector<utp> ne(sz), po(v.size() - sz);
-		copy_if(v.begin(), v.end(), ne.begin(), is_minus);
-		remove_copy_if(v.begin(), v.end(), po.begin(), is_minus);
-		radix_sort_fast_divide(ne, blk);
-		radix_sort_fast_divide(po, blk);
-		copy(ne.begin(), ne.end(), v.begin());
-		copy(po.begin(), po.end(), v.begin() + sz);
-	} else {
-		vector<vector<tp>> radix(blk);
-		vector<tp> all;
-		tp chunk = 1;
-		for (auto x : v)
-			all.emplace_back(x);
-		for (;; chunk <<= ctz(blk)) {
-			for (auto x : all)
-				radix[x >> ctz(chunk) & (blk - 1)].emplace_back(x);
-			all.clear();
-			for (auto &cur : radix) {
-				if (!cur.empty()) {
-					for (auto x : cur) {
-						all.emplace_back(x);
-					}
-					cur.clear();
-				}
-			}
-			if (chunk << ctz(blk) < chunk)
-				break;
-		}
-		copy(all.begin(), all.end(), v.begin());
-	}
-}
-template<typename tp>
-void radix_sort_fast_normal(vector<tp> &v, uint blk = 1 << 8)
-{
-	if (std::is_signed<tp>::value) {
-		typedef typename std::make_unsigned<tp>::type utp;
-		auto is_minus = [](tp x) { return x < 0; };
-		vector<utp> cp(v.size());
-		copy(v.begin(), v.end(), cp.begin());
-		radix_sort_fast_normal(cp, blk);
-		size_t fd = find_if(cp.begin(), cp.end(), is_minus) - cp.begin();
-		copy(cp.begin(), cp.begin() + fd, v.end() - fd);
-		copy(cp.begin() + fd, cp.end(), v.begin());
-	} else {
-		vector<vector<tp>> radix(blk);
-		vector<tp> all;
-		tp chunk = 1;
-		for (auto x : v)
-			all.emplace_back(x);
-		for (;; chunk <<= ctz(blk)) {
-			for (auto x : all)
-				radix[x >> ctz(chunk) & (blk - 1)].emplace_back(x);
-			all.clear();
-			for (auto &cur : radix) {
-				if (!cur.empty()) {
-					for (auto x : cur) {
-						all.emplace_back(x);
-					}
-					cur.clear();
-				}
-			}
-			if (chunk << ctz(blk) < chunk)
-				break;
-		}
-		copy(all.begin(), all.end(), v.begin());
-	}
-}
-
 template<typename tp, class twist = mt19937_64>
 class random_int {
 	using dist = uniform_int_distribution<tp>;
@@ -613,113 +507,147 @@ public:
 		return segment(gen);
 	}
 };
-
-template<typename tp>
-void test_slow_divide(int sz, int d, tp m1, tp m2)
+ull random(ull mod)
 {
-	vector<tp> v(sz);
-	double t1, t2;
-	random_int<tp> rd;
-	rd.set(m1, m2);
-	fup (i, 0, sz - 1)
-		v[i] = rd();
-	t1 = clock();
-	radix_sort_slow_divide(v, 1 << d);
-	t2 = clock();
-	cout << (t2 - t1) / 1000 << ' ' << is_sorted(v.begin(), v.end()) << endl;
+	return (ull)(mod * (rand() / (double)RAND_MAX));
 }
 template<typename tp>
-void test_slow_normal(int sz, int d, tp m1, tp m2)
+void combine(size_t &seed, const tp &x)
 {
-	vector<tp> v(sz);
-	double t1, t2;
-	random_int<tp> rd;
-	rd.set(m1, m2);
-	fup (i, 0, sz - 1)
-		v[i] = rd();
-	t1 = clock();
-	radix_sort_slow_normal(v, 1 << d);
-	t2 = clock();
-	cout << (t2 - t1) / 1000 << ' ' << is_sorted(v.begin(), v.end()) << endl;
+	seed ^= hash<tp>()(x) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+void hash_val(size_t &seed) {}
+template<typename tp, typename ...other>
+void hash_val(size_t &seed, tp &val, const other &...args)
+{
+	combine(seed, val);
+	hash_val(seed, args...);
 }
 template<typename tp>
-void test_fast_divide(int sz, int d, tp m1, tp m2)
+size_t hash_val(const vector<tp> &vec)
 {
-	vector<tp> v(sz);
-	double t1, t2;
-	random_int<tp> rd;
-	rd.set(m1, m2);
-	fup (i, 0, sz - 1)
-		v[i] = rd();
-	t1 = clock();
-	radix_sort_fast_divide(v, 1 << d);
-	t2 = clock();
-	cout << (t2 - t1) / 1000 << ' ' << is_sorted(v.begin(), v.end()) << endl;
-}
-template<typename tp>
-void test_fast_normal(int sz, int d, tp m1, tp m2)
-{
-	vector<tp> v(sz);
-	double t1, t2;
-	random_int<tp> rd;
-	rd.set(m1, m2);
-	fup (i, 0, sz - 1)
-		v[i] = rd();
-	t1 = clock();
-	radix_sort_fast_normal(v, 1 << d);
-	t2 = clock();
-	cout << (t2 - t1) / 1000 << ' ' << is_sorted(v.begin(), v.end()) << endl;
-}
-template<typename tp>
-void test_std(int sz, tp m1, tp m2)
-{
-	vector<tp> v(sz);
-	double t1, t2;
-	random_int<tp> rd;
-	rd.set(m1, m2);
-	fup (i, 0, sz - 1)
-		v[i] = rd();
-	t1 = clock();
-	sort(v.begin(), v.end());
-	t2 = clock();
-	cout << (t2 - t1) / 1000 << ' ' << is_sorted(v.begin(), v.end()) << endl;
-}
-void test()
-{
-	srand(time(0));
-	const int sz = 5000000;
-	for (auto d : {5, 8, 10}) {
-		cout << "\nshift: " << d << endl;
-		cout << "fast normal\n";
-		test_fast_normal<int>(sz, d, -1e9, 1e9);
-		test_fast_normal<uint>(sz, d, 0, ~0u);
-		test_fast_normal<ll>(sz, d, -1e18, 1e18);
-		test_fast_normal<ull>(sz, d, 0ull, ~0ull);
-		cout << "fast divide\n";
-		test_fast_divide<int>(sz, d, -1e9, 1e9);
-		test_fast_divide<uint>(sz, d, 0, ~0u);
-		test_fast_divide<ll>(sz, d, -1e18, 1e18);
-		test_fast_divide<ull>(sz, d, 0ull, ~0ull);
-		cout << "slow normal\n";
-		test_slow_normal<int>(sz, d, -1e9, 1e9);
-		test_slow_normal<uint>(sz, d, 0, ~0u);
-		test_slow_normal<ll>(sz, d, -1e18, 1e18);
-		test_slow_normal<ull>(sz, d, 0ull, ~0ull);
-		cout << "slow divide\n";
-		test_slow_divide<int>(sz, d, -1e9, 1e9);
-		test_slow_divide<uint>(sz, d, 0, ~0u);
-		test_slow_divide<ll>(sz, d, -1e18, 1e18);
-		test_slow_divide<ull>(sz, d, 0ull, ~0ull);
+	size_t seed = 0;
+	for (auto x : vec) {
+		combine(seed, x);
 	}
-	cout << "\nstd\n";
-	test_std<int>(sz, -1e9, 1e9);
-	test_std<uint>(sz, 0, ~0u);
-	test_std<ll>(sz, -1e18, 1e18);
-	test_std<ull>(sz, 0ull, ~0ull);
+	return seed;
 }
+template<typename ...tp>
+size_t hash_val(const tp &...args)
+{
+	size_t seed = 0;
+	hash_val(seed, args...);
+	return seed;
+}
+void bkdr_hash_preprocess(const string &seq, vector<ull> &hash, ull seed, int i = 0)
+{
+	if (hash.size() < i + seq.size())
+		hash.resize(i + seq.size());
+	for (auto h : seq) {
+		hash[i] = presum_point(hash, i - 1) * seed + h;
+	}
+}
+template<typename tp>
+void bkdr_hash_preprocess(const vector<tp> &seq, vector<ull> &hash, ull seed, int i = 0)
+{
+	if (hash.size() < i + seq.size())
+		hash.resize(i + seq.size());
+	for (auto h : seq) {
+		hash[i] = presum_point(hash, i - 1) * seed + h;
+	}
+}
+ull bkdr_hash_once(const string &seq, ull seed)
+{
+	ull hash = 0;
+	for (auto h : seq)
+		hash = hash * seed + h;
+	return hash;
+}
+template<typename tp>
+ull bkdr_hash_once(const vector<tp> &seq, ull seed)
+{
+	ull hash = 0;
+	for (auto h : seq)
+		hash = hash * seed + h;
+	return hash;
+}
+ull bkdr_hash_range(const vector<ull> &hash, const vector<ull> &exp, int l, int r)
+{
+	return hash[r] - presum_point(hash, l - 1) * exp[length(l, r)];
+}
+int fdu(double x)
+{
+	return fabs(x) < eps ? 0 : x <= -eps ? -1 : 1;
+}
+// like ecvt, fcvt, gcvt...
+double fcut(double x, int xp)
+{
+	return 1.L * (ll)(x * pow(10, xp)) / pow(10, xp);
+}
+template<typename tp>
+void read(tp &x)
+{
+	cin >> x;
+}
+template<typename tp>
+void read_vec(vector<tp> &v, size_t n)
+{
+	v.resize(n);
+	fup(i, 0, v.size() - 1) {
+		cin >> v[i];
+	}
+}
+
+class data {
+	string exp;
+	int ans;
+	istream &ioend() {
+		cin.setstate(ios_base::badbit);
+		return cin;
+	}
+public:
+	istream &in() {
+		getline(cin, exp);
+		return cin;
+	}
+	void deal() {
+		ans = parse_calc_exp<int>(exp);
+	}
+	void out() {
+		cout << ans << endl;
+	}
+} gkd;
+
+class task {
+	int testcase = 1 << 30;
+	stringstream tid;
+	data &gao = gkd;
+public:
+	task(
+		bool multicase = false,
+		bool testid = false,
+		bool blankline = false) {
+		ios::sync_with_stdio(0);
+		cin.tie(0);
+		cout.setf(ios::fixed);
+		cout.precision(20);
+		if (multicase)
+			read(testcase);
+		for (int ti = 1; ti <= testcase && gao.in(); ++ti) {
+			gao.deal();
+			if (blankline && 1 < ti)
+				cout << endl;
+			tid << "Case #" << ti << ": ";
+			if (testid)
+				cout << tid.str();
+			gao.out();
+			tid.str("");
+		}
+	}
+};
 
 __attribute__((optimize("-Ofast"))) int main()
 {
-	test();
+	task gao{};
 	return 0;
 }
