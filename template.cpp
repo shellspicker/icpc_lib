@@ -377,12 +377,22 @@ int cto(tp x) {
 		return x ? 1 << __builtin_ctz(x) : 0;
 	}
 }
-ull roundup_pow_of_2(ull x) { return x ? clo(x) << 1 : 0; }
-ull rounddown_pow_of_2(ull x) { return x ? clo(x) : 0; }
-bool is_power_of_2(ull x) { return x && !(x & (x - 1)); }
-ull length(ull l, ull r) { return (r < l) ? 0 : r - l + 1; }
-bool inrange(ll x, ll l, ll r) { return r < l ? false : l <= x && x <= r; }
-ull midpoint(ull l, ull r) { return l + ((r - l) >> 1); }
+template<typename tp>
+tp roundup_pow_of_2(tp x) { return x ? clo(x) << 1 : 0; }
+template<typename tp>
+tp rounddown_pow_of_2(tp x) { return x ? clo(x) : 0; }
+template<typename tp>
+bool is_power_of_2(tp x) { return x && !(x & (x - 1)); }
+template<typename tp>
+tp ltor(tp l, tp len) { return l + len - 1; }
+template<typename tp>
+tp rtol(tp r, tp len) { return r - len + 1; }
+template<typename tp>
+tp length(tp l, tp r) { return (r < l) ? 0 : r - l + 1; }
+template<typename tp>
+bool inrange(tp x, tp l, tp r) { return r < l ? false : l <= x && x <= r; }
+template<typename tp>
+tp midpoint(tp l, tp r) { return l + ((r - l) >> 1); }
 template<typename tp>
 void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
 /*
@@ -452,25 +462,31 @@ void premul_preprocess(
 	for (long i = st, d = l; d <= r; ++i, ++d)
 		mul[i] = premul_point(mul, i - 1) * data[d];
 }
-ll div_roundup(ll x, ll div) { return (x + div - 1) / div; }
-ll div_rounddown(ll x, ll div) { return x / div; }
-ll round_shift(ll x, ll dist, ll l, ll r)
+template<typename tp>
+tp div_roundup(tp x, tp div) { return (x + div - 1) / div; }
+template<typename tp>
+tp div_rounddown(tp x, tp div) { return x / div; }
+template<typename tp>
+tp round_shift(tp x, tp dist, tp l, tp r)
 {
 	int len = length(l, r);
 	return ((x - l + dist) % len + len) % len + l;
 }
-ll gcd(ll a, ll b) { while (b) { a %= b; swap(a, b); } return a; }
-ll lcm(ll a, ll b) { return a / gcd(a, b) * b; }
+template<typename tp>
+tp gcd(tp a, tp b) { while (b) { a %= b; swap(a, b); } return a; }
+template<typename tp>
+tp lcm(tp a, tp b) { return a / gcd(a, b) * b; }
 ull mul_mod(ull a, ull b, ull mod)
 {
 	ull res = (a * b - (ll)(a / (ldb)mod * b + 1e-3) * mod + mod) % mod;
 	return res;
 }
-ll pow_mod(ll x, ll n, ll mod)
+template<typename tp>
+tp pow_mod(tp x, tp n, tp mod)
 {
 	if (mod == 1)
 		return 0;
-	ll res = 1;
+	tp res = 1;
 	while (n > 0) {
 		if (n & 1)
 			res = mul_mod(res, x, mod);
@@ -517,10 +533,6 @@ public:
 		return segment(gen);
 	}
 };
-ull random(ull mod)
-{
-	return (ull)(mod * (rand() / (double)RAND_MAX));
-}
 template<typename tp>
 void combine(size_t &seed, const tp &x)
 {
