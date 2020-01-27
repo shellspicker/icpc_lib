@@ -10,11 +10,7 @@
 - [ ] 二维, 三维数组的遍历方向数组. 二维的4向, 8向; 三维的6向, 26向(可能不需要)...
 - [ ] 快速读入, istream.rdbuf->sgetn(buf, sizeof(buf)), 配合readint...
 - [ ] 开栈.
-- [x] debug辅助.
 - [ ] efg_cvt, 浮点数截断.
-- [x] mt19937...
-- [x] [模运算类 by tourist.](http://codeforces.com/contest/1261/submission/65651526) 
-用于连续运算取模. 另外也可以写成栈解析表达式, 传入字符串用sprintf来搞.
 - [ ] 整理一份全局符号表.
 
 ## data structure
@@ -39,7 +35,8 @@
 ## other
 
 - [ ] 自实现allocator, 可用于vector的那种. 参考cppreference里的vector::reserve.
-- [x] 可变参数模板, 能方便写什么东西? 已经有了hash_val.
+- [x] 可变参数模板, 用initializer_list一行展开.
+- [ ] 各种比较级函数, 传入lambda, 用function接收.
 - [ ] cppreference里面能用到的函数都列一遍, 做个lib整理.
 - [ ] github上的3份很好的模板都合并过来.
 
