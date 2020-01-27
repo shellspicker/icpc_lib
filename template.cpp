@@ -13,6 +13,7 @@
 #include <iostream>
 #include <sstream>
 #include <utility>
+#include <functional>
 #include <algorithm>
 #include <numeric>
 #include <random>
@@ -149,6 +150,7 @@ using std::adjacent_difference;
 using std::partial_sum;
 using std::begin;
 using std::end;
+using std::function;
 using std::plus;
 using std::minus;
 using std::multiplies;
@@ -190,6 +192,8 @@ using ordered_map = __gnu_pbds::tree<
 #define it_each(obj) (obj).begin(), (obj).end()
 #define it_i(obj, i) (obj).begin() + (i)
 #define it_range(obj, l, r) it_i(obj, l), it_i(obj, r)
+#define it_prefix(obj, i) (obj).begin(), it_i(obj, i)
+#define it_suffix(obj, i) it_i(obj, i), (obj).end()
 #define endl '\n'
 #define tail(len) ((len) - 1)
 #define offset(st, off) ((st) + (off))
