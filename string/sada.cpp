@@ -28,7 +28,6 @@
 #include <queue>
 #include <bitset>
 #include <tr2/dynamic_bitset>
-#include <ext/pb_ds/assoc_container.hpp>
 using std::ios;
 using std::ios_base;
 using std::istream;
@@ -175,15 +174,6 @@ using std::mt19937_64;
 using std::random_device;
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
-using namespace __gnu_pbds;
-template<typename key>
-using ordered_set = __gnu_pbds::tree<
-						key, __gnu_pbds::null_type, less<key>, __gnu_pbds::rb_tree_tag,
-						__gnu_pbds::tree_order_statistics_node_update>;
-template<typename key, typename val>
-using ordered_map = __gnu_pbds::tree<
-						key, val, less<key>, __gnu_pbds::rb_tree_tag,
-						__gnu_pbds::tree_order_statistics_node_update>;
 #define DEBUG(...) cout << __LINE__ << ": "; debug_line(__VA_ARGS__)
 #define fup_s(i, a, b, s) for (long i = a, c = b; i <= c; i += s)
 #define fwn_s(i, a, b, s) for (long i = b, c = a; c <= i; i -= s)
@@ -192,8 +182,6 @@ using ordered_map = __gnu_pbds::tree<
 #define it_each(obj) (obj).begin(), (obj).end()
 #define it_i(obj, i) (obj).begin() + (i)
 #define it_range(obj, l, r) it_i(obj, l), it_i(obj, r)
-#define it_prefix(obj, i) (obj).begin(), it_i(obj, i)
-#define it_suffix(obj, i) it_i(obj, i), (obj).end()
 #define endl '\n'
 #define tail(len) ((len) - 1)
 #define offset(st, off) ((st) + (off))
@@ -624,7 +612,7 @@ void read_vec(vector<tp> &v, size_t n)
 	}
 }
 
-class sais
+class sada
 {
 	string origin;
 	vector<int> val, sa, rk, lcp;
@@ -638,101 +626,52 @@ public:
 		rk.resize(sz);
 		lcp.resize(sz);
 		val.assign(it_each(origin));
-		get_sa(val, sa);
+		copy(it_each(val), rk.begin());
+		iota(it_each(sa), 0);
+		get_sa();
 		get_lcp();
 		fup (i, 1, sa.size() -  1)
 			cout << sa[i] << " \n"[i == sa.size() - 1];
 		fup (i, 1, lcp.size() - 1)
 			cout << lcp[i] << " \n"[i == lcp.size() - 1];
 	}
-	void get_sa(vector<int> &text, vector<int> &sa) {
-		int len = text.size();
-		vector<int> bk, lbk, sbk, lms;
-		vector<bool> type(len);
-		auto is_lms_char = [&](int i) {
-			return !type[i] && 0 < i && type[i - 1];
-		};
-		auto is_lms_equal = [&](int p1, int p2) {
-			/*
-			 * this judge can't deal one is lms and other is not lms,
-			 * but text is equal, is think this can not judge equal.
-			 * it is seems not affect sa.
-			 */
-			for (bool f1, f2; text[p1] == text[p2]
-				&& (f1 = is_lms_char(++p1), f2 = is_lms_char(++p2), !(f1 & f2)););
-			return (text[p1] == text[p2]);
-		};
-		auto reset_bk = [&]() {
-			lbk[0] = sbk[0] = 0;
-			fup (x, 1, bk.size() - 1) {
-				lbk[x] = bk[x - 1];
-				sbk[x] = bk[x] - 1;
+	void get_sa() {
+		int sz = rk.size(), cc;
+		vector<int> rk1(sz), sa1(sz);
+		auto get_vi = [&](vector<int> &v, int i) {
+			if (i < v.size()) {
+				return v[i];
 			}
+			return 0;
 		};
-		auto push_lbk = [&](int pos) {
-			sa[lbk[text[pos]]++] = pos;
+		auto counting_sort = [&](int k) {
+			int vmx = *max_element(it_each(rk));
+			vector<int> cnt(vmx + 1, 0);
+			fup (i, 0, sz - 1)
+				cnt[get_vi(rk, sa[i] + k)]++;
+			partial_sum(it_each(cnt), cnt.begin());
+			fwn (i, 0, sz - 1)
+				sa1[--cnt[get_vi(rk, sa[i] + k)]] = sa[i];
+			sa.swap(sa1);
 		};
-		auto push_sbk = [&](int pos) {
-			sa[sbk[text[pos]]--] = pos;
-		};
-		auto induced_sort = [&]() {
-			fill(it_each(sa), -1);
-			reset_bk();
-			fwn (i, 0, lms.size() - 1)
-				push_sbk(lms[i]);
-			fup (i, 0, sa.size() - 1) if (0 < sa[i] && type[sa[i] - 1])
-				push_lbk(sa[i] - 1);
-			reset_bk();
-			fwn (i, 0, sa.size() - 1) if (0 < sa[i] && !type[sa[i] - 1])
-				push_sbk(sa[i] - 1);
-		};
-		int vmx = *max_element(it_each(text));
-		bk.resize(vmx + 1);
-		lbk.resize(vmx + 1);
-		sbk.resize(vmx + 1);
-		fill(it_each(bk), 0);
-		for (auto x : text)
-			bk[x]++;
-		partial_sum(it_each(bk), bk.begin());
-		type.back() = 0;
-		fwn (i, 0, len - 2) {
-			if (text[i] == text[i + 1])
-				type[i] = type[i + 1];
-			else
-				type[i] = text[i] > text[i + 1];
-		}
-		fup (i, 1, len - 1)
-			if (is_lms_char(i))
-				lms.emplace_back(i);
-		induced_sort();
-		vector<int> rr(len);
-		int cc = 0, last = -1;
-		fill(it_each(rr), -1);
-		fup (i, 0, len - 1) {
-			int pos = sa[i];
-			if (is_lms_char(pos)) {
-				if (~last && !is_lms_equal(pos, last))
+		counting_sort(1);
+		counting_sort(0);
+		for (int k = 1; k < sz; k <<= 1) {
+			counting_sort(k);
+			counting_sort(0);
+			rk1[sa[0]] = cc = 0;
+			fup (i, 1, sz - 1) {
+				if (get_vi(rk, sa[i]) != get_vi(rk, sa[i - 1]) ||
+					get_vi(rk, sa[i] + k) != get_vi(rk, sa[i - 1] + k))
 					cc++;
-				rr[pos] = cc;
-				last = pos;
+				rk1[sa[i]] = cc;
 			}
+			rk.swap(rk1);
+			if (rk[sa.back()] == sz - 1)
+				break;
 		}
-		bool flag = cc + 1 == lms.size();
-		vector<int> text1(lms.size()), sa1(lms.size());
-		copy_if(it_each(rr), text1.begin(), [](int x) { return x != -1; });
-		if (flag) {
-			fup (i, 0, lms.size() - 1)
-				sa1[text1[i]] = i;
-		} else {
-			get_sa(text1, sa1);
-		}
-		transform(it_each(sa1), sa1.begin(), [&](int x) { return lms[x]; });
-		lms.swap(sa1);
-		induced_sort();
 	}
 	void get_lcp() {
-		fup (i, 0, sa.size() - 1)
-			rk[sa[i]] = i;
 		int d = 0;
 		lcp[0] = 0;
 		fup (p1, 0, sa.size() - 2) {
@@ -748,7 +687,7 @@ public:
 
 class data {
 	string s;
-	sais sa;
+	sada sa;
 	istream &ioend() {
 		cin.setstate(ios_base::badbit);
 		return cin;
