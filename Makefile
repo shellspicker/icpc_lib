@@ -4,6 +4,7 @@ CXX = g++
 AR = ar
 RANLIB = ranlib
 SHARE = -fpic -shared -o
+VPATH = ./
 INCLUDE = -I./\
 	-I/usr/include/\
 	-I/usr/local/include/
@@ -34,6 +35,8 @@ endef
 # default target
 default: all
 fake_all: $(TARGET)
+fake_clean:
+	rm -f *.orig *~ $(obj_all) $(obj_all:.o=.d)
 
 # 万事具备, 展开所有必要的静态规则.
 ifneq ($(aimid_all),)
@@ -71,7 +74,7 @@ rebuild: cleanall build
 all: init_all
 	@$(MAKE) -f $(MAKEFILE) fake_all
 clean: init_all
-	rm -f *.orig *~ *.o *.d
+	@$(MAKE) -f $(MAKEFILE) fake_clean
 cleanall: clean
 	rm -f $(TARGET)
 
@@ -89,7 +92,7 @@ endef
 	@$(call mkdep,$<,$@,$(CC))
 
 %.d: %.cpp
-	@$(call mkdep,$<,$@,$(CXX))
+	@$(call mkdep,$<,$@,$(CXX) -std=c++11)
 
 # 以下是生成.d文件的4种方法.
 # 形如%.d %.o: %.c something.h...

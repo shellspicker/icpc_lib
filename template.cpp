@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <climits>
+#include <ctime>
 #include <cstdlib>
 #include <cstdarg>
 #include <cassert>
@@ -186,24 +187,29 @@ using ordered_map = __gnu_pbds::tree<
 						key, val, less<key>, __gnu_pbds::rb_tree_tag,
 						__gnu_pbds::tree_order_statistics_node_update>;
 #endif
-#define DEBUG(...) cout << __LINE__ << ": "; debug_line(__VA_ARGS__)
+#define debug(...) cout << __LINE__ << ": "; debug_line(__VA_ARGS__)
+#define endl '\n'
 #define fup_s(i, a, b, s) for (long i = a, c = b; i <= c; i += s)
 #define fwn_s(i, a, b, s) for (long i = b, c = a; c <= i; i -= s)
 #define fup(i, a, b) fup_s(i, a, b, 1)
 #define fwn(i, a, b) fwn_s(i, a, b, 1)
 #define it_each(obj) (obj).begin(), (obj).end()
 #define it_i(obj, i) (obj).begin() + (i)
-#define it_range(obj, l, r) it_i(obj, l), it_i(obj, r)
+#define it_i_rev(obj, i) (obj).end() - 1 - (i)
+#define it_seg(obj, l, r) it_i(obj, l), it_i(obj, r)
+#define it_seg_rev(obj, l, r) it_i_rev(obj, r), it_i_rev(obj, l)
+#define it_range(obj, st, off) it_seg(obj, st, (st) + (off) - 1)
+#define it_range_r(obj, ed, off) it_seg(obj, st, (ed) - (off) + 1)
+#define it_range_rev(obj, st, off) it_seg_rev(obj, it_range(obj, st, off))
+#define it_range_r_rev(obj, ed, off) it_seg_rev(obj, it_range_r(obj, ed, off))
 #define it_prefix(obj, i) (obj).begin(), it_i(obj, i)
 #define it_suffix(obj, i) it_i(obj, i), (obj).end()
-#define endl '\n'
-#define tail(len) ((len) - 1)
-#define offset(st, off) ((st) + (off))
-#define mirror(len, i) offset(tail((len)), -(i))
-#define range(st, len) (st), offset((st), tail((len)))
-#define range_r(ed, len) offset((ed), -tail((len))), (ed)
-#define range_mirror_point(len, a, b) mirror((len), (b)), mirror((len), (a))
-#define range_mirror(len, st, off) range_mirror_point((len), (st), offset((st), tail((off))))
+#define i_rev(len, i) (len) - 1 - (i)
+#define seg_rev(len, a, b) i_rev((len), (b)), i_rev((len), (a))
+#define range(st, off) (st), (st) + (off) - 1
+#define range_r(ed, off) (ed) - (off) + 1, (ed)
+#define range_rev(len, st, off) seg_rev((len), range(st, off))
+#define range_r_rev(len, ed, off) seg_rev((len), range_r(st, off))
 typedef unsigned int uint;
 typedef long long ll;
 typedef unsigned long long ull;
@@ -214,6 +220,8 @@ const double pi = acos(-1);
 const double eps = 1e-6;
 template<typename tp>
 void print(const tp &x) { cout << x << ' '; }
+template<typename tp>
+void print(vector<tp> &v) { for (auto x : v) cout << x << ' '; }
 template<typename ...tp>
 void debug_line(tp &&...args)
 {
@@ -300,9 +308,9 @@ public:
 				if (ed == -1ull)
 					ed = len;
 				if (sizeof(tp) - 4)
-					push_num(nop, stoll(exp.substr(cur, offset(ed, -cur))) * minus);
+					push_num(nop, stoll(exp.substr(cur, ed - cur)) * minus);
 				else
-					push_num(nop, stoi(exp.substr(cur, offset(ed, -cur))) * minus);
+					push_num(nop, stoi(exp.substr(cur, ed - cur)) * minus);
 				minus = 1;
 				cur = ed;
 			} else {
