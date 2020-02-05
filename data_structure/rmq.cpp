@@ -1,11 +1,8 @@
 template<typename tp>
 class rmq {
+#define fn max
 	vector<tp> ds[20];
-	function<tp(tp, tp)> fn;
 public:
-	rmq(function<tp(tp, tp)> f) {
-		fn = f;
-	}
 	void init(const vector<tp> &v) {
 		int sz = v.size();
 		for (auto &dim : ds)
@@ -19,6 +16,7 @@ public:
 	tp query(int l, int r) {
 		range_normalize(l, r);
 		tp xp = ctz(rounddown_pow_of_2(length(l, r)));
-		return fn(ds[xp][l], ds[xp][r - (1 << xp) + 1]);
+		return fn(ds[xp][l], ds[xp][rtol(r, 1 << xp)]);
 	}
+#undef fn
 };
