@@ -30,7 +30,7 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug(t2 - t1);
+	debug((t2 - t1) / 1000);
 
 	t1 = clock();
 	fup (j, 0, dim - 1) {
@@ -39,7 +39,7 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug(t2 - t1);
+	debug((t2 - t1) / 1000);
 
 	t1 = clock();
 	fup (i, 0, dim - 1) {
@@ -48,7 +48,7 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug(t2 - t1);
+	debug((t2 - t1) / 1000);
 
 	t1 = clock();
 	fup (j, 0, dim - 1) {
@@ -57,9 +57,8 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug(t2 - t1);
+	debug((t2 - t1) / 1000);
 
-	debug(sizeof(arr_normal));
 	memset(arr_normal, 0, sizeof(arr_normal));
 	t1 = clock();
 	fup (i, 0, dim - 1) {
@@ -68,7 +67,7 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug(t2 - t1);
+	debug((t2 - t1) / 1000);
 
 	t1 = clock();
 	fup (j, 0, dim - 1) {
@@ -77,7 +76,7 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug(t2 - t1);
+	debug((t2 - t1) / 1000);
 }
 
 int main()

@@ -412,9 +412,8 @@ template<typename tp>
 size_t hash_val(const vector<tp> &vec)
 {
 	size_t seed = 0;
-	for (auto x : vec) {
+	for (auto x : vec)
 		combine(seed, x);
-	}
 	return seed;
 }
 template<typename ...var>
@@ -428,18 +427,16 @@ void bkdr_hash_preprocess(const string &seq, vector<ull> &hash, ull seed, int i 
 {
 	if (hash.size() < i + seq.size())
 		hash.resize(i + seq.size());
-	for (auto h : seq) {
+	for (auto h : seq)
 		hash[i] = presum_point(hash, i - 1) * seed + h;
-	}
 }
 template<typename tp>
 void bkdr_hash_preprocess(const vector<tp> &seq, vector<ull> &hash, ull seed, int i = 0)
 {
 	if (hash.size() < i + seq.size())
 		hash.resize(i + seq.size());
-	for (auto h : seq) {
+	for (auto h : seq)
 		hash[i] = presum_point(hash, i - 1) * seed + h;
-	}
 }
 ull bkdr_hash_once(const string &seq, ull seed)
 {
