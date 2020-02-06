@@ -221,13 +221,365 @@ const double eps = 1e-6;
 template<typename tp>
 void print(const tp &x) { cout << x << ' '; }
 template<typename tp>
-void print(vector<tp> &v) { for (auto x : v) cout << x << ' '; }
-template<typename ...tp>
-void debug_line(tp &&...args)
+void print(const vector<tp> &v) { for (auto x : v) cout << x << ' '; }
+template<typename ...var>
+void debug_line(var &&...args)
 {
-	initializer_list<int>{(print(forward<tp>(args)), 0)...};
+	initializer_list<int>{(print(forward<var>(args)), 0)...};
 	cout << endl;
 }
+template<typename tp>
+int bitcount(tp x)
+{
+	bool isll = sizeof(x) - 4;
+	if (isll) {
+		return __builtin_popcountll(x);
+	} else {
+		return __builtin_popcount(x);
+	}
+}
+template<typename tp>
+int clz(tp x)
+{
+	bool isll = sizeof(x) - 4;
+	if (isll) {
+		return __builtin_clzll(x);
+	} else {
+		return __builtin_clz(x);
+	}
+}
+template<typename tp>
+int ctz(tp x)
+{
+	bool isll = sizeof(x) - 4;
+	if (isll) {
+		return __builtin_ctzll(x);
+	} else {
+		return __builtin_ctz(x);
+	}
+}
+template<typename tp>
+int clo(tp x)
+{
+	bool isll = sizeof(x) - 4;
+	if (isll) {
+		return x ? 1 << (64 - 1 - __builtin_clzll(x)) : 0;
+	} else {
+		return x ? 1 << (32 - 1 - __builtin_clz(x)) : 0;
+	}
+}
+template<typename tp>
+int cto(tp x)
+{
+	bool isll = sizeof(x) - 4;
+	if (isll) {
+		return x ? 1 << __builtin_ctzll(x) : 0;
+	} else {
+		return x ? 1 << __builtin_ctz(x) : 0;
+	}
+}
+template<typename tp>
+tp roundup_pow_of_2(tp x) { return x ? clo(x) << 1 : 0; }
+template<typename tp>
+tp rounddown_pow_of_2(tp x) { return x ? clo(x) : 0; }
+template<typename tp>
+bool is_power_of_2(tp x) { return x && !(x & (x - 1)); }
+template<typename tp>
+tp ltor(tp l, tp len) { return l + len - 1; }
+template<typename tp>
+tp rtol(tp r, tp len) { return r - len + 1; }
+template<typename tp>
+tp length(tp l, tp r) { return (r < l) ? 0 : r - l + 1; }
+template<typename tp>
+bool inrange(tp x, tp l, tp r) { return r < l ? false : l <= x && x <= r; }
+template<typename tp>
+tp midpoint(tp l, tp r) { return l + ((r - l) >> 1); }
+template<typename tp>
+void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
+/*
+ * dir: find in left or right.
+ * contain: can be equal or not.
+ * whatever, key can be not found, thus return index will flow,
+ * be careful to check return point, if must.
+ * one way to check the return point is
+ * check point in range and compare with key.
+ * dir: 0, contain: 0. -> (. left flow.
+ * dir: 0, contain: 1. -> [. right flow.
+ * dir: 1, contain: 0. -> ). right flow.
+ * dir: 1, contain: 1. -> ]. left flow.
+ */
+template<typename tp>
+int binary_search(
+		const vector<tp> &v, int lo, int hi, tp key, bool dir, bool contain)
+{
+	range_normalize(lo, hi);
+	while (lo <= hi) {
+		int mid = midpoint(lo, hi), now = v[mid];
+		if (!dir) {
+			if (now < key)
+				lo = mid + 1;
+			else
+				hi = mid - 1;
+		} else {
+			if (key < now)
+				hi = mid - 1;
+			else
+				lo = mid + 1;
+		}
+	}
+	return dir ^ contain ? lo : hi;
+}
+template<typename tp>
+tp presum_point(const vector<tp> &sum, int i) { return 0 <= i ? sum[i] : 0; }
+template<typename tp>
+tp presum_range(const vector<tp> &sum, int l, int r)
+{
+	return sum[r] - presum_point(sum, l - 1);
+}
+template<typename tp>
+void presum_preprocess(
+						vector<tp> &sum, const vector<tp> &data,
+						int l, int r, int st)
+{
+	int len = length(l, r);
+	sum.resize(sum.size() + len);
+	for (long i = st, d = l; d <= r; ++i, ++d)
+		sum[i] = presum_point(sum, i - 1) + data[d];
+}
+template<typename tp>
+tp premul_point(const vector<tp> &mul, int i) { return 0 <= i ? mul[i] : 1; }
+template<typename tp>
+tp premul_range(const vector<tp> &mul, int l, int r)
+{
+	return mul[r] / premul_point(mul, l - 1);
+}
+template<typename tp>
+void premul_preprocess(
+						vector<tp> &mul, const vector<tp> &data,
+						int l, int r, int st)
+{
+	int len = length(l, r);
+	mul.resize(mul.size() + len);
+	for (long i = st, d = l; d <= r; ++i, ++d)
+		mul[i] = premul_point(mul, i - 1) * data[d];
+}
+template<typename tp>
+tp div_roundup(tp x, tp div) { return (x + div - 1) / div; }
+template<typename tp>
+tp div_rounddown(tp x, tp div) { return x / div; }
+template<typename tp>
+tp round_shift(tp x, tp dist, tp l, tp r)
+{
+	int len = length(l, r);
+	return ((x - l + dist) % len + len) % len + l;
+}
+template<typename tp>
+tp gcd(tp a, tp b) { while (b) { a %= b; swap(a, b); } return a; }
+template<typename tp>
+tp lcm(tp a, tp b) { return a / gcd(a, b) * b; }
+ull mul_mod(ull a, ull b, ull mod)
+{
+	ull res = (a * b - (ll)(a / (ldb)mod * b + 1e-3) * mod + mod) % mod;
+	return res;
+}
+template<typename tp>
+tp pow_mod(tp x, tp n, tp mod)
+{
+	if (mod == 1)
+		return 0;
+	tp res = 1;
+	while (n > 0) {
+		if (n & 1)
+			res = mul_mod(res, x, mod);
+		x = mul_mod(x, x, mod);
+		n >>= 1;
+	}
+	return res;
+}
+template<typename tp>
+void combine(size_t &seed, const tp &x)
+{
+	seed ^= hash<tp>()(x) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+void hash_val(size_t &seed) {}
+template<typename tp, typename ...var>
+void hash_val(size_t &seed, tp &val, var &&...args)
+{
+	combine(seed, val);
+	hash_val(seed, forward<var>(args)...);
+}
+template<typename tp>
+size_t hash_val(const vector<tp> &vec)
+{
+	size_t seed = 0;
+	for (auto x : vec) {
+		combine(seed, x);
+	}
+	return seed;
+}
+template<typename ...var>
+size_t hash_val(var &&...args)
+{
+	size_t seed = 0;
+	hash_val(seed, forward<var>(args)...);
+	return seed;
+}
+void bkdr_hash_preprocess(const string &seq, vector<ull> &hash, ull seed, int i = 0)
+{
+	if (hash.size() < i + seq.size())
+		hash.resize(i + seq.size());
+	for (auto h : seq) {
+		hash[i] = presum_point(hash, i - 1) * seed + h;
+	}
+}
+template<typename tp>
+void bkdr_hash_preprocess(const vector<tp> &seq, vector<ull> &hash, ull seed, int i = 0)
+{
+	if (hash.size() < i + seq.size())
+		hash.resize(i + seq.size());
+	for (auto h : seq) {
+		hash[i] = presum_point(hash, i - 1) * seed + h;
+	}
+}
+ull bkdr_hash_once(const string &seq, ull seed)
+{
+	ull hash = 0;
+	for (auto h : seq)
+		hash = hash * seed + h;
+	return hash;
+}
+template<typename tp>
+ull bkdr_hash_once(const vector<tp> &seq, ull seed)
+{
+	ull hash = 0;
+	for (auto h : seq)
+		hash = hash * seed + h;
+	return hash;
+}
+ull bkdr_hash_range(const vector<ull> &hash, const vector<ull> &exp, int l, int r)
+{
+	return hash[r] - presum_point(hash, l - 1) * exp[length(l, r)];
+}
+int fdu(double x)
+{
+	return fabs(x) < eps ? 0 : x <= -eps ? -1 : 1;
+}
+// like ecvt, fcvt, gcvt...
+double fcut(double x, int xp)
+{
+	return 1.L * (ll)(x * pow(10, xp)) / pow(10, xp);
+}
+template<typename tp>
+void read(tp &x)
+{
+	cin >> x;
+}
+template<typename tp>
+void read_vec_n(vector<tp> &v, size_t n)
+{
+	v.resize(n);
+	fup(i, 0, v.size() - 1)
+		cin >> v[i];
+}
+template<typename tp>
+void read_vec(vector<tp> &v)
+{
+	int vn;
+	cin >> vn;
+	read_vec_n(v, vn);
+}
+template<typename tp>
+class zip {
+	using iter = typename vector<tp>::iterator;
+public:
+	int tot;
+	vector<tp> data;
+	vector<int> dim;
+	zip(const vector<int> &v) {
+		dim.resize(v.size());
+		copy(it_each(v), dim.begin());
+		tot = 1;
+		fwn (i, 0, dim.size() - 1) {
+			int suf = tot;
+			tot *= dim[i];
+			dim[i] = suf;
+		}
+		data.resize(tot);
+	}
+	template<typename ...var>
+	tp &operator ()(var &&...args) {
+		assert(sizeof...(args) == dim.size());
+		int idx = 0;
+		iter it = dim.begin();
+		auto product = [](int &ret, iter &it, int val) {
+			ret += *it++ * val;
+		};
+		initializer_list<int>{(product(idx, it, forward<var>(args)), 0)...};
+		return data[idx];
+	}
+	vector<tp> get_dim(int idx) {
+		assert(inrange(idx, 0, tot - 1));
+		vector<tp> ret(dim.size());
+		fup (i, 0, ret.size() - 1) {
+			ret[i] = idx / dim[i];
+			idx -= ret[i] * dim[i];
+		}
+		return ret;
+	}
+};
+template<typename tp>
+class descrete {
+	vector<tp> data;
+public:
+	descrete(vector<tp> &v) {
+		data.assign(it_each(v));
+		sort(it_each(data));
+		data.erase(unique(it_each(data)), data.end());
+		for (auto &x : v)
+			x = lower_bound(it_each(data), x) - data.begin();
+	}
+	tp get(int i) {
+		return data[i];
+	}
+};
+template<typename tp, class twist = mt19937_64>
+class random_int {
+	using dist = uniform_int_distribution<tp>;
+	using param_type = typename dist::param_type;
+	dist segment;
+	twist gen{random_device{}()};
+public:
+	void set(tp l, tp r) {
+		segment.param(param_type{l, r});
+	}
+	pair<tp, tp> get() {
+		assert(segment.a() == segment.min());
+		assert(segment.b() == segment.max());
+		return {segment.a(), segment.b()};
+	}
+	tp operator ()() {
+		return segment(gen);
+	}
+};
+template<typename tp, class twist = mt19937_64>
+class random_real {
+	using dist = uniform_real_distribution<tp>;
+	using param_type = typename dist::param_type;
+	dist segment;
+	twist gen{random_device{}()};
+public:
+	void set(tp l, tp r) {
+		segment.param(param_type{l, r});
+	}
+	pair<tp, tp> get() {
+		assert(segment.a() == segment.min());
+		assert(segment.b() == segment.max());
+		return {segment.a(), segment.b()};
+	}
+	tp operator ()() {
+		return segment(gen);
+	}
+};
 /*
  * calc expression for basic arithmetic.
  * judge and deal illegal situation.
@@ -353,365 +705,3 @@ end:
 		return parse_calc(buf);
 	}
 };
-template<typename tp>
-int bitcount(tp x)
-{
-	bool isll = sizeof(x) - 4;
-	if (isll) {
-		return __builtin_popcountll(x);
-	} else {
-		return __builtin_popcount(x);
-	}
-}
-template<typename tp>
-int clz(tp x)
-{
-	bool isll = sizeof(x) - 4;
-	if (isll) {
-		return __builtin_clzll(x);
-	} else {
-		return __builtin_clz(x);
-	}
-}
-template<typename tp>
-int ctz(tp x)
-{
-	bool isll = sizeof(x) - 4;
-	if (isll) {
-		return __builtin_ctzll(x);
-	} else {
-		return __builtin_ctz(x);
-	}
-}
-template<typename tp>
-int clo(tp x)
-{
-	bool isll = sizeof(x) - 4;
-	if (isll) {
-		return x ? 1 << (64 - 1 - __builtin_clzll(x)) : 0;
-	} else {
-		return x ? 1 << (32 - 1 - __builtin_clz(x)) : 0;
-	}
-}
-template<typename tp>
-int cto(tp x)
-{
-	bool isll = sizeof(x) - 4;
-	if (isll) {
-		return x ? 1 << __builtin_ctzll(x) : 0;
-	} else {
-		return x ? 1 << __builtin_ctz(x) : 0;
-	}
-}
-template<typename tp>
-tp roundup_pow_of_2(tp x) { return x ? clo(x) << 1 : 0; }
-template<typename tp>
-tp rounddown_pow_of_2(tp x) { return x ? clo(x) : 0; }
-template<typename tp>
-bool is_power_of_2(tp x) { return x && !(x & (x - 1)); }
-template<typename tp>
-tp ltor(tp l, tp len) { return l + len - 1; }
-template<typename tp>
-tp rtol(tp r, tp len) { return r - len + 1; }
-template<typename tp>
-tp length(tp l, tp r) { return (r < l) ? 0 : r - l + 1; }
-template<typename tp>
-bool inrange(tp x, tp l, tp r) { return r < l ? false : l <= x && x <= r; }
-template<typename tp>
-tp midpoint(tp l, tp r) { return l + ((r - l) >> 1); }
-template<typename tp>
-void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
-template<typename tp>
-class descrete {
-	vector<tp> data;
-public:
-	descrete(vector<tp> &v) {
-		data.assign(it_each(v));
-		sort(it_each(data));
-		data.erase(unique(it_each(data)), data.end());
-		for (auto &x : v)
-			x = lower_bound(it_each(data), x) - data.begin();
-	}
-	tp get(int i) {
-		return data[i];
-	}
-};
-/*
- * dir: find in left or right.
- * contain: can be equal or not.
- * whatever, key can be not found, thus return index will flow,
- * be careful to check return point, if must.
- * one way to check the return point is
- * check point in range and compare with key.
- * dir: 0, contain: 0. -> (. left flow.
- * dir: 0, contain: 1. -> [. right flow.
- * dir: 1, contain: 0. -> ). right flow.
- * dir: 1, contain: 1. -> ]. left flow.
- */
-template<typename tp>
-int binary_search(
-		const vector<tp> &v, int lo, int hi, tp key, bool dir, bool contain)
-{
-	range_normalize(lo, hi);
-	while (lo <= hi) {
-		int mid = midpoint(lo, hi), now = v[mid];
-		if (!dir) {
-			if (now < key)
-				lo = mid + 1;
-			else
-				hi = mid - 1;
-		} else {
-			if (key < now)
-				hi = mid - 1;
-			else
-				lo = mid + 1;
-		}
-	}
-	return dir ^ contain ? lo : hi;
-}
-template<typename tp>
-tp presum_point(const vector<tp> &sum, int i) { return 0 <= i ? sum[i] : 0; }
-template<typename tp>
-tp presum_range(const vector<tp> &sum, int l, int r)
-{
-	return sum[r] - presum_point(sum, l - 1);
-}
-template<typename tp>
-void presum_preprocess(
-						vector<tp> &sum, const vector<tp> &data,
-						int l, int r, int st)
-{
-	int len = length(l, r);
-	sum.resize(sum.size() + len);
-	for (long i = st, d = l; d <= r; ++i, ++d)
-		sum[i] = presum_point(sum, i - 1) + data[d];
-}
-template<typename tp>
-tp premul_point(const vector<tp> &mul, int i) { return 0 <= i ? mul[i] : 1; }
-template<typename tp>
-tp premul_range(const vector<tp> &mul, int l, int r)
-{
-	return mul[r] / premul_point(mul, l - 1);
-}
-template<typename tp>
-void premul_preprocess(
-						vector<tp> &mul, const vector<tp> &data,
-						int l, int r, int st)
-{
-	int len = length(l, r);
-	mul.resize(mul.size() + len);
-	for (long i = st, d = l; d <= r; ++i, ++d)
-		mul[i] = premul_point(mul, i - 1) * data[d];
-}
-template<typename tp>
-tp div_roundup(tp x, tp div) { return (x + div - 1) / div; }
-template<typename tp>
-tp div_rounddown(tp x, tp div) { return x / div; }
-template<typename tp>
-tp round_shift(tp x, tp dist, tp l, tp r)
-{
-	int len = length(l, r);
-	return ((x - l + dist) % len + len) % len + l;
-}
-template<typename tp>
-tp gcd(tp a, tp b) { while (b) { a %= b; swap(a, b); } return a; }
-template<typename tp>
-tp lcm(tp a, tp b) { return a / gcd(a, b) * b; }
-ull mul_mod(ull a, ull b, ull mod)
-{
-	ull res = (a * b - (ll)(a / (ldb)mod * b + 1e-3) * mod + mod) % mod;
-	return res;
-}
-template<typename tp>
-tp pow_mod(tp x, tp n, tp mod)
-{
-	if (mod == 1)
-		return 0;
-	tp res = 1;
-	while (n > 0) {
-		if (n & 1)
-			res = mul_mod(res, x, mod);
-		x = mul_mod(x, x, mod);
-		n >>= 1;
-	}
-	return res;
-}
-template<typename tp, class twist = mt19937_64>
-class random_int {
-	using dist = uniform_int_distribution<tp>;
-	using param_type = typename dist::param_type;
-	dist segment;
-	twist gen{random_device{}()};
-public:
-	void set(tp l, tp r) {
-		segment.param(param_type{l, r});
-	}
-	pair<tp, tp> get() {
-		assert(segment.a() == segment.min());
-		assert(segment.b() == segment.max());
-		return {segment.a(), segment.b()};
-	}
-	tp operator()() {
-		return segment(gen);
-	}
-};
-template<typename tp, class twist = mt19937_64>
-class random_real {
-	using dist = uniform_real_distribution<tp>;
-	using param_type = typename dist::param_type;
-	dist segment;
-	twist gen{random_device{}()};
-public:
-	void set(tp l, tp r) {
-		segment.param(param_type{l, r});
-	}
-	pair<tp, tp> get() {
-		assert(segment.a() == segment.min());
-		assert(segment.b() == segment.max());
-		return {segment.a(), segment.b()};
-	}
-	tp operator()() {
-		return segment(gen);
-	}
-};
-template<typename tp>
-void combine(size_t &seed, const tp &x)
-{
-	seed ^= hash<tp>()(x) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-}
-void hash_val(size_t &seed) {}
-template<typename tp, typename ...other>
-void hash_val(size_t &seed, tp &val, const other &...args)
-{
-	combine(seed, val);
-	hash_val(seed, args...);
-}
-template<typename tp>
-size_t hash_val(const vector<tp> &vec)
-{
-	size_t seed = 0;
-	for (auto x : vec) {
-		combine(seed, x);
-	}
-	return seed;
-}
-template<typename ...tp>
-size_t hash_val(const tp &...args)
-{
-	size_t seed = 0;
-	hash_val(seed, args...);
-	return seed;
-}
-void bkdr_hash_preprocess(const string &seq, vector<ull> &hash, ull seed, int i = 0)
-{
-	if (hash.size() < i + seq.size())
-		hash.resize(i + seq.size());
-	for (auto h : seq) {
-		hash[i] = presum_point(hash, i - 1) * seed + h;
-	}
-}
-template<typename tp>
-void bkdr_hash_preprocess(const vector<tp> &seq, vector<ull> &hash, ull seed, int i = 0)
-{
-	if (hash.size() < i + seq.size())
-		hash.resize(i + seq.size());
-	for (auto h : seq) {
-		hash[i] = presum_point(hash, i - 1) * seed + h;
-	}
-}
-ull bkdr_hash_once(const string &seq, ull seed)
-{
-	ull hash = 0;
-	for (auto h : seq)
-		hash = hash * seed + h;
-	return hash;
-}
-template<typename tp>
-ull bkdr_hash_once(const vector<tp> &seq, ull seed)
-{
-	ull hash = 0;
-	for (auto h : seq)
-		hash = hash * seed + h;
-	return hash;
-}
-ull bkdr_hash_range(const vector<ull> &hash, const vector<ull> &exp, int l, int r)
-{
-	return hash[r] - presum_point(hash, l - 1) * exp[length(l, r)];
-}
-int fdu(double x)
-{
-	return fabs(x) < eps ? 0 : x <= -eps ? -1 : 1;
-}
-// like ecvt, fcvt, gcvt...
-double fcut(double x, int xp)
-{
-	return 1.L * (ll)(x * pow(10, xp)) / pow(10, xp);
-}
-template<typename tp>
-void read(tp &x)
-{
-	cin >> x;
-}
-template<typename tp>
-void read_vec_n(vector<tp> &v, size_t n)
-{
-	v.resize(n);
-	fup(i, 0, v.size() - 1)
-		cin >> v[i];
-}
-template<typename tp>
-void read_vec(vector<tp> &v)
-{
-	int vn;
-	cin >> vn;
-	read_vec_n(v, vn);
-}
-
-class data {
-	istream &ioend() {
-		cin.setstate(ios_base::badbit);
-		return cin;
-	}
-public:
-	istream &in() {
-		return cin;
-	}
-	void deal() {
-	}
-	void out() {
-	}
-};
-
-class task {
-	int testcase = 1 << 30;
-	stringstream tid;
-	data gkd{};
-public:
-	task(
-		bool multicase = false,
-		bool testid = false,
-		bool blankline = false) {
-		ios::sync_with_stdio(0);
-		cin.tie(0);
-		cout.setf(ios::fixed);
-		cout.precision(20);
-		if (multicase)
-			read(testcase);
-		for (int ti = 1; ti <= testcase && gkd.in(); ++ti) {
-			gkd.deal();
-			if (blankline && 1 < ti)
-				cout << endl;
-			tid << "Case #" << ti << ": ";
-			if (testid)
-				cout << tid.str();
-			gkd.out();
-			tid.str("");
-		}
-	}
-};
-
-int main()
-{
-	task gkd(0, 0, 0);
-	return 0;
-}

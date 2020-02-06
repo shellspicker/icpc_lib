@@ -4,8 +4,9 @@ CXX = g++
 AR = ar
 RANLIB = ranlib
 SHARE = -fpic -shared -o
-VPATH = ./
+VPATH = src/test
 INCLUDE = -I./\
+	-I./include/\
 	-I/usr/include/\
 	-I/usr/local/include/
 LIBS = -L./\
@@ -55,7 +56,7 @@ init_all:
 # 添加需要的目标文件.
 # 自定义文件, 支持多个目标, 写好每个目标的信息, 具体看函数的参数.
 #	$(eval $(call dim_file_relevant,,,,))
-	$(eval $(call dim_file_relevant,1,exe,ttt,template.cpp))
+	$(eval $(call dim_file_relevant,1,exe,ttt,test.cpp))
 	@$(foreach id,$(aimid_all),\
 		$(eval $(call preprocess,$(id)))\
 		$(eval REQ_$(id) = $(OBJS_$(id)))\
@@ -86,7 +87,7 @@ cleanall: clean
 define mkdep
 	@set -e
 	@rm -f $(2)
-	@$(3) -MM -MF $(2) -MT '$(patsubst %.d,%.o,$(2)) $(2)' $(1)
+	@$(3) $(INCLUDE) -MM -MF $(2) -MT '$(patsubst %.d,%.o,$(2)) $(2)' $(1)
 endef
 %.d: %.c
 	@$(call mkdep,$<,$@,$(CC))
@@ -168,13 +169,15 @@ endef
 # call as below.
 #	@$(foreach id,$(aimid_all),$(call debug,$(id)))
 define debug
-	@echo -en "debug begin!!!\n"
-	@echo -en "suffix: $(SUFFIX_$(1))$$\n"
-	@echo -en "cc: $(CC_$(1))$$\n"
-	@echo -en "objs: $(OBJS_$(1))$$\n"
-	@echo -en "all: $(ALL_$(1))$$\n"
-	@echo -en "srcs: $(SRCS_$(1))$$\n"
-	@echo -en "req: $(REQ_$(1))$$\n"
-	@echo -en "mode: $(MODE_$(1))$$\n"
-	@echo -en "debug end!!!\n"
+	@echo ""
+	@echo "debug begin!!!"
+	@echo "suffix: $(SUFFIX_$(1))$$"
+	@echo "cc: $(CC_$(1))$$"
+	@echo "objs: $(OBJS_$(1))$$"
+	@echo "all: $(ALL_$(1))$$"
+	@echo "srcs: $(SRCS_$(1))$$"
+	@echo "req: $(REQ_$(1))$$"
+	@echo "mode: $(MODE_$(1))$$"
+	@echo "debug end!!!"
+	@echo ""
 endef
