@@ -19,21 +19,27 @@ struct bignum {
 	int base = 10;
 	vector<int> vd;
 	bool sign = 0;// 符号位, 默认为正.
-	bignum() = delete;
-	bignum(int bs) {
-		base = bs;
-		assert(2 <= base);
-		clear();
-	}
+	bignum() { clear(); }
 	bignum(const cnm &b) = default;
 	bignum(cnm &&b) = default;
-	// 较小的数值(个位数), 或10进制以下的数字用, 一般配合进制转换.
-	bignum(ll x, int bs) {
+	void clear() {
+		vd.clear();
+		sign = 0;// 默认正数.
+	}
+	// 清除前导0.
+	void zero_justify() {
+		while (vd.size() > 1 && vd.back() == 0)
+			vd.pop_back();// 缩减位.
+	}
+	void set_base(int bs) {
 		base = bs;
 		assert(2 <= base);
+	}
+	// 较小的数值(个位数), 或10进制以下的数字用, 一般配合进制转换.
+	void operator ()(ll x) {
+		clear();
 		if (x == 0) {
 			vd.assign(1, 0);
-			sign = 0;
 			return;
 		}
 		while (x) {
@@ -42,10 +48,8 @@ struct bignum {
 			vd.push_back(res.rem);
 		}
 	}
-	bignum(const string &s, int bs) {
-		base = bs;
-		assert(2 <= base);
-		int len = s.length(), st;// st是符号占位.
+	void operator ()(const string &s) {
+		int len = s.length(), st;
 		clear();
 		if (!isdigit(s[0])) {
 			if (s[0] == '-')
@@ -61,20 +65,14 @@ struct bignum {
 			vd.push_back(table.find(s[i]));
 		zero_justify();
 	}
-	void clear() {
-		vd.clear();
-		sign = 0;// 默认正数.
-	}
-	// 清除前导0.
-	void zero_justify() {
-		while (vd.size() > 1 && vd.back() == 0)
-			vd.pop_back();// 缩减位.
-	}
 	bignum trans_base(int obase) {
-		vector<bignum> xp(base + 1, bignum(obase)); //[0, ibase] -> obase.
-		bignum ret(obase);
-		new (&xp[0])bignum(0, obase);
-		new (&xp[1])bignum(1, obase);
+		vector<bignum> xp(base + 1); //[0, ibase] -> obase.
+		bignum ret;
+		ret.set_base(obase);
+		for (auto &x : xp)
+			x.set_base(obase);
+		xp[0](0);
+		xp[1](1);
 		ret = xp[0];
 		if (vd.size() == 1 && vd[0] == 0)
 			return ret;
@@ -129,10 +127,12 @@ struct bignum {
 	cnm operator =(const cnm &b) {
 		vd = b.vd;
 		sign = b.sign;
+		base = b.base;
 		return *this;
 	}
 	cnm operator +(const cnm &b) const {
-		cnm c(base);
+		cnm c;
+		c.set_base(base);
 		if (sign ^ b.sign) {
 			if (sign) {
 				c = *this;
@@ -174,7 +174,8 @@ struct bignum {
 		 * a > 0, b < 0的情况相当于正数加法.
 		 * a < 0, b < 0的情况相当于异号加法, 然后再化为异号减法, 转化为上面2种.
 		 */
-		cnm c(base);
+		cnm c;
+		c.set_base(base);
 		if (sign ^ b.sign) {
 			c = *this;
 			c = c + b;
@@ -203,7 +204,10 @@ struct bignum {
 		return c;
 	}
 	cnm operator *(const cnm &b) const {
-		cnm c(0, base), row = *this, tmp(base);
+		cnm c, row = *this, tmp;
+		c.set_base(base);
+		tmp.set_base(base);
+		c(0);
 		fup (i, 0, b.vd.size() - 1) {
 			int carry = 0, mul;
 			tmp.vd.assign(row.vd.size(), 0);
@@ -222,7 +226,10 @@ struct bignum {
 		return c;
 	}
 	cnm operator /(const cnm &b) const {
-		cnm c(base), row(0), tb = b;
+		cnm c, row, tb = b;
+		c.set_base(base);
+		row.set_base(base);
+		row(0);
 		c.sign = sign ^ b.sign;
 		tb.sign = 0;
 		c.vd.assign(vd.size(), 0);
@@ -238,7 +245,9 @@ struct bignum {
 		return c;
 	}
 	cnm operator ^(int n) const {
-		cnm c(1, base), xp = *this;
+		cnm c, xp = *this;
+		c.set_base(base);
+		c(1);
 		while (n) {
 			if (n & 1)
 				c = c * xp;
@@ -248,7 +257,8 @@ struct bignum {
 		return c;
 	}
 	cnm operator %(const cnm &b) const {
-		cnm c(base);
+		cnm c;
+		c.set_base(base);
 		if (*this < b)
 			return *this;
 		if (*this == b)
@@ -260,7 +270,7 @@ struct bignum {
 		if (o.sign)
 			os << "-";
 		fwn (i, 0, o.vd.size() - 1)
-			os << bignum::table[o.vd[i]];
+			os << table[o.vd[i]];
 		return os;
 	}
 };
