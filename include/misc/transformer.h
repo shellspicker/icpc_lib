@@ -1,6 +1,5 @@
 template<size_t dn>
-class permutation
-{
+class permutation {
 	static int origin[dn];
 	void gall() { ghs(); ginv(); gcyc(); }
 	void ghs() {
@@ -58,9 +57,8 @@ public:
 		assert(find_if_not(nxt.begin(), nxt.end(), fn) == nxt.end());
 		assert(is_permutation(pre.begin(), pre.end(), nxt.begin()));
 		permutation();
-		for (int i = 0; i < pre.size(); ++i) {
+		fup (i, 0, pre.size() - 1)
 			mat[0][pre[i]] = nxt[i];
-		}
 		gall();
 	}
 	void compos(permutation<dn> &rhs, int tp) {

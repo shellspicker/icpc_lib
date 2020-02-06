@@ -1,3 +1,6 @@
+/*
+ * 注意, 下标起始1, 0是没有数据的.
+ */
 template<typename tp>
 class bit {
 	vector<tp> ds;
@@ -5,7 +8,7 @@ public:
 	void resize(int len) { ds.resize(len); }
 	void clear() { fill(ds.begin(), ds.end(), 0); }
 	void add(int x, int v) {
-		assert(0 < x);
+		assert(0 < x); // notice.
 		while (x < ds.size()) {
 			ds[x] += v;
 			x += cto(x);

@@ -1,6 +1,6 @@
 template<typename tp>
 class rmq {
-#define fn max
+#define fn min
 	vector<tp> ds[20];
 public:
 	void init(const vector<tp> &v) {

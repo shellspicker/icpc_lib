@@ -4,7 +4,13 @@ CXX = g++
 AR = ar
 RANLIB = ranlib
 SHARE = -fpic -shared -o
-VPATH = src/test
+VPATH = ./\
+	src/basic\
+	src/data_structure\
+	src/math\
+	src/string\
+	src/misc\
+	src/test
 INCLUDE = -I./\
 	-I./include/\
 	-I/usr/include/\

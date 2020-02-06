@@ -189,8 +189,8 @@ using ordered_map = __gnu_pbds::tree<
 #endif
 #define debug(...) cout << __LINE__ << ": "; debug_line(__VA_ARGS__)
 #define endl '\n'
-#define fup_s(i, a, b, s) for (long i = a, c = b; i <= c; i += s)
-#define fwn_s(i, a, b, s) for (long i = b, c = a; c <= i; i -= s)
+#define fup_s(i, a, b, s) for (long i = a, foc = b; i <= foc; i += s)
+#define fwn_s(i, a, b, s) for (long i = b, foc = a; foc <= i; i -= s)
 #define fup(i, a, b) fup_s(i, a, b, 1)
 #define fwn(i, a, b) fwn_s(i, a, b, 1)
 #define it_each(obj) (obj).begin(), (obj).end()
