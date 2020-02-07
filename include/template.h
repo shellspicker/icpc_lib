@@ -210,6 +210,8 @@ using ordered_map = __gnu_pbds::tree<
 #define range_r(ed, off) (ed) - (off) + 1, (ed)
 #define range_rev(len, st, off) seg_rev((len), range(st, off))
 #define range_r_rev(len, ed, off) seg_rev((len), range_r(st, off))
+#define finput(is, cls, obj) friend istream &operator <<(istream &is, cls &obj)
+#define foutput(os, cls, obj) friend ostream &operator <<(ostream &os, const cls &obj)
 typedef unsigned int uint;
 typedef long long ll;
 typedef unsigned long long ull;

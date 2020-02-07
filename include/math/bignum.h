@@ -262,7 +262,7 @@ struct bignum {
 		c = (*this) - (*this) / b * b;
 		return c;
 	}
-	friend ostream &operator <<(ostream &os, const cnm &o) {
+	foutput(os, cnm, o) {
 		if (o.sign)
 			os << "-";
 		fwn (i, 0, o.vd.size() - 1)
