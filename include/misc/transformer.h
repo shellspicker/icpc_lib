@@ -1,3 +1,7 @@
+/*
+ * 置换类, 魔方类...
+ * 注意, 下标起始0.
+ */
 template<size_t dn>
 class permutation {
 	static int origin[dn];
@@ -27,7 +31,7 @@ class permutation {
 					nx = mat[0][nx];
 				};
 				reverse(cycle[1][cycn].begin(), cycle[1][cycn].end());
-				period = lcm(period, cycle[0][cycn].size());
+				period = lcm(period, int(cycle[0][cycn].size()));
 				cycn++;
 			}
 		}
@@ -52,7 +56,7 @@ public:
 		gall();
 	}
 	void assign(const vector<int> &pre, const vector<int> &nxt) {
-		auto fn = [](int x) { return inrange(x, 0, dn - 1); };
+		auto fn = [](int x) { return inrange(x, 0, int(dn - 1)); };
 		assert(find_if_not(pre.begin(), pre.end(), fn) == pre.end());
 		assert(find_if_not(nxt.begin(), nxt.end(), fn) == nxt.end());
 		assert(is_permutation(pre.begin(), pre.end(), nxt.begin()));
@@ -84,28 +88,27 @@ public:
 		origin = pm<dn>();
 	}
 	static void level_bfs(vpm<dn> &misc, int limit, vpm<dn> &comb) {
-		queue<pm<dn>> que[2];
+		queue<pm<dn>> qnow, qnxt;
 		set<ull> st;
-		int qid = 0;
-		que[qid].push(origin);
+		qnow.push(origin);
 		st.insert(origin.hs[0]);
 		comb.push_back(origin);
 		for (int lev = 0; lev < limit; ++lev) {
-			if (que[qid].empty())
+			if (qnow.empty())
 				break;
-			while (!que[qid].empty()) {
-				pm<dn> x = que[qid].front(); que[qid].pop();
+			while (!qnow.empty()) {
+				pm<dn> x = qnow.front(); qnow.pop();
 				for (auto y : misc) {
 					x.compos(y, 0);
 					if (!st.count(x.hs[0])) {
-						que[qid ^ 1].push(x);
+						qnxt.push(x);
 						st.insert(x.hs[0]);
 						comb.push_back(x);
 					}
 					x.compos(y, 1);
 				}
 			}
-			qid ^= 1;
+			qnow.swap(qnxt);
 		}
 	}
 	static void face_seq(vpm<dn> &body, vpm<dn> &face, vpm<dn> &comb) {

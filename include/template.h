@@ -293,7 +293,7 @@ tp rtol(tp r, tp len) { return r - len + 1; }
 template<typename tp>
 tp length(tp l, tp r) { return (r < l) ? 0 : r - l + 1; }
 template<typename tp>
-bool inrange(tp x, tp l, tp r) { return r < l ? false : l <= x && x <= r; }
+bool inrange(tp x, tp l, tp r) { return r < l ? 0 : l <= x && x <= r; }
 template<typename tp>
 tp midpoint(tp l, tp r) { return l + ((r - l) >> 1); }
 template<typename tp>
@@ -411,7 +411,7 @@ void hash_val(size_t &seed, tp &val, var &&...args)
 	hash_val(seed, forward<var>(args)...);
 }
 template<typename tp>
-size_t hash_val(const vector<tp> &vec)
+size_t hash_val(vector<tp> &&vec)
 {
 	size_t seed = 0;
 	for (auto x : vec)
