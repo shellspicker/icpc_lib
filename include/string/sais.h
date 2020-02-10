@@ -2,9 +2,9 @@
 #define SAIS_H 1
 
 class sais {
+public:
 	string origin;
 	vector<int> val, sa, rk, lcp;
-public:
 	void init(const string &str) {
 		origin.assign(str);
 		origin += '#';

@@ -8,8 +8,8 @@ template<typename tp>
 class bit {
 	vector<tp> ds;
 public:
-	void resize(int len) { ds.resize(len); }
-	void clear() { fill(ds.begin(), ds.end(), 0); }
+	void init(int len) { ds.resize(len); clear(); }
+	void clear() { fill(it_each(ds), 0); }
 	void add(int x, int v) {
 		assert(0 < x); // notice.
 		while (x < ds.size()) {

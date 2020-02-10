@@ -213,7 +213,7 @@ using ordered_map = __gnu_pbds::tree<
 #define range_r(ed, off) (ed) - (off) + 1, (ed)
 #define range_rev(len, st, off) seg_rev((len), range(st, off))
 #define range_r_rev(len, ed, off) seg_rev((len), range_r(st, off))
-#define finput(is, cls, obj) friend istream &operator >>(istream &is, cls &obj)
+#define finput(is, cls, obj) friend istream &operator <<(istream &is, cls &obj)
 #define foutput(os, cls, obj) friend ostream &operator <<(ostream &os, const cls &obj)
 typedef unsigned int uint;
 typedef long long ll;
@@ -327,7 +327,7 @@ int binary_search(
 template<typename tp>
 tp special(const vector<tp> &v, int i, tp val)
 {
-	if (inrange(i, 0, int(v.size() - 1)))
+	if (inrange(i, 0, tp(v.size() - 1)))
 		return v[i];
 	return val;
 }
@@ -439,3 +439,121 @@ public:
 };
 
 #endif
+
+#ifndef SADA_H
+#define SADA_H 1
+
+class sada {
+public:
+	string origin;
+	vector<int> val, sa, rk, lcp;
+	void init(const string &str) {
+		origin.assign(str);
+		origin += '#';
+		int sz = origin.size();
+		sa.resize(sz);
+		lcp.resize(sz);
+		val.assign(it_each(origin));
+		rk.assign(it_each(origin));
+		iota(it_each(sa), 0);
+		get_sa();
+		get_lcp();
+	}
+	void get_sa() {
+		int sz = rk.size(), cc;
+		vector<int> rk1(sz), sa1(sz);
+		auto counting_sort = [&](int k) {
+			int vmx = *max_element(it_each(rk));
+			vector<int> cnt(vmx + 1, 0);
+			fup (i, 0, sz - 1)
+				cnt[special(rk, sa[i] + k, 0)]++;
+			partial_sum(it_each(cnt), cnt.begin());
+			fwn (i, 0, sz - 1)
+				sa1[--cnt[special(rk, sa[i] + k, 0)]] = sa[i];
+			sa.swap(sa1);
+		};
+		for (int k = 1; k < sz; k <<= 1) {
+			counting_sort(k);
+			counting_sort(0);
+			rk1[sa[0]] = cc = 0;
+			fup (i, 1, sz - 1) {
+				if (special(rk, sa[i], 0) != special(rk, sa[i - 1], 0) ||
+					special(rk, sa[i] + k, 0) != special(rk, sa[i - 1] + k, 0))
+					cc++;
+				rk1[sa[i]] = cc;
+			}
+			rk.swap(rk1);
+			if (rk[sa.back()] == sz - 1)
+				break;
+		}
+	}
+	void get_lcp() {
+		int d = 0;
+		lcp[0] = 0;
+		fup (p1, 0, sa.size() - 2) {
+			if (d)
+				d--;
+			int p2 = sa[rk[p1] - 1];
+			while (val[p1 + d] == val[p2 + d])
+				d++;
+			lcp[rk[p1]] = d;
+		}
+	}
+};
+
+#endif
+
+class data {
+	string s;
+	sada sa;
+	istream &ioend() {
+		cin.setstate(ios_base::badbit);
+		return cin;
+	}
+public:
+	istream &in() {
+		cin >> s;
+		return cin;
+	}
+	void deal() {
+		sa.init(s);
+	}
+	void out() {
+		fup (i, 1, sa.sa.size() - 1)
+			cout << sa.sa[i] + 1 << " \n"[i == sa.sa.size() - 1];
+	}
+};
+
+class task {
+	int testcase = 1 << 30;
+	stringstream tid;
+	data gkd{};
+public:
+	task(
+		bool multicase = false,
+		bool testid = false,
+		bool blankline = false) {
+		ios::sync_with_stdio(0);
+		cin.tie(0);
+		cout.setf(ios::fixed);
+		cout.precision(20);
+		if (multicase)
+			read(testcase);
+		for (int ti = 1; ti <= testcase && gkd.in(); ++ti) {
+			gkd.deal();
+			if (blankline && 1 < ti)
+				cout << endl;
+			tid << "Case #" << ti << ": ";
+			if (testid)
+				cout << tid.str();
+			gkd.out();
+			tid.str("");
+		}
+	}
+};
+
+int main()
+{
+	task gkd(0, 0, 0);
+	return 0;
+}

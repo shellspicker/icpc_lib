@@ -439,3 +439,139 @@ public:
 };
 
 #endif
+
+#ifndef BIT_H
+#define BIT_H 1
+
+/*
+ * 注意, 下标起始1, 0是没有数据的.
+ */
+template<typename tp>
+class bit {
+	vector<tp> ds;
+public:
+	void init(int len) { ds.resize(len); clear(); }
+	void clear() { fill(it_each(ds), 0); }
+	void add(int x, int v) {
+		assert(0 < x); // notice.
+		while (x < ds.size()) {
+			ds[x] += v;
+			x += cto(x);
+		}
+	}
+	tp presum(int x) {
+		if (x < 0)
+			return 0;
+		tp ans = 0;
+		while (x) {
+			ans += ds[x];
+			x -= cto(x);
+		}
+		return ans;
+	}
+	tp sufsum(int x) {
+		return presum(ds.size() - 1) - presum(x - 1);
+	}
+	tp presum_range(int l, int r) {
+		return presum(r) - presum(l - 1);
+	}
+	int rank(int x) {
+		return presum(x - 1) + 1;
+	}
+	int kth(int k) {
+		int x, lo, hi, mid;
+		lo = 1, hi = ds.size() - 1;
+		while (lo <= hi) {
+			mid = midpoint(lo, hi);
+			if (k <= presum(mid))
+				hi = mid - 1;
+			else
+				lo = mid + 1;
+		}
+		x = k <= presum(lo) ? lo : 0;
+		return x;
+	}
+};
+
+#endif
+
+class query {
+public:
+	int op, x, v;
+	finput(is, query, o) {
+		is >> o.op >> o.x >> o.v;
+		return is;
+	}
+};
+
+class data {
+	vector<ll> v, ans;
+	vector<query> qa;
+	bit<ll> bb;
+	istream &ioend() {
+		cin.setstate(ios_base::badbit);
+		return cin;
+	}
+public:
+	istream &in() {
+		int vn, qn;
+		read(vn);
+		read(qn);
+		if (!cin)
+			return ioend();
+		read_vec(v, vn);
+		read_vec(qa, qn);
+		return cin;
+	}
+	void deal() {
+		bb.init(v.size() + 1);
+		ans.clear();
+		fup (i, 0, v.size() - 1)
+			bb.add(i + 1, v[i]);
+		for (auto q : qa) {
+			if (q.op == 1) {
+				bb.add(q.x, q.v);
+			} else {
+				ans.emplace_back(bb.presum_range(q.x, q.v));
+			}
+		}
+	}
+	void out() {
+		for (auto x : ans)
+			cout << x << endl;
+	}
+};
+
+class task {
+	int testcase = 1 << 30;
+	stringstream tid;
+	data gkd{};
+public:
+	task(
+		bool multicase = false,
+		bool testid = false,
+		bool blankline = false) {
+		ios::sync_with_stdio(0);
+		cin.tie(0);
+		cout.setf(ios::fixed);
+		cout.precision(20);
+		if (multicase)
+			read(testcase);
+		for (int ti = 1; ti <= testcase && gkd.in(); ++ti) {
+			gkd.deal();
+			if (blankline && 1 < ti)
+				cout << endl;
+			tid << "Case #" << ti << ": ";
+			if (testid)
+				cout << tid.str();
+			gkd.out();
+			tid.str("");
+		}
+	}
+};
+
+int main()
+{
+	task gkd(0, 0, 0);
+	return 0;
+}

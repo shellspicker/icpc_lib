@@ -2,9 +2,9 @@
 #define SADA_H 1
 
 class sada {
+public:
 	string origin;
 	vector<int> val, sa, rk, lcp;
-public:
 	void init(const string &str) {
 		origin.assign(str);
 		origin += '#';
@@ -20,30 +20,23 @@ public:
 	void get_sa() {
 		int sz = rk.size(), cc;
 		vector<int> rk1(sz), sa1(sz);
-		auto get_vi = [&](vector<int> &v, int i) {
-			if (i < v.size())
-				return v[i];
-			return 0;
-		};
 		auto counting_sort = [&](int k) {
 			int vmx = *max_element(it_each(rk));
 			vector<int> cnt(vmx + 1, 0);
 			fup (i, 0, sz - 1)
-				cnt[get_vi(rk, sa[i] + k)]++;
+				cnt[special(rk, sa[i] + k, 0)]++;
 			partial_sum(it_each(cnt), cnt.begin());
 			fwn (i, 0, sz - 1)
-				sa1[--cnt[get_vi(rk, sa[i] + k)]] = sa[i];
+				sa1[--cnt[special(rk, sa[i] + k, 0)]] = sa[i];
 			sa.swap(sa1);
 		};
-		counting_sort(1);
-		counting_sort(0);
 		for (int k = 1; k < sz; k <<= 1) {
 			counting_sort(k);
 			counting_sort(0);
 			rk1[sa[0]] = cc = 0;
 			fup (i, 1, sz - 1) {
-				if (get_vi(rk, sa[i]) != get_vi(rk, sa[i - 1]) ||
-					get_vi(rk, sa[i] + k) != get_vi(rk, sa[i - 1] + k))
+				if (special(rk, sa[i], 0) != special(rk, sa[i - 1], 0) ||
+					special(rk, sa[i] + k, 0) != special(rk, sa[i - 1] + k, 0))
 					cc++;
 				rk1[sa[i]] = cc;
 			}

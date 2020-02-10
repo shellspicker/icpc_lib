@@ -439,3 +439,115 @@ public:
 };
 
 #endif
+
+#ifndef RMQ_H
+#define RMQ_H 1
+
+template<typename tp, bool is_min>
+class rmq {
+	vector<tp> ds[20];
+public:
+	void init(const vector<tp> &v) {
+		int sz = v.size();
+		for (auto &dim : ds)
+			dim.resize(sz);
+		fup (i, 0, sz - 1)
+			ds[0][i] = v[i];
+		for (int b = 1; (1 << b) <= sz; ++b)
+			for (int s = 0; s + (1 << b) <= sz; ++s) {
+				if (is_min)
+					ds[b][s] = min(ds[b - 1][s], ds[b - 1][s + (1 << b - 1)]);
+				else
+					ds[b][s] = max(ds[b - 1][s], ds[b - 1][s + (1 << b - 1)]);
+			}
+	}
+	tp query(int l, int r) {
+		range_normalize(l, r);
+		tp xp = ctz(rounddown_pow_of_2(length(l, r)));
+		if (is_min)
+			return min(ds[xp][l], ds[xp][rtol(r, 1 << xp)]);
+		else
+			return max(ds[xp][l], ds[xp][rtol(r, 1 << xp)]);
+	}
+};
+
+#endif
+
+class query {
+public:
+	int l, r, ans;
+	finput(is, query, o) {
+		is >> o.l >> o.r;
+		o.l--;
+		o.r--;
+		return is;
+	}
+	foutput(os, query, o) {
+		os << o.ans;
+		return os;
+	}
+};
+
+class data {
+	vector<int> v;
+	vector<query> qa;
+	rmq<int, 0> dsm{};
+	istream &ioend() {
+		cin.setstate(ios_base::badbit);
+		return cin;
+	}
+public:
+	istream &in() {
+		int vn, qn;
+		read(vn);
+		read(qn);
+		if (!cin)
+			return ioend();
+		read_vec(v, vn);
+		read_vec(qa, qn);
+		return cin;
+	}
+	void deal() {
+		dsm.init(v);
+		for (auto &q : qa)
+			q.ans = dsm.query(q.l, q.r);
+	}
+	void out() {
+		for (auto &q : qa)
+			cout << q << endl;
+	}
+};
+
+class task {
+	int testcase = 1 << 30;
+	stringstream tid;
+	data gkd{};
+public:
+	task(
+		bool multicase = false,
+		bool testid = false,
+		bool blankline = false) {
+		ios::sync_with_stdio(0);
+		cin.tie(0);
+		cout.setf(ios::fixed);
+		cout.precision(20);
+		if (multicase)
+			read(testcase);
+		for (int ti = 1; ti <= testcase && gkd.in(); ++ti) {
+			gkd.deal();
+			if (blankline && 1 < ti)
+				cout << endl;
+			tid << "Case #" << ti << ": ";
+			if (testid)
+				cout << tid.str();
+			gkd.out();
+			tid.str("");
+		}
+	}
+};
+
+int main()
+{
+	task gkd(0, 0, 0);
+	return 0;
+}
