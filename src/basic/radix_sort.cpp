@@ -1,5 +1,5 @@
 #include "template.h"
-#include "basic/radix_sort.h"
+#include "basic/radix_sort_test.h"
 
 template<typename tp>
 void test_bucket_normal(int sz, int d, tp m1, tp m2)
