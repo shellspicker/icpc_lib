@@ -233,52 +233,42 @@ void debug_line(var &&...args)
 template<typename tp>
 int bitcount(tp x)
 {
-	bool isll = sizeof(x) - 4;
-	if (isll) {
+	if (4 < sizeof(x))
 		return __builtin_popcountll(x);
-	} else {
+	else
 		return __builtin_popcount(x);
-	}
 }
 template<typename tp>
-int clz(tp x)
+tp clz(tp x)
 {
-	bool isll = sizeof(x) - 4;
-	if (isll) {
+	if (4 < sizeof(x))
 		return __builtin_clzll(x);
-	} else {
+	else
 		return __builtin_clz(x);
-	}
 }
 template<typename tp>
-int ctz(tp x)
+tp ctz(tp x)
 {
-	bool isll = sizeof(x) - 4;
-	if (isll) {
+	if (4 < sizeof(x))
 		return __builtin_ctzll(x);
-	} else {
+	else
 		return __builtin_ctz(x);
-	}
 }
 template<typename tp>
-int clo(tp x)
+tp clo(tp x)
 {
-	bool isll = sizeof(x) - 4;
-	if (isll) {
-		return x ? 1 << (64 - 1 - __builtin_clzll(x)) : 0;
-	} else {
+	if (4 < sizeof(x))
+		return x ? 1ll << (64 - 1 - __builtin_clzll(x)) : 0;
+	else
 		return x ? 1 << (32 - 1 - __builtin_clz(x)) : 0;
-	}
 }
 template<typename tp>
-int cto(tp x)
+tp cto(tp x)
 {
-	bool isll = sizeof(x) - 4;
-	if (isll) {
-		return x ? 1 << __builtin_ctzll(x) : 0;
-	} else {
+	if (4 < sizeof(x))
+		return x ? 1ll << __builtin_ctzll(x) : 0;
+	else
 		return x ? 1 << __builtin_ctz(x) : 0;
-	}
 }
 template<typename tp>
 tp roundup_pow_of_2(tp x) { return x ? clo(x) << 1 : 0; }
