@@ -1,3 +1,6 @@
+#ifndef SADA_H
+#define SADA_H 1
+
 class sada {
 	string origin;
 	vector<int> val, sa, rk, lcp;
@@ -62,3 +65,5 @@ public:
 		}
 	}
 };
+
+#endif

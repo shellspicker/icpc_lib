@@ -1,3 +1,6 @@
+#ifndef RADIX_SORT_H
+#define RADIX_SORT_H 1
+
 template<typename tp>
 void radix_sort(vector<tp> &v, uint blk = 1 << 8)
 {
@@ -35,3 +38,5 @@ void radix_sort(vector<tp> &v, uint blk = 1 << 8)
 		}
 	}
 }
+
+#endif

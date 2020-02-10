@@ -1,3 +1,6 @@
+#ifndef RMQ_H
+#define RMQ_H 1
+
 template<typename tp>
 class rmq {
 #define fn min
@@ -20,3 +23,5 @@ public:
 	}
 #undef fn
 };
+
+#endif

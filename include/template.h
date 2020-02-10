@@ -1,3 +1,6 @@
+#ifndef TEMPLATE_H
+#define TEMPLATE_H
+
 #pragma GCC optimize(1,2,3,"Ofast","inline")
 #include <cstddef>
 #include <cstdint>
@@ -189,8 +192,8 @@ using ordered_map = __gnu_pbds::tree<
 #endif
 #define debug(...) cout << __LINE__ << ": "; debug_line(__VA_ARGS__)
 #define endl '\n'
-#define fup_s(i, a, b, s) for (long i = a, foc = b; i <= foc; i += s)
-#define fwn_s(i, a, b, s) for (long i = b, foc = a; foc <= i; i -= s)
+#define fup_s(i, a, b, s) for (int i = a, foc = b; i <= foc; i += s)
+#define fwn_s(i, a, b, s) for (int i = b, foc = a; foc <= i; i -= s)
 #define fup(i, a, b) fup_s(i, a, b, 1)
 #define fwn(i, a, b) fwn_s(i, a, b, 1)
 #define it_each(obj) (obj).begin(), (obj).end()
@@ -322,38 +325,41 @@ int binary_search(
 	return dir ^ contain ? lo : hi;
 }
 template<typename tp>
-tp presum_point(const vector<tp> &sum, int i) { return 0 <= i ? sum[i] : 0; }
+tp special(const vector<tp> &v, int i, tp val)
+{
+	if (inrange(i, 0, v.size() - 1))
+		return v[i];
+	return val;
+}
 template<typename tp>
 tp presum_range(const vector<tp> &sum, int l, int r)
 {
-	return sum[r] - presum_point(sum, l - 1);
+	return sum[r] - special(sum, l - 1, 0);
 }
 template<typename tp>
 void presum_preprocess(
-						vector<tp> &sum, const vector<tp> &data,
+						vector<tp> &&sum, const vector<tp> &data,
 						int l, int r, int st)
 {
 	int len = length(l, r);
 	sum.resize(sum.size() + len);
-	for (long i = st, d = l; d <= r; ++i, ++d)
-		sum[i] = presum_point(sum, i - 1) + data[d];
+	for (int i = st, d = l; d <= r; ++i, ++d)
+		sum[i] = special(sum, i - 1, 0) + data[d];
 }
-template<typename tp>
-tp premul_point(const vector<tp> &mul, int i) { return 0 <= i ? mul[i] : 1; }
 template<typename tp>
 tp premul_range(const vector<tp> &mul, int l, int r)
 {
-	return mul[r] / premul_point(mul, l - 1);
+	return mul[r] / special(mul, l - 1, 1);
 }
 template<typename tp>
 void premul_preprocess(
-						vector<tp> &mul, const vector<tp> &data,
+						vector<tp> &&mul, const vector<tp> &data,
 						int l, int r, int st)
 {
 	int len = length(l, r);
 	mul.resize(mul.size() + len);
-	for (long i = st, d = l; d <= r; ++i, ++d)
-		mul[i] = premul_point(mul, i - 1) * data[d];
+	for (int i = st, d = l; d <= r; ++i, ++d)
+		mul[i] = special(mul, i - 1, 1) * data[d];
 }
 template<typename tp>
 tp div_roundup(tp x, tp div) { return (x + div - 1) / div; }
@@ -366,116 +372,16 @@ tp round_shift(tp x, tp dist, tp l, tp r)
 	return ((x - l + dist) % len + len) % len + l;
 }
 template<typename tp>
-tp gcd(tp a, tp b) { while (b) { a %= b; swap(a, b); } return a; }
-template<typename tp>
-tp lcm(tp a, tp b) { return a / gcd(a, b) * b; }
-ull mul_mod(ull a, ull b, ull mod)
-{
-	ull res = (a * b - (ll)(a / (ldb)mod * b + 1e-3) * mod + mod) % mod;
-	return res;
-}
-template<typename tp>
-tp pow_mod(tp x, tp n, tp mod)
-{
-	if (mod == 1)
-		return 0;
-	tp res = 1;
-	while (n > 0) {
-		if (n & 1)
-			res = mul_mod(res, x, mod);
-		x = mul_mod(x, x, mod);
-		n >>= 1;
-	}
-	return res;
-}
-template<typename tp>
-void combine(size_t &seed, const tp &x)
-{
-	seed ^= hash<tp>()(x) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-}
-void hash_val(size_t &seed) {}
-template<typename tp, typename ...var>
-void hash_val(size_t &seed, tp &val, var &&...args)
-{
-	combine(seed, val);
-	hash_val(seed, forward<var>(args)...);
-}
-template<typename tp>
-size_t hash_val(vector<tp> &&vec)
-{
-	size_t seed = 0;
-	for (auto x : vec)
-		combine(seed, x);
-	return seed;
-}
-template<typename ...var>
-size_t hash_val(var &&...args)
-{
-	size_t seed = 0;
-	hash_val(seed, forward<var>(args)...);
-	return seed;
-}
-void bkdr_hash_preprocess(const string &seq, vector<ull> &hash, ull seed, int i = 0)
-{
-	if (hash.size() < i + seq.size())
-		hash.resize(i + seq.size());
-	for (auto h : seq)
-		hash[i] = presum_point(hash, i - 1) * seed + h;
-}
-template<typename tp>
-void bkdr_hash_preprocess(const vector<tp> &seq, vector<ull> &hash, ull seed, int i = 0)
-{
-	if (hash.size() < i + seq.size())
-		hash.resize(i + seq.size());
-	for (auto h : seq)
-		hash[i] = presum_point(hash, i - 1) * seed + h;
-}
-ull bkdr_hash_once(const string &seq, ull seed)
-{
-	ull hash = 0;
-	for (auto h : seq)
-		hash = hash * seed + h;
-	return hash;
-}
-template<typename tp>
-ull bkdr_hash_once(const vector<tp> &seq, ull seed)
-{
-	ull hash = 0;
-	for (auto h : seq)
-		hash = hash * seed + h;
-	return hash;
-}
-ull bkdr_hash_range(const vector<ull> &hash, const vector<ull> &exp, int l, int r)
-{
-	return hash[r] - presum_point(hash, l - 1) * exp[length(l, r)];
-}
-int fdu(double x)
-{
-	return fabs(x) < eps ? 0 : x <= -eps ? -1 : 1;
-}
-// like ecvt, fcvt, gcvt...
-double fcut(double x, int xp)
-{
-	return 1.L * (ll)(x * pow(10, xp)) / pow(10, xp);
-}
-template<typename tp>
 void read(tp &x)
 {
 	cin >> x;
 }
 template<typename tp>
-void read_vec_n(vector<tp> &v, size_t n)
+void read_vec(vector<tp> &v, size_t n)
 {
 	v.resize(n);
 	fup(i, 0, v.size() - 1)
 		cin >> v[i];
-}
-template<typename tp>
-void read_vec(vector<tp> &v)
-{
-	int vn;
-	cin >> vn;
-	read_vec_n(v, vn);
 }
 template<typename tp>
 class zip {
@@ -531,166 +437,5 @@ public:
 		return data[i];
 	}
 };
-template<typename tp, class twist = mt19937_64>
-class random_int {
-	using dist = uniform_int_distribution<tp>;
-	using param_type = typename dist::param_type;
-	dist segment;
-	twist gen{random_device{}()};
-public:
-	void set(tp l, tp r) {
-		segment.param(param_type{l, r});
-	}
-	pair<tp, tp> get() {
-		assert(segment.a() == segment.min());
-		assert(segment.b() == segment.max());
-		return {segment.a(), segment.b()};
-	}
-	tp operator ()() {
-		return segment(gen);
-	}
-};
-template<typename tp, class twist = mt19937_64>
-class random_real {
-	using dist = uniform_real_distribution<tp>;
-	using param_type = typename dist::param_type;
-	dist segment;
-	twist gen{random_device{}()};
-public:
-	void set(tp l, tp r) {
-		segment.param(param_type{l, r});
-	}
-	pair<tp, tp> get() {
-		assert(segment.a() == segment.min());
-		assert(segment.b() == segment.max());
-		return {segment.a(), segment.b()};
-	}
-	tp operator ()() {
-		return segment(gen);
-	}
-};
-/*
- * calc expression for basic arithmetic.
- * judge and deal illegal situation.
- * not use stringstream(it may be slow).
- * skip space use `isblank`, not `isspace`, so just read one-line.
- * if read multi-line expression... use `isspace`, good luck.
- */
-template<typename tp>
-class expression {
-	tp mod = 0;
-public:
-	void set_mod(int m) {
-		mod = m;
-	}
-	tp parse_calc(const string &exp) {
-		stack<char> cop;
-		stack<tp> nop;
-		int cur = 0, len = exp.length(), minus = 1;
-		char ch;
-		bool flag = 0;
-		auto push_num = [&](stack<tp> &nop, tp x) {
-			nop.push(x);
-			flag = 1;
-		};
-		auto calc = [&](stack<char> &cop, stack<tp> &nop) {
-			tp ret, e1, e2;
-			char op;
-			bool ok = 1 <= cop.size() && 2 <= nop.size();
-			if (!ok)
-				return;
-			op = cop.top(); cop.pop();
-			e2 = nop.top(); nop.pop();
-			e1 = nop.top(); nop.pop();
-			switch (op) {
-				case '+':
-					ret = e1 + e2;
-					break;
-				case '-':
-					ret = e1 - e2;
-					break;
-				case '*':
-					ret = e1 * e2;
-					break;
-				case '/':
-					ret = e1 / e2;
-					break;
-				case '%':
-					ret = e1 % e2;
-					break;
-				case '^':
-					ret = pow(e1, e2);
-					break;
-				default:
-					ok = 0;
-					break;
-			}
-			if (mod) {
-				if (ret < 0)
-					ret += mod;
-				if (mod < ret)
-					ret %= mod;
-			}
-			if (ok)
-				push_num(nop, ret);
-		};
-		auto can_push = [](char lef, char rig) {
-			bool ok;
-			string plus("+-"), multiply("*/%^");
-			ok = rig != ')' && (lef == '(' || rig == '('
-				|| (plus.find(lef) != -1ull && multiply.find(rig) != -1ull));
-			return ok;
-		};
-		while (cur < len) {
-			while (isblank(ch = exp[cur]))
-				cur++;
-			if (isdigit(ch)) {
-				size_t ed = exp.find_first_not_of("0123456789", cur);
-				if (ed == -1ull)
-					ed = len;
-				if (sizeof(tp) - 4)
-					push_num(nop, stoll(exp.substr(cur, ed - cur)) * minus);
-				else
-					push_num(nop, stoi(exp.substr(cur, ed - cur)) * minus);
-				minus = 1;
-				cur = ed;
-			} else {
-				if (ch == '-' && !flag) {
-					flag = 0;
-					minus *= -1;
-					goto end;
-				}
-				if (ch == ')') {
-					while (!cop.empty() && cop.top() != '(')
-						calc(cop, nop);
-					if (cop.empty())
-						goto end;
-					cop.pop();
-				} else {
-					if (ch != '(')
-						while (!cop.empty() && !can_push(cop.top(), ch))
-							calc(cop, nop);
-					cop.push(ch);
-				}
-end:
-				cur++;
-			}
-		}
-		while (!cop.empty()) {
-			if (cop.top() == '(')
-				cop.pop();
-			else
-				calc(cop, nop);
-		}
-		assert(nop.size() == 1);
-		return nop.top();
-	}
-	tp va_exp(const char *fmt, ...) {
-		char buf[1024];
-		va_list args;
-		va_start(args, fmt);
-		vsprintf(buf, fmt, args);
-		va_end(args);
-		return parse_calc(buf);
-	}
-};
+
+#endif

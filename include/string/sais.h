@@ -1,3 +1,6 @@
+#ifndef SAIS_H
+#define SAIS_H 1
+
 class sais {
 	string origin;
 	vector<int> val, sa, rk, lcp;
@@ -104,3 +107,5 @@ public:
 		}
 	}
 };
+
+#endif

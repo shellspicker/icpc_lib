@@ -1,3 +1,6 @@
+#ifndef BIGNUM_H
+#define BIGNUM_H 1
+
 /*
  * 大整数模板
  * 含有进制, 默认10, 可以设置成2~62.
@@ -271,3 +274,5 @@ struct bignum {
 	}
 };
 string bignum::table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+#endif

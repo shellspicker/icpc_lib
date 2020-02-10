@@ -1,6 +1,8 @@
+#ifndef TRANSFORMER_H
+#define TRANSFORMER_H 1
+
 /*
  * 置换类, 魔方类...
- * 注意, 下标起始0.
  */
 template<size_t dn>
 class permutation {
@@ -132,3 +134,5 @@ public:
 };
 template<size_t dn>
 pm<dn> cube<dn>::origin;
+
+#endif
