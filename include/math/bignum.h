@@ -123,12 +123,6 @@ struct bignum {
 			b.vd[i] = 0;
 		return b;
 	}
-	cnm operator =(const cnm &b) {
-		vd = b.vd;
-		sign = b.sign;
-		base = b.base;
-		return *this;
-	}
 	cnm operator +(const cnm &b) const {
 		cnm c;
 		c.set_base(base);
@@ -143,10 +137,8 @@ struct bignum {
 				return *this - c;
 			}
 		}
-		if (vd.size() < b.vd.size()) {
-			c = b;
-			return c + (*this);
-		}
+		if (vd.size() < b.vd.size())
+			return b + (*this);
 		int carry = 0;
 		c.sign = sign;
 		c.vd.assign(vd.size(), 0);
