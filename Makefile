@@ -62,8 +62,7 @@ init_all:
 # 添加需要的目标文件.
 # 自定义文件, 支持多个目标, 写好每个目标的信息, 具体看函数的参数.
 #	$(eval $(call dim_file_relevant,,,,))
-	$(eval $(call dim_file_relevant,1,exe,ttt,polynomial_test.cpp))
-	$(eval $(call dim_file_relevant,2,exe,fft,test_fft.cpp))
+	$(eval $(call dim_file_relevant,1,exe,ttt,template.cpp))
 	@$(foreach id,$(aimid_all),\
 		$(eval $(call preprocess,$(id)))\
 		$(eval REQ_$(id) = $(OBJS_$(id)))\
