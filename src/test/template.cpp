@@ -21,11 +21,12 @@ class task {
 	data gkd{};
 public:
 	task(
-		bool multicase = false,
-		bool testid = false,
-		bool blankline = false) {
+		bool multicase = 0,
+		bool testid = 0,
+		bool blankline = 0) {
 		ios::sync_with_stdio(0);
 		cin.tie(0);
+		cout.tie(0);
 		cout.setf(ios::fixed);
 		cout.precision(20);
 		if (multicase)
