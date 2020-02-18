@@ -191,7 +191,6 @@ using ordered_map = __gnu_pbds::tree<
 						key, val, less<key>, __gnu_pbds::rb_tree_tag,
 						__gnu_pbds::tree_order_statistics_node_update>;
 #endif
-#define debug(...) cout << __LINE__ << ": "; debug_line(__VA_ARGS__)
 #define endl '\n'
 #define fup_s(i, a, b, s) for (int i = a, foc = b; i <= foc; i += s)
 #define fwn_s(i, a, b, s) for (int i = b, foc = a; foc <= i; i -= s)
@@ -224,16 +223,6 @@ const int inf32 = 1 << 30;
 const ll inf64 = 1ll << 60;
 const double pi = acos(-1);
 const double eps = 1e-6;
-template<typename tp>
-void print(const tp &x) { cout << x << ' '; }
-template<typename tp>
-void print(const vector<tp> &v) { for (auto x : v) cout << x << ' '; }
-template<typename ...var>
-void debug_line(var &&...args)
-{
-	initializer_list<int>{(print(forward<var>(args)), 0)...};
-	cout << endl;
-}
 template<typename tp>
 int bitcount(tp x)
 {
@@ -384,6 +373,29 @@ void read_vec(vector<tp> &v, size_t n)
 	fup(i, 0, v.size() - 1)
 		cin >> v[i];
 }
+class debuger {
+	string delim;
+	template<typename tp>
+	void print(const tp &x) { cout << x << delim; }
+	template<typename tp>
+	void print(const vector<tp> &v) { for (auto x : v) cout << x << delim; }
+public:
+	debuger(string s = " ") : delim(s) {}
+	template<typename ...var>
+	void operator ()(var &&...args) {
+		initializer_list<int>{(print(forward<var>(args)), 0)...};
+	}
+	void msg(const char *fmt, ...) {
+		string ret;
+		static char buf[1 << 10];
+		va_list args;
+		va_start(args, fmt);
+		vsprintf(buf, fmt, args);
+		va_end(args);
+		new (&ret) string(buf);
+		cout << ret;
+	}
+};
 template<typename tp>
 class zip {
 	using iter = typename vector<tp>::iterator;
