@@ -431,11 +431,11 @@ public:
 		for (; ch = getchar(), ch ^ -1 && isdigit(ch);)
 			ret = ret * 10 + (ch ^ 48);
 		if (ch == -1 || !isgraph(ch))
-			return ret *= sgn, 1;
+			return ret *= sgn, ch ^ -1;
 read_float:
 		for (; ch = getchar(), ch ^ -1 && isdigit(ch);)
-			ret += (ch - '0') * bit, bit/=10;
-		return ret *= sgn, 1;
+			ret += (ch ^ 48) * bit, bit /= 10;
+		return ret *= sgn, ch ^ -1;
 	}
 	void output_char(char ch) {
 		putchar(ch);
