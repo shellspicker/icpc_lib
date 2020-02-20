@@ -1,3 +1,6 @@
+/*
+ * 魔方体, 仅测模板用.
+ */
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse4")
 #include <cstddef>

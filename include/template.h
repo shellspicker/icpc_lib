@@ -39,6 +39,7 @@ using std::ios_base;
 using std::istream;
 using std::ostream;
 using std::stringstream;
+using std::streambuf;
 using std::cin;
 using std::cout;
 using std::string;
@@ -373,6 +374,96 @@ void read_vec(vector<tp> &v, size_t n)
 	fup(i, 0, v.size() - 1)
 		cin >> v[i];
 }
+/*
+ * 加速io, 无浮点数输出(如果遇到了浮点数需要快速输出的情况, 自己看着办...)
+ */
+class direct_io {
+	static const int bsz = 1 << 10;
+	char ibuf[bsz], obuf[bsz], *ihead = 0, *itail = 0, *ohead = obuf;
+	streambuf *isb = cin.rdbuf(), *osb = cout.rdbuf();
+	char getchar() {
+		if (ihead == itail)
+			itail = (ihead = ibuf) + isb->sgetn(ibuf, bsz);
+		return (ihead == itail) ? -1 : *ihead++;
+	}
+	void putchar(char ch) {
+		if (ohead - obuf == bsz)
+			osb->sputn(ohead = obuf, bsz);
+		*ohead++ = ch;
+	}
+public:
+	~direct_io() { osb->sputn(obuf, ohead - obuf); }
+	bool input_char(char &ch) {
+		if ((ch = getchar()) == -1)
+			return 0;
+		for (; ch ^ -1 && !isgraph(ch); ch = getchar());
+		return ch ^ -1;
+	}
+	bool input_cstr(char *s) {
+		char ch;
+		if (!input_char(ch))
+			return 0;
+		for (*s++ = ch; ch = getchar(), ch ^ -1 && isgraph(ch); *s++ = ch);
+		*s++ = 0;
+		return 1;
+	}
+	bool input_string(string &s) {
+		s.clear();
+		char ch;
+		if (!input_char(ch))
+			return 0;
+		for (s += ch; ch = getchar(), ch ^ -1 && isgraph(ch); s += ch);
+		return 1;
+	}
+	// 适用于正负数, (int, long long, double).
+	template<typename tp>
+	bool input_digit(tp &ret) {
+		char ch;
+		int sgn;
+		tp bit = 0.1;
+		if (ch = getchar(), ch == -1)
+			return 0;
+		for (; ch != -1 && ch != '-' && ch != '.' && !isdigit(ch); ch = getchar());
+		sgn = (ch == '-') ? -1 : 1;
+		ret = isdigit(ch) ? (ch ^ 48) : 0;
+		if (ch == '.')
+			goto read_float;
+		for (; ch = getchar(), ch ^ -1 && isdigit(ch);)
+			ret = ret * 10 + (ch ^ 48);
+		if (ch == -1 || !isgraph(ch))
+			return ret *= sgn, 1;
+read_float:
+		for (; ch = getchar(), ch ^ -1 && isdigit(ch);)
+			ret += (ch - '0') * bit, bit/=10;
+		return ret *= sgn, 1;
+	}
+	void output_char(char ch) {
+		putchar(ch);
+	}
+	void output_cstr(char *s) {
+		for (; *s; s++)
+			putchar(*s);
+	}
+	void output_string(string &s) {
+		for (auto ch : s)
+			putchar(char(ch));
+	}
+	// 适用于正负数, (int, long long).
+	template<typename tp>
+	void output_digit(tp &&x) {
+		static char buf[1 << 8];
+		static int cnt;
+		if (x < 0)
+			putchar('-'), x = -x;
+		cnt = 0;
+		do {
+			buf[++cnt] = x % 10 | 48;
+			x /= 10;
+		} while (x);
+		while (cnt)
+			putchar(buf[cnt--]);
+	}
+};
 class debuger {
 	string delim;
 	template<typename tp>
@@ -384,16 +475,15 @@ public:
 	template<typename ...var>
 	void operator ()(var &&...args) {
 		initializer_list<int>{(print(forward<var>(args)), 0)...};
+		cout << endl;
 	}
 	void msg(const char *fmt, ...) {
-		string ret;
 		static char buf[1 << 10];
 		va_list args;
 		va_start(args, fmt);
 		vsprintf(buf, fmt, args);
 		va_end(args);
-		new (&ret) string(buf);
-		cout << ret;
+		cout << buf << endl;
 	}
 };
 template<typename tp>

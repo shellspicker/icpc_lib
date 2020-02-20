@@ -3,20 +3,6 @@
 // 做法就是从后往前拼接字符串, hash二分lcp再比较下一位.
 // 细节就是hash是从后往前接的, 但是字符串是从前往后算下标的, 主要就是下标计算.
 // 正反同时扫描的下标都明确了就简单了, 二分很好写的.
-/**
- * 通用头文件.
- *
- * todolist:
- * 一些数学函数, 几何相关?
- * 二维, 三维数组的遍历方向数组. 二维的4向, 8向; 三维的6向, 26向(可能不需要)...
- * 快速读入, istream.rdbuf->sgetn(buf, sizeof(buf)), 配合readint...
- * 开栈.
- * debug辅助.
- * efg_cvt, 浮点数截断.
- * mt19937...
- * 模运算类.
- * http://codeforces.com/contest/1261/submission/65651526
- */
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse4")
 #include <cstdio>

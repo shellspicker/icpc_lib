@@ -5,6 +5,7 @@ AR = ar
 RANLIB = ranlib
 SHARE = -fpic -shared -o
 VPATH = ./\
+	src/\
 	src/basic\
 	src/data_structure\
 	src/math\

@@ -1,10 +1,12 @@
 #include "template.h"
 
 class data {
-	istream &ioend() {
-		cin.setstate(ios_base::badbit);
-		return cin;
-	}
+#define ioend(cond) \
+	do {\
+		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
+	} while(0)
+	direct_io fio;
+	debuger bug;
 public:
 	istream &in() {
 		return cin;
@@ -13,6 +15,7 @@ public:
 	}
 	void out() {
 	}
+#undef ioend
 };
 
 class task {
@@ -46,6 +49,11 @@ public:
 
 int main()
 {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	cout.setf(ios::fixed);
+	cout.precision(20);
 	task gkd(0, 0, 0);
 	return 0;
 }

@@ -118,7 +118,7 @@ end:
 		return nop.top();
 	}
 	tp va_exp(const char *fmt, ...) {
-		char buf[1024];
+		static char buf[1 << 10];
 		va_list args;
 		va_start(args, fmt);
 		vsprintf(buf, fmt, args);
