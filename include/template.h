@@ -381,6 +381,7 @@ class direct_io {
 	static const int bsz = 1 << 10;
 	char ibuf[bsz], obuf[bsz], *ihead = 0, *itail = 0, *ohead = obuf;
 	streambuf *isb = cin.rdbuf(), *osb = cout.rdbuf();
+	int output_float_digit = 15;
 	char getchar() {
 		if (ihead == itail)
 			itail = (ihead = ibuf) + isb->sgetn(ibuf, bsz);
@@ -393,31 +394,34 @@ class direct_io {
 	}
 public:
 	~direct_io() { osb->sputn(obuf, ohead - obuf); }
-	bool input_char(char &ch) {
+	void set_output_float_digit(int d) {
+		output_float_digit = d;
+	}
+	bool input(char &ch) {
 		if ((ch = getchar()) == -1)
 			return 0;
 		for (; ch ^ -1 && !isgraph(ch); ch = getchar());
 		return ch ^ -1;
 	}
-	bool input_cstr(char *s) {
+	bool input(char *s) {
 		char ch;
-		if (!input_char(ch))
+		if (!input(ch))
 			return 0;
 		for (*s++ = ch; ch = getchar(), ch ^ -1 && isgraph(ch); *s++ = ch);
 		*s++ = 0;
 		return 1;
 	}
-	bool input_string(string &s) {
+	bool input(string &s) {
 		s.clear();
 		char ch;
-		if (!input_char(ch))
+		if (!input(ch))
 			return 0;
 		for (s += ch; ch = getchar(), ch ^ -1 && isgraph(ch); s += ch);
 		return 1;
 	}
 	// 适用于正负数, (int, long long, double).
 	template<typename tp>
-	bool input_digit(tp &ret) {
+	bool input(tp &ret) {
 		char ch;
 		int sgn;
 		tp bit = 0.1;
@@ -437,31 +441,54 @@ read_float:
 			ret += (ch ^ 48) * bit, bit /= 10;
 		return ret *= sgn, ch ^ -1;
 	}
-	void output_char(char ch) {
+	template<typename ...var>
+	void input(var &&...args) {
+		initializer_list<int>{(input(forward<var>(args)), 0)...};
+	}
+	void output(char ch) {
 		putchar(ch);
 	}
-	void output_cstr(char *s) {
+	void output(char *s) {
 		for (; *s; s++)
 			putchar(*s);
 	}
-	void output_string(string &s) {
+	void output(string &s) {
 		for (auto ch : s)
 			putchar(char(ch));
 	}
-	// 适用于正负数, (int, long long).
-	template<typename tp>
-	void output_digit(tp &&x) {
+	void output(ll x) {
 		static char buf[1 << 8];
-		static int cnt;
+		int cnt = 0;
 		if (x < 0)
 			putchar('-'), x = -x;
-		cnt = 0;
 		do {
 			buf[++cnt] = x % 10 | 48;
 			x /= 10;
 		} while (x);
 		while (cnt)
 			putchar(buf[cnt--]);
+	}
+	void output(double x) {
+		static char buf[1 << 8];
+		int cnt = 0, xn = int(x);
+		do {
+			buf[cnt++] = xn % 10 | 48;
+			xn /= 10;
+		} while (xn);
+		reverse(buf, buf + cnt);
+		buf[cnt++] = '.';
+		x = x - int(x);
+		fup (t, 1, output_float_digit) {
+			x = x * 10;
+			buf[cnt++] = int(x) | 48;
+			x = x - int(x);
+		}
+		fup (i, 0, cnt - 1)
+			putchar(buf[i]);
+	}
+	template<typename ...var>
+	void output(var &&...args) {
+		initializer_list<int>{(output(forward<var>(args)), 0)...};
 	}
 };
 class debuger {

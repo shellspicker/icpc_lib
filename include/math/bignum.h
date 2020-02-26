@@ -44,7 +44,7 @@ struct bignum {
 		while (x) {
 			lldiv_t res = lldiv(x, base);
 			x = res.quot;
-			vd.push_back(res.rem);
+			vd.emplace_back(res.rem);
 		}
 	}
 	void operator ()(const string &s) {
@@ -59,9 +59,10 @@ struct bignum {
 			vd.assign(1, 0);
 			return;
 		}
+		vd.resize(len - st);
 		// 逆序扫描字符串, 从数的低位开始.
 		fwn (i, st, len - 1)
-			vd.push_back(table.find(s[i]));
+			vd.emplace_back(table.find(s[i]));
 		zero_justify();
 	}
 	bignum trans_base(int obase) {
@@ -153,7 +154,7 @@ struct bignum {
 			carry = add / base;
 		}
 		if (carry)
-			c.vd.push_back(carry);
+			c.vd.emplace_back(carry);
 		c.zero_justify();
 		return c;
 	}
@@ -208,7 +209,7 @@ struct bignum {
 				carry = mul / base;
 			}
 			if (carry)
-				tmp.vd.push_back(carry);
+				tmp.vd.emplace_back(carry);
 			c = c + tmp;
 			row = row << 1;
 		}

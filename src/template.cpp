@@ -8,6 +8,8 @@ class data {
 	direct_io fio;
 	debuger bug;
 public:
+	data() {
+	}
 	istream &in() {
 		return cin;
 	}
