@@ -375,7 +375,7 @@ void read_vec(vector<tp> &v, size_t n)
 		cin >> v[i];
 }
 /*
- * 加速io, 无浮点数输出(如果遇到了浮点数需要快速输出的情况, 自己看着办...)
+ * 加速io, 基本类型都支持.
  */
 class direct_io {
 	static const int bsz = 1 << 10;
