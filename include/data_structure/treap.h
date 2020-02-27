@@ -26,7 +26,7 @@ public:
 		key = k, fix = rand(), size = 1;
 		return this;
 	}
-	node *pushup() {
+	node *pull() {
 		size = ls->size + rs->size + 1;
 		return this;
 	}
@@ -53,8 +53,10 @@ template<typename tp, size_t dsn, size_t pon>
 class treap {
 public:
 	using node = __node<tp>;
-	node *root[dsn], *&null = node::null;// null must be reference.
+private:
 	allocator<node, pon> alloc;
+public:
+	node *root[dsn], *&null = node::null;// null must be reference.
 	void init() {
 		srand(time(0));// 这个加上有可能直接RE, 慎重.
 		alloc.clear();
@@ -63,12 +65,15 @@ public:
 		fup (i, 0, dsn - 1)
 			root[i] = null;
 	}
-	node *link(node *u, int d, node *v) {
-		return (u->ch[d] = v)->fa = u;
+	node *&operator ()(int idx) {
+		return root[idx];
 	}
 	node *rotate(node *&o, int d) {
+		auto link = [](node *u, int d, node *v) {
+			return (u->ch[d] = v)->fa = u;
+		};
 		node *k = o->ch[d], *ac = o->fa;
-		link(o, d, k->ch[d ^ 1])->pushup();
+		link(o, d, k->ch[d ^ 1])->pull();
 		link(k, d ^ 1, o);
 		(o = k)->fa = ac;
 		return o;
@@ -82,7 +87,7 @@ public:
 			insert(o->ch[d], o, x);
 			if (o->ch[d]->fix > o->fix)// heap.
 				rotate(o, d);
-			o->pushup();
+			o->pull();
 		}
 	}
 	// map, set
@@ -105,7 +110,7 @@ public:
 			ok = insert(o->ch[d], o, x, count);
 			if(o->ch[d]->fix > o->fix)// heap.
 				rotate(o, d);
-			o->pushup();
+			o->pull();
 		}
 		return ok;
 	}
@@ -124,10 +129,11 @@ public:
 				int d = (o->ls->fix > o->rs->fix ? 0 : 1);
 				ok = remove(rotate(o, d)->ch[d ^ 1], x);
 			}
-		} else
+		} else {
 			ok = remove(o->ch[o->key < x], x);
+		}
 		if (o != null)
-			o->pushup();
+			o->pull();
 		return ok;
 	}
 	/*
@@ -160,7 +166,7 @@ public:
 			int s = o->ch[d]->size;
 			if (k == s + 1)
 				return o;
-			if (k < s + 1)
+			if (k <= s)
 				o = o->ch[d];
 			else
 				k -= s + 1, o = o->ch[d ^ 1];

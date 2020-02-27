@@ -1,5 +1,5 @@
 /*
- * 魔方体, 仅测模板用.
+ * 魔方题, 仅测模板用.
  */
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse4")

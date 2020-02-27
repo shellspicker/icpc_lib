@@ -363,9 +363,9 @@ tp round_shift(tp x, tp dist, tp l, tp r)
 	return ((x - l + dist) % len + len) % len + l;
 }
 template<typename tp>
-void read(tp &x)
+bool read(tp &x)
 {
-	cin >> x;
+	return bool(cin >> x);
 }
 template<typename tp>
 void read_vec(vector<tp> &v, size_t n)

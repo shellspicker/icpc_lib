@@ -39,6 +39,7 @@ using std::ios_base;
 using std::istream;
 using std::ostream;
 using std::stringstream;
+using std::streambuf;
 using std::cin;
 using std::cout;
 using std::string;
@@ -191,7 +192,6 @@ using ordered_map = __gnu_pbds::tree<
 						key, val, less<key>, __gnu_pbds::rb_tree_tag,
 						__gnu_pbds::tree_order_statistics_node_update>;
 #endif
-#define debug(...) cout << __LINE__ << ": "; debug_line(__VA_ARGS__)
 #define endl '\n'
 #define fup_s(i, a, b, s) for (int i = a, foc = b; i <= foc; i += s)
 #define fwn_s(i, a, b, s) for (int i = b, foc = a; foc <= i; i -= s)
@@ -224,16 +224,6 @@ const int inf32 = 1 << 30;
 const ll inf64 = 1ll << 60;
 const double pi = acos(-1);
 const double eps = 1e-6;
-template<typename tp>
-void print(const tp &x) { cout << x << ' '; }
-template<typename tp>
-void print(const vector<tp> &v) { for (auto x : v) cout << x << ' '; }
-template<typename ...var>
-void debug_line(var &&...args)
-{
-	initializer_list<int>{(print(forward<var>(args)), 0)...};
-	cout << endl;
-}
 template<typename tp>
 int bitcount(tp x)
 {
@@ -373,9 +363,9 @@ tp round_shift(tp x, tp dist, tp l, tp r)
 	return ((x - l + dist) % len + len) % len + l;
 }
 template<typename tp>
-void read(tp &x)
+bool read(tp &x)
 {
-	cin >> x;
+	return bool(cin >> x);
 }
 template<typename tp>
 void read_vec(vector<tp> &v, size_t n)
@@ -384,6 +374,145 @@ void read_vec(vector<tp> &v, size_t n)
 	fup(i, 0, v.size() - 1)
 		cin >> v[i];
 }
+/*
+ * 加速io, 基本类型都支持.
+ */
+class direct_io {
+	static const int bsz = 1 << 10;
+	char ibuf[bsz], obuf[bsz], *ihead = 0, *itail = 0, *ohead = obuf;
+	streambuf *isb = cin.rdbuf(), *osb = cout.rdbuf();
+	int output_float_digit = 15;
+	char getchar() {
+		if (ihead == itail)
+			itail = (ihead = ibuf) + isb->sgetn(ibuf, bsz);
+		return (ihead == itail) ? -1 : *ihead++;
+	}
+	void putchar(char ch) {
+		if (ohead - obuf == bsz)
+			osb->sputn(ohead = obuf, bsz);
+		*ohead++ = ch;
+	}
+public:
+	~direct_io() { osb->sputn(obuf, ohead - obuf); }
+	void set_output_float_digit(int d) {
+		output_float_digit = d;
+	}
+	bool input(char &ch) {
+		if ((ch = getchar()) == -1)
+			return 0;
+		for (; ch ^ -1 && !isgraph(ch); ch = getchar());
+		return ch ^ -1;
+	}
+	bool input(char *s) {
+		char ch;
+		if (!input(ch))
+			return 0;
+		for (*s++ = ch; ch = getchar(), ch ^ -1 && isgraph(ch); *s++ = ch);
+		*s++ = 0;
+		return 1;
+	}
+	bool input(string &s) {
+		s.clear();
+		char ch;
+		if (!input(ch))
+			return 0;
+		for (s += ch; ch = getchar(), ch ^ -1 && isgraph(ch); s += ch);
+		return 1;
+	}
+	// 适用于正负数, (int, long long, double).
+	template<typename tp>
+	bool input(tp &ret) {
+		char ch;
+		int sgn;
+		tp bit = 0.1;
+		if (ch = getchar(), ch == -1)
+			return 0;
+		for (; ch != -1 && ch != '-' && ch != '.' && !isdigit(ch); ch = getchar());
+		sgn = (ch == '-') ? -1 : 1;
+		ret = isdigit(ch) ? (ch ^ 48) : 0;
+		if (ch == '.')
+			goto read_float;
+		for (; ch = getchar(), ch ^ -1 && isdigit(ch);)
+			ret = ret * 10 + (ch ^ 48);
+		if (ch == -1 || !isgraph(ch))
+			return ret *= sgn, ch ^ -1;
+read_float:
+		for (; ch = getchar(), ch ^ -1 && isdigit(ch);)
+			ret += (ch ^ 48) * bit, bit /= 10;
+		return ret *= sgn, ch ^ -1;
+	}
+	template<typename ...var>
+	void input(var &&...args) {
+		initializer_list<int>{(input(forward<var>(args)), 0)...};
+	}
+	void output(char ch) {
+		putchar(ch);
+	}
+	void output(char *s) {
+		for (; *s; s++)
+			putchar(*s);
+	}
+	void output(string &s) {
+		for (auto ch : s)
+			putchar(char(ch));
+	}
+	void output(ll x) {
+		static char buf[1 << 8];
+		int cnt = 0;
+		if (x < 0)
+			putchar('-'), x = -x;
+		do {
+			buf[++cnt] = x % 10 | 48;
+			x /= 10;
+		} while (x);
+		while (cnt)
+			putchar(buf[cnt--]);
+	}
+	void output(double x) {
+		static char buf[1 << 8];
+		int cnt = 0, xn = int(x);
+		do {
+			buf[cnt++] = xn % 10 | 48;
+			xn /= 10;
+		} while (xn);
+		reverse(buf, buf + cnt);
+		buf[cnt++] = '.';
+		x = x - int(x);
+		fup (t, 1, output_float_digit) {
+			x = x * 10;
+			buf[cnt++] = int(x) | 48;
+			x = x - int(x);
+		}
+		fup (i, 0, cnt - 1)
+			putchar(buf[i]);
+	}
+	template<typename ...var>
+	void output(var &&...args) {
+		initializer_list<int>{(output(forward<var>(args)), 0)...};
+	}
+};
+class debuger {
+	string delim;
+	template<typename tp>
+	void print(const tp &x) { cout << x << delim; }
+	template<typename tp>
+	void print(const vector<tp> &v) { for (auto x : v) cout << x << delim; }
+public:
+	debuger(string s = " ") : delim(s) {}
+	template<typename ...var>
+	void operator ()(var &&...args) {
+		initializer_list<int>{(print(forward<var>(args)), 0)...};
+		cout << endl;
+	}
+	void msg(const char *fmt, ...) {
+		static char buf[1 << 10];
+		va_list args;
+		va_start(args, fmt);
+		vsprintf(buf, fmt, args);
+		va_end(args);
+		cout << buf << endl;
+	}
+};
 template<typename tp>
 class zip {
 	using iter = typename vector<tp>::iterator;
@@ -469,7 +598,7 @@ public:
 		key = k, fix = rand(), size = 1;
 		return this;
 	}
-	node *pushup() {
+	node *pull() {
 		size = ls->size + rs->size + 1;
 		return this;
 	}
@@ -496,8 +625,10 @@ template<typename tp, size_t dsn, size_t pon>
 class treap {
 public:
 	using node = __node<tp>;
-	node *root[dsn], *&null = node::null;// null must be reference.
+private:
 	allocator<node, pon> alloc;
+public:
+	node *root[dsn], *&null = node::null;// null must be reference.
 	void init() {
 		srand(time(0));// 这个加上有可能直接RE, 慎重.
 		alloc.clear();
@@ -506,12 +637,15 @@ public:
 		fup (i, 0, dsn - 1)
 			root[i] = null;
 	}
-	node *link(node *u, int d, node *v) {
-		return (u->ch[d] = v)->fa = u;
+	node *&operator ()(int idx) {
+		return root[idx];
 	}
 	node *rotate(node *&o, int d) {
+		auto link = [](node *u, int d, node *v) {
+			return (u->ch[d] = v)->fa = u;
+		};
 		node *k = o->ch[d], *ac = o->fa;
-		link(o, d, k->ch[d ^ 1])->pushup();
+		link(o, d, k->ch[d ^ 1])->pull();
 		link(k, d ^ 1, o);
 		(o = k)->fa = ac;
 		return o;
@@ -525,7 +659,7 @@ public:
 			insert(o->ch[d], o, x);
 			if (o->ch[d]->fix > o->fix)// heap.
 				rotate(o, d);
-			o->pushup();
+			o->pull();
 		}
 	}
 	// map, set
@@ -548,7 +682,7 @@ public:
 			ok = insert(o->ch[d], o, x, count);
 			if(o->ch[d]->fix > o->fix)// heap.
 				rotate(o, d);
-			o->pushup();
+			o->pull();
 		}
 		return ok;
 	}
@@ -567,10 +701,11 @@ public:
 				int d = (o->ls->fix > o->rs->fix ? 0 : 1);
 				ok = remove(rotate(o, d)->ch[d ^ 1], x);
 			}
-		} else
+		} else {
 			ok = remove(o->ch[o->key < x], x);
+		}
 		if (o != null)
-			o->pushup();
+			o->pull();
 		return ok;
 	}
 	/*
@@ -603,7 +738,7 @@ public:
 			int s = o->ch[d]->size;
 			if (k == s + 1)
 				return o;
-			if (k < s + 1)
+			if (k <= s)
 				o = o->ch[d];
 			else
 				k -= s + 1, o = o->ch[d ^ 1];
@@ -620,6 +755,7 @@ public:
 		int ans = 1;// 从1开始标号.
 		node *last = null;
 		bool lastdir;
+		assert(o != null);
 		while (o != null) {
 			int s = o->ls->size;
 			last = o;
@@ -662,16 +798,18 @@ class data {
 	vector<query> qa;
 	vector<int> ans;
 	treap<int, 1, 100233> dsm;
-	istream &ioend() {
-		cin.setstate(ios_base::badbit);
-		return cin;
-	}
+#define ioend(cond) \
+	do {\
+		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
+	} while(0)
+	direct_io fio;
+	debuger bug;
 public:
+	data() {
+	}
 	istream &in() {
 		int qn;
-		read(qn);
-		if (!cin)
-			return ioend();
+		ioend(read(qn));
 		read_vec(qa, qn);
 		return cin;
 	}
@@ -681,30 +819,30 @@ public:
 		for (auto q : qa) {
 			switch (q.op) {
 				case 1: {
-					dsm.insert(dsm.root[0], 0, q.x);
+					dsm.insert(dsm(0), 0, q.x);
 					break;
 				}
 				case 2: {
-					dsm.remove(dsm.root[0], q.x);
+					dsm.remove(dsm(0), q.x);
 					break;
 				}
 				case 3: {
-					auto fd = dsm.search(dsm.root[0], q.x, 0, 1);
+					auto fd = dsm.search(dsm(0), q.x, 0, 1);
 					ans.emplace_back(fd.first);
 					break;
 				}
 				case 4: {
-					auto fd = dsm.kth(dsm.root[0], q.x, 0);
+					auto fd = dsm.kth(dsm(0), q.x, 0);
 					ans.emplace_back(fd->key);
 					break;
 				}
 				case 5: {
-					auto fd = dsm.search(dsm.root[0], q.x, 0, 0);
+					auto fd = dsm.search(dsm(0), q.x, 0, 0);
 					ans.emplace_back(fd.second->key);
 					break;
 				}
 				case 6: {
-					auto fd = dsm.search(dsm.root[0], q.x, 1, 0);
+					auto fd = dsm.search(dsm(0), q.x, 1, 0);
 					ans.emplace_back(fd.second->key);
 					break;
 				}
