@@ -471,7 +471,8 @@ read_float:
 	}
 	void output(double x) {
 		static char buf[1 << 8];
-		int cnt = 0, xn = ll(x);
+		int cnt = 0;
+		ll xn = ll(x);
 		if (xn < 0)
 			putchar('-'), xn = -xn;
 		do {
