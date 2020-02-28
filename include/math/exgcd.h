@@ -26,7 +26,7 @@ ll exgcd(ll a, ll b, ll &x, ll &y)
 }
 #undef FAST
 
-ll inv(ll a, ll b)
+ll mod_inv(ll a, ll b)
 {
 	ll x, y;
 	if (exgcd(a, b, x, y) == 1) {

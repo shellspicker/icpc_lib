@@ -15,7 +15,7 @@
 struct bignum {
 	typedef bignum cnm;
 	static string table;
-	int base = 10;
+	static int base;
 	vector<int> vd;
 	bool sign = 0;// 符号位, 默认为正.
 	bignum() { clear(); }
@@ -30,7 +30,7 @@ struct bignum {
 		while (vd.size() > 1 && vd.back() == 0)
 			vd.pop_back();// 缩减位.
 	}
-	void set_base(int bs) {
+	static void set_base(int bs) {
 		base = bs;
 		assert(2 <= base);
 	}
@@ -59,28 +59,33 @@ struct bignum {
 			vd.assign(1, 0);
 			return;
 		}
-		vd.resize(len - st);
+		vd.reserve(len - st);
 		// 逆序扫描字符串, 从数的低位开始.
 		fwn (i, st, len - 1)
 			vd.emplace_back(table.find(s[i]));
 		zero_justify();
 	}
 	bignum trans_base(int obase) {
-		vector<bignum> xp(base + 1); //[0, ibase] -> obase.
+		int ibase = base;
+		set_base(obase);
+		vector<bignum> xp(ibase + 1); //[0, ibase] -> obase.
 		bignum ret;
-		ret.set_base(obase);
-		for (auto &x : xp)
-			x.set_base(obase);
 		xp[0](0);
 		xp[1](1);
 		ret = xp[0];
 		if (vd.size() == 1 && vd[0] == 0)
 			return ret;
-		fup (i, 2, base)
+		fup (i, 2, ibase)
 			xp[i] = xp[i - 1] + xp[1];
 		fwn (i, 0, vd.size() - 1)
-			ret = ret * xp[base] + xp[vd[i]];
+			ret = ret * xp[ibase] + xp[vd[i]];
+		set_base(ibase);
 		return ret;
+	}
+	cnm operator =(const cnm &b) {
+		sign = b.sign;
+		vd = b.vd;
+		return *this;
 	}
 	bool operator <(const cnm &b) const {
 		if (sign ^ b.sign)
@@ -126,7 +131,6 @@ struct bignum {
 	}
 	cnm operator +(const cnm &b) const {
 		cnm c;
-		c.set_base(base);
 		if (sign ^ b.sign) {
 			if (sign) {
 				c = *this;
@@ -167,7 +171,6 @@ struct bignum {
 		 * a < 0, b < 0的情况相当于异号加法, 然后再化为异号减法, 转化为上面2种.
 		 */
 		cnm c;
-		c.set_base(base);
 		if (sign ^ b.sign) {
 			c = *this;
 			c = c + b;
@@ -197,8 +200,6 @@ struct bignum {
 	}
 	cnm operator *(const cnm &b) const {
 		cnm c, row = *this, tmp;
-		c.set_base(base);
-		tmp.set_base(base);
 		c(0);
 		fup (i, 0, b.vd.size() - 1) {
 			int carry = 0, mul;
@@ -219,8 +220,6 @@ struct bignum {
 	}
 	cnm operator /(const cnm &b) const {
 		cnm c, row, tb = b;
-		c.set_base(base);
-		row.set_base(base);
 		row(0);
 		c.sign = sign ^ b.sign;
 		tb.sign = 0;
@@ -238,7 +237,6 @@ struct bignum {
 	}
 	cnm operator ^(int n) const {
 		cnm c, xp = *this;
-		c.set_base(base);
 		c(1);
 		while (n) {
 			if (n & 1)
@@ -250,7 +248,6 @@ struct bignum {
 	}
 	cnm operator %(const cnm &b) const {
 		cnm c;
-		c.set_base(base);
 		if (*this < b)
 			return *this;
 		if (*this == b)
@@ -267,5 +264,6 @@ struct bignum {
 	}
 };
 string bignum::table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+int bignum::base = 10;
 
 #endif
