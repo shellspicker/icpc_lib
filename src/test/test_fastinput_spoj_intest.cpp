@@ -471,20 +471,18 @@ read_float:
 	}
 	void output(double x) {
 		static char buf[1 << 8];
-		int cnt = 0, xn = ll(x);
-		if (xn < 0)
-			putchar('-'), xn = -xn;
+		int cnt = 0, xn = int(x);
 		do {
 			buf[cnt++] = xn % 10 | 48;
 			xn /= 10;
 		} while (xn);
 		reverse(buf, buf + cnt);
 		buf[cnt++] = '.';
-		x = x - ll(x);
+		x = x - int(x);
 		fup (t, 1, output_float_digit) {
 			x = x * 10;
-			buf[cnt++] = ll(x) | 48;
-			x = x - ll(x);
+			buf[cnt++] = int(x) | 48;
+			x = x - int(x);
 		}
 		fup (i, 0, cnt - 1)
 			putchar(buf[i]);
@@ -572,3 +570,68 @@ public:
 };
 
 #endif
+
+class data {
+#define ioend(cond) \
+	do {\
+		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
+	} while(0)
+	direct_io fio;
+	debuger bug;
+	int n, k, ans;
+public:
+	data() {
+	}
+	istream &in() {
+		ioend(fio.input(n) && fio.input(k));
+		ans = 0;
+		fup (t, 1, n) {
+			int x;
+			fio.input(x);
+			if (x % k == 0)
+				ans++;
+		}
+		return cin;
+	}
+	void deal() {
+	}
+	void out() {
+		fio.output(ans, '\n');
+	}
+#undef ioend
+};
+
+class task {
+	int testcase = 1 << 30;
+	stringstream tid;
+	data gkd{};
+public:
+	task(
+		bool multicase = 0,
+		bool testid = 0,
+		bool blankline = 0) {
+		if (multicase)
+			read(testcase);
+		for (int ti = 1; ti <= testcase && gkd.in(); ++ti) {
+			gkd.deal();
+			if (blankline && 1 < ti)
+				cout << endl;
+			tid << "Case #" << ti << ": ";
+			if (testid)
+				cout << tid.str();
+			gkd.out();
+			tid.str("");
+		}
+	}
+};
+
+int main()
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	cout.setf(ios::fixed);
+	cout.precision(20);
+	task gkd(0, 0, 0);
+	return 0;
+}
