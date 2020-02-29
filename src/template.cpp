@@ -1,14 +1,16 @@
 #include "template.h"
 
-class data {
+class task {
 #define ioend(cond) \
 	do {\
 		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
+	int testcase = 1 << 30;
+	stringstream tid;
 	direct_io fio;
 	debuger bug;
-public:
-	data() {
+	void preprocess() {
+		fio.set_output_float_digit(12);
 	}
 	istream &in() {
 		return cin;
@@ -17,31 +19,26 @@ public:
 	}
 	void out() {
 	}
-#undef ioend
-};
-
-class task {
-	int testcase = 1 << 30;
-	stringstream tid;
-	data gkd{};
 public:
 	task(
 		bool multicase = 0,
 		bool testid = 0,
 		bool blankline = 0) {
+		preprocess();
 		if (multicase)
-			read(testcase);
-		for (int ti = 1; ti <= testcase && gkd.in(); ++ti) {
-			gkd.deal();
+			fio.in(testcase);
+		for (int ti = 1; ti <= testcase && in(); ++ti) {
+			deal();
 			if (blankline && 1 < ti)
-				cout << endl;
+				fio.out('\n');
 			tid << "Case #" << ti << ": ";
 			if (testid)
-				cout << tid.str();
-			gkd.out();
+				fio.out(tid.str());
+			out();
 			tid.str("");
 		}
 	}
+#undef ioend
 };
 
 int main()
@@ -50,7 +47,7 @@ int main()
 	cin.tie(0);
 	cout.tie(0);
 	cout.setf(ios::fixed);
-	cout.precision(20);
+	cout.precision(12);
 	task gkd(0, 0, 0);
 	return 0;
 }

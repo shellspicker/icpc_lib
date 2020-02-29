@@ -8,7 +8,7 @@ int fdu(double x)
 // like ecvt, fcvt, gcvt...
 double fcut(double x, int xp)
 {
-	return 1.L * (ll)(x * pow(10, xp)) / pow(10, xp);
+	return 1. * (ll)(x * pow(10, xp) + .5) / pow(10, xp);
 }
 
 #endif

@@ -378,10 +378,14 @@ void read_vec(vector<tp> &v, size_t n)
  * 加速io, 基本类型都支持.
  */
 class direct_io {
-	static const int bsz = 1 << 10;
+	static const int bsz = 1 << 20;
 	char ibuf[bsz], obuf[bsz], *ihead = 0, *itail = 0, *ohead = obuf;
 	streambuf *isb = cin.rdbuf(), *osb = cout.rdbuf();
-	int output_float_digit = 15;
+	int output_float_digit = 12;
+	bool status;
+	void set_status(bool ok) {
+		status = ok;
+	}
 	char getchar() {
 		if (ihead == itail)
 			itail = (ihead = ibuf) + isb->sgetn(ibuf, bsz);
@@ -392,106 +396,97 @@ class direct_io {
 			osb->sputn(ohead = obuf, bsz);
 		*ohead++ = ch;
 	}
-public:
-	~direct_io() { osb->sputn(obuf, ohead - obuf); }
-	void set_output_float_digit(int d) {
-		output_float_digit = d;
+	void input(char &ch) {
+		for (; ch = getchar(), ch ^ -1 && !isgraph(ch););
+		set_status(ch ^ -1);
 	}
-	bool input(char &ch) {
-		if ((ch = getchar()) == -1)
-			return 0;
-		for (; ch ^ -1 && !isgraph(ch); ch = getchar());
-		return ch ^ -1;
-	}
-	bool input(char *s) {
+	void input(char *s) {
 		char ch;
-		if (!input(ch))
-			return 0;
-		for (*s++ = ch; ch = getchar(), ch ^ -1 && isgraph(ch); *s++ = ch);
+		input(ch);
+		if (!status)
+			return;
+		do {
+			*s++ = ch;
+		} while (ch = getchar(), isgraph(ch));
 		*s++ = 0;
-		return 1;
 	}
-	bool input(string &s) {
+	void input(string &s) {
 		s.clear();
 		char ch;
-		if (!input(ch))
-			return 0;
-		for (s += ch; ch = getchar(), ch ^ -1 && isgraph(ch); s += ch);
-		return 1;
+		input(ch);
+		if (!status)
+			return;
+		do {
+			s += ch;
+		} while (ch = getchar(), isgraph(ch));
 	}
-	// 适用于正负数, (int, long long, double).
 	template<typename tp>
-	bool input(tp &ret) {
+	void input(tp &ret) {
 		char ch;
 		int sgn;
 		tp bit = 0.1;
-		if (ch = getchar(), ch == -1)
-			return 0;
-		for (; ch != -1 && ch != '-' && ch != '.' && !isdigit(ch); ch = getchar());
+		input(ch);
+		if (!status)
+			return;
 		sgn = (ch == '-') ? -1 : 1;
 		ret = isdigit(ch) ? (ch ^ 48) : 0;
 		if (ch == '.')
 			goto read_float;
-		for (; ch = getchar(), ch ^ -1 && isdigit(ch);)
+		for (; ch = getchar(), isdigit(ch);)
 			ret = ret * 10 + (ch ^ 48);
-		if (ch == -1 || !isgraph(ch))
-			return ret *= sgn, ch ^ -1;
+		if (ch ^ '.')
+			goto end;
 read_float:
-		for (; ch = getchar(), ch ^ -1 && isdigit(ch);)
+		for (; ch = getchar(), isdigit(ch);)
 			ret += (ch ^ 48) * bit, bit /= 10;
-		return ret *= sgn, ch ^ -1;
-	}
-	template<typename ...var>
-	void input(var &&...args) {
-		initializer_list<int>{(input(forward<var>(args)), 0)...};
+end:
+		ret *= sgn;
 	}
 	void output(char ch) {
 		putchar(ch);
 	}
-	void output(char *s) {
+	void output(const char *s) {
 		for (; *s; s++)
 			putchar(*s);
 	}
-	void output(string &s) {
+	void output(const string &s) {
 		for (auto ch : s)
-			putchar(char(ch));
+			putchar(ch);
 	}
 	template<typename tp>
 	void output(tp x) {
-		static char buf[1 << 8];
-		int cnt = 0;
-		if (x < 0)
-			putchar('-'), x = -x;
-		do {
-			buf[++cnt] = x % 10 | 48;
-			x /= 10;
-		} while (x);
-		while (cnt)
-			putchar(buf[cnt--]);
-	}
-	void output(double x) {
 		static char buf[1 << 8];
 		int cnt = 0;
 		ll xn = ll(x);
 		if (xn < 0)
 			putchar('-'), xn = -xn;
 		do {
-			buf[cnt++] = xn % 10 | 48;
+			buf[++cnt] = xn % 10 | 48;
 			xn /= 10;
 		} while (xn);
-		reverse(buf, buf + cnt);
-		buf[cnt++] = '.';
-		x = x - ll(x);
-		fup (t, 1, output_float_digit) {
-			x = x * 10;
-			buf[cnt++] = ll(x) | 48;
-			x = x - ll(x);
+		while (cnt)
+			putchar(buf[cnt--]);
+		if (std::is_same<typename std::decay<tp>::type, double>::value) {
+			putchar('.');
+			x -= ll(x);
+			fup (t, 1, output_float_digit) {
+				putchar(char(x *= 10) | 48);
+				x -= char(x);
+			}
 		}
-		fup (i, 0, cnt - 1)
-			putchar(buf[i]);
+	}
+public:
+	~direct_io() { osb->sputn(obuf, ohead - obuf); }
+	void set_output_float_digit(int d) {
+		output_float_digit = d;
 	}
 	template<typename ...var>
-	void output(var &&...args) {
+	bool in(var &&...args) {
+		initializer_list<int>{(input(forward<var>(args)), 0)...};
+		return status;
+	}
+	template<typename ...var>
+	void out(var &&...args) {
 		initializer_list<int>{(output(forward<var>(args)), 0)...};
 	}
 };
