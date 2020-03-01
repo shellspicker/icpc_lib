@@ -270,16 +270,11 @@ template<typename tp>
 tp rounddown_pow_of_2(tp x) { return x ? clo(x) : 0; }
 template<typename tp>
 bool is_power_of_2(tp x) { return x && !(x & (x - 1)); }
-template<typename tp>
-tp ltor(tp l, tp len) { return l + len - 1; }
-template<typename tp>
-tp rtol(tp r, tp len) { return r - len + 1; }
-template<typename tp>
-tp length(tp l, tp r) { return (r < l) ? 0 : r - l + 1; }
-template<typename tp>
-bool inrange(tp x, tp l, tp r) { return r < l ? 0 : l <= x && x <= r; }
-template<typename tp>
-tp midpoint(tp l, tp r) { return l + ((r - l) >> 1); }
+ll ltor(ll l, ll len) { return l + len - 1; }
+ll rtol(ll r, ll len) { return r - len + 1; }
+ll length(ll l, ll r) { return (r < l) ? 0 : r - l + 1; }
+bool inrange(ll x, ll l, ll r) { return r < l ? 0 : l <= x && x <= r; }
+ll midpoint(ll l, ll r) { return l + ((r - l) >> 1); }
 template<typename tp>
 void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
 /*
@@ -352,30 +347,17 @@ void premul_preprocess(
 	for (int i = st, d = l; d <= r; ++i, ++d)
 		mul[i] = special(mul, i - 1, 1) * data[d];
 }
-template<typename tp>
-tp div_roundup(tp x, tp div) { return (x + div - 1) / div; }
-template<typename tp>
-tp div_rounddown(tp x, tp div) { return x / div; }
-template<typename tp>
-tp round_shift(tp x, tp dist, tp l, tp r)
+ull div_roundup(ull x, ull div) { return (x + div - 1) / div; }
+ull div_rounddown(ull x, ull div) { return x / div; }
+ll round_shift(ll x, ll dist, ll l, ll r)
 {
 	int len = length(l, r);
-	return ((x - l + dist) % len + len) % len + l;
-}
-template<typename tp>
-bool read(tp &x)
-{
-	return bool(cin >> x);
-}
-template<typename tp>
-void read_vec(vector<tp> &v, size_t n)
-{
-	v.resize(n);
-	fup(i, 0, v.size() - 1)
-		cin >> v[i];
+	return (x - l + dist + len) % len + l;
 }
 /*
  * 加速io, 基本类型都支持.
+ * 因为有rdbuf的操作, 所以不要把ios::sync_with_stdio(0)这一句放到类实例化之后,
+ * 否则会使得rdbuf无法重定向到这里设置的缓冲区.
  */
 class direct_io {
 	static const int bsz = 1 << 20;
