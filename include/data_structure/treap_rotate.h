@@ -1,11 +1,10 @@
-#ifndef TREAP_H
-#define TREAP_H 1
+#ifndef TREAP_ROTATE_H
+#define TREAP_ROTATE_H 1
 
 /*
  * treap, rotate版本.
  * 优先级用系统的rand.
  * 这里是大顶堆, rotate之前都会判断堆的性质, 需要改的话找调用rotate的地方.
- * null的优先级无所谓, 因为null并不会被转上来.
  * 可模拟set, map, multiset.
  * 几个二分相关的查找函数, 合并了, 方向自己调参数, 0左1右.
  * 模拟map的时候注意, map[key] = val, 这个key要是找不到的话,
