@@ -116,18 +116,12 @@ public:
 				o = o->ch[d ^ 1];
 			return o;
 		}
-		node *last = o;
-		o = o->fa;
-		while (o != null && o->ch[d ^ 1] != last) {
-			last = o;
-			o = o->fa;
-		}
+		node *last;
+		do {
+			o = (last = o)->fa;
+		} while (o != null && o->ch[d ^ 1] != last);
 		return o;
 	}
-	/*
-	 * dir：0:左，1:右.
-	 * k的有效范围应该是[1, o->size].
-	 */
 	node *kth(node *o, int k, bool d) {
 		if (!inrange(k, 1, o->size))
 			return null;
@@ -135,47 +129,35 @@ public:
 			int s = o->ch[d]->size;
 			if (k == s + 1)
 				return o;
-			if (k <= s)
-				o = o->ch[d];
-			else
-				k -= s + 1, o = o->ch[d ^ 1];
+			bool ok = !(k <= s);
+			o = o->ch[ok];
+			if (ok)
+				k -= s + 1;
 		}
 		return null;
 	}
 	/*
-	 * 二分系列其实平衡树只能找到[)端点, 因为最后端点都会往右边超界.
+	 * 二分系列其实平衡树只能找到[)端点, 因为只能向下走,
+	 * 最后端点都会往右边超界.
 	 * 如果返回排名的话, 对应ans得到的是[), ans-1得到的是(].
 	 * 类似的还有直接返回对应结点, so, 能返回的信息有<rank, node*>.
-	 * 把2个二分函数整合在一起, 后面2个bool参数对应括号的方向和形状.
+	 * 参数和原理类比数组版本的二分.
 	 */
 	pair<int, node *> search(node *o, tp x, bool d, bool contain) {
+#define dwn(cond) \
+		if ((cond)) ans += o->ls->size + 1, o = o->ch[lastdir = 1];\
+		else o = o->ch[lastdir = 0]
 		int ans = 1;// 从1开始标号.
 		node *last = null;
 		bool lastdir;
 		while (o != null) {
-			int s = o->ls->size;
 			last = o;
-			if (d == 0) {
-				if (o->key < x)
-					ans += s + 1, o = o->ch[d ^ 1], lastdir = d ^ 1;
-				else
-					o = o->ch[d], lastdir = d;
-			}
-			if (d == 1) {
-				if (x < o->key)
-					o = o->ch[d ^ 1], lastdir = d ^ 1;
-				else
-					ans += s + 1, o = o->ch[d], lastdir = d;
-			}
+			dwn((d == 0 && o->key < x) || (d == 1 && !(x < o->key)));
 		}
-		ans = !d ? !contain ? ans - 1 : ans : contain ? ans - 1 : ans;
-		node *endpos = !lastdir ? order(last, 0) : order(last, 1);
-		// 如果最后的方向和期望方向一样, 那么答案是last点, 否则是endpos点.
-		if (d != contain)// 找第一个.
-			o = !lastdir ? last : endpos;
-		else// 找最后一个.
-			o = lastdir ? last : endpos;
-		return make_pair(ans, o);
+		ans = d ^ contain ? ans : ans - 1;
+		o = d ^ contain ^ lastdir ? last : order(last, lastdir);
+		return {ans, o};
+#undef dwn
 	}
 };
 

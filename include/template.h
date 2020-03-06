@@ -283,32 +283,45 @@ void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
  * whatever, key can be not found, thus return index will flow,
  * be careful to check return point, if must.
  * one way to check the return point is
- * check point in range and compare with key.
- * dir: 0, contain: 0. -> (. left flow.
- * dir: 0, contain: 1. -> [. right flow.
- * dir: 1, contain: 0. -> ). right flow.
- * dir: 1, contain: 1. -> ]. left flow.
+ * check point in range and compare with key or condition again.
+ * a rule is, must return error condition point, it will fix point
+ * to last correct range, or it is alrealdy in correct range.
+ * +-----------------------------+
+ * |                             |
+ * | dir           0   0   1   1 |
+ * |                             |
+ * | contain       0   1   1   0 |
+ * |                             |
+ * | compare       <   >=  <=  > |
+ * |                             |
+ * | shape         (   [   ]   ) |
+ * |                             |
+ * | aim_dir       1   0   1   0 |
+ * |                             |
+ * | error_dir     0   1   0   1 |
+ * |                             |
+ * | dir                         |
+ * | xor contain   1   1   1   1 |
+ * | xor aim_dir                 |
+ * |                             |
+ * | dir                         |
+ * | xor contain   0   0   0   0 |
+ * | xor error_dir               |
+ * |                             |
+ * +-----------------------------+
  */
 template<typename tp>
 int binary_search(
 		const vector<tp> &v, int lo, int hi, tp key, bool dir, bool contain)
 {
+#define look(cond) if ((cond)) lo = mid + 1; else hi = mid - 1;
 	range_normalize(lo, hi);
 	while (lo <= hi) {
 		int mid = midpoint(lo, hi), now = v[mid];
-		if (!dir) {
-			if (now < key)
-				lo = mid + 1;
-			else
-				hi = mid - 1;
-		} else {
-			if (key < now)
-				hi = mid - 1;
-			else
-				lo = mid + 1;
-		}
+		look((!dir && now < key) || (dir && !(key < now)));
 	}
 	return dir ^ contain ? lo : hi;
+#undef look
 }
 template<typename tp>
 tp special(const vector<tp> &v, int i, tp val)
