@@ -561,5 +561,20 @@ public:
 		return data[i];
 	}
 };
+template<typename tp, size_t pon = 0>
+class allocator {
+	vector<tp *> buf;
+public:
+	allocator() { buf.reserve(pon); }
+	tp *operator ()(){
+		buf.push_back(new tp());
+		return buf.back();
+	}
+	void clear() {
+		fup (i, 0, buf.size() - 1) if (buf[i])
+			delete buf[i];
+		buf.clear();
+	}
+};
 
 #endif
