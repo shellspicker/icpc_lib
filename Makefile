@@ -4,14 +4,6 @@ CXX = g++
 AR = ar
 RANLIB = ranlib
 SHARE = -fpic -shared -o
-VPATH = ./\
-	src/\
-	src/basic\
-	src/data_structure\
-	src/math\
-	src/string\
-	src/misc\
-	src/test
 INCLUDE = -I./\
 	-I./include/\
 	-I/usr/include/\
@@ -63,7 +55,7 @@ init_all:
 # 添加需要的目标文件.
 # 自定义文件, 支持多个目标, 写好每个目标的信息, 具体看函数的参数.
 #	$(eval $(call dim_file_relevant,,,,))
-	$(eval $(call dim_file_relevant,1,exe,ttt,template.cpp))
+	$(eval $(call dim_file_relevant,1,exe,ttt,src/template.cpp))
 	@$(foreach id,$(aimid_all),\
 		$(eval $(call preprocess,$(id)))\
 		$(eval REQ_$(id) = $(OBJS_$(id)))\

@@ -1,3 +1,5 @@
+#define FAST_IO 0
+
 #include "template.h"
 
 class task {
@@ -39,15 +41,9 @@ public:
 		}
 	}
 #undef ioend
-};
+} gkd(0, 0, 0);
 
 int main()
 {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	cout.setf(ios::fixed);
-	cout.precision(12);
-	task gkd(0, 0, 0);
 	return 0;
 }

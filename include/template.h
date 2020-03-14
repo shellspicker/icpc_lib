@@ -42,6 +42,7 @@ using std::stringstream;
 using std::streambuf;
 using std::cin;
 using std::cout;
+using std::cerr;
 using std::string;
 using std::move;
 using std::forward;
@@ -375,7 +376,7 @@ ll round_shift(ll x, ll dist, ll l, ll r)
 class direct_io {
 	static const int bsz = 1 << 20;
 	char ibuf[bsz], obuf[bsz], *ihead = 0, *itail = 0, *ohead = obuf;
-	streambuf *isb = cin.rdbuf(), *osb = cout.rdbuf();
+	streambuf *isb, *osb;
 	int output_float_digit = 12;
 	bool status;
 	void set_status(bool ok) {
@@ -471,32 +472,50 @@ end:
 		}
 	}
 public:
+	direct_io() {
+		ios::sync_with_stdio(0);
+		cin.tie(0);
+		cout.tie(0);
+		cout.setf(ios::fixed);
+		cout.precision(12);
+		isb = cin.rdbuf();
+		osb = cout.rdbuf();
+	}
 	~direct_io() { osb->sputn(obuf, ohead - obuf); }
 	void set_output_float_digit(int d) {
 		output_float_digit = d;
 	}
 	template<typename ...var>
 	bool in(var &&...args) {
+#if FAST_IO
 		initializer_list<int>{(input(forward<var>(args)), 0)...};
 		return status;
+#else
+		initializer_list<int>{(cin >> forward<var>(args), 0)...};
+		return cin.good();
+#endif
 	}
 	template<typename ...var>
 	void out(var &&...args) {
+#if FAST_IO
 		initializer_list<int>{(output(forward<var>(args)), 0)...};
+#else
+		initializer_list<int>{(cout << forward<var>(args), 0)...};
+#endif
 	}
 };
 class debuger {
 	string delim;
 	template<typename tp>
-	void print(const tp &x) { cout << x << delim; }
+	void print(const tp &x) { cerr << x << delim; }
 	template<typename tp>
-	void print(const vector<tp> &v) { for (auto x : v) cout << x << delim; }
+	void print(const vector<tp> &v) { for (auto x : v) cerr << x << delim; }
 public:
 	debuger(string s = " ") : delim(s) {}
 	template<typename ...var>
 	void operator ()(var &&...args) {
 		initializer_list<int>{(print(forward<var>(args)), 0)...};
-		cout << endl;
+		cerr << endl;
 	}
 	void msg(const char *fmt, ...) {
 		static char buf[1 << 10];
@@ -504,7 +523,7 @@ public:
 		va_start(args, fmt);
 		vsprintf(buf, fmt, args);
 		va_end(args);
-		cout << buf << endl;
+		cerr << buf << endl;
 	}
 };
 template<typename tp>

@@ -11,25 +11,28 @@ class task {
 	stringstream tid;
 	direct_io fio;
 	debuger bug;
-	int n, k, ans;
+	int x, y;
+	string z;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
 	istream &in() {
-		ioend(fio.in(n, k));
-		ans = 0;
-		fup (t, 1, n) {
-			int x;
-			fio.in(x);
-			if (x % k == 0)
-				ans++;
-		}
+		ioend(fio.in(x, y));
+		fio.in(z);
 		return cin;
 	}
 	void deal() {
 	}
 	void out() {
-		fio.out(ans, '\n');
+		fio.out("fio: ", x, '\n');
+		cout << "cout: " << x << '\n';
+		printf("printf: %d\n", x);
+		fio.out("fio: ", y, '\n');
+		cout << "cout: " << y << '\n';
+		printf("printf: %d\n", y);
+		fio.out("fio: ", z, '\n');
+		cout << "cout: " << z << '\n';
+		printf("printf: %s\n", z.data());
 	}
 public:
 	task(
