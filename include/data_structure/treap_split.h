@@ -10,49 +10,27 @@
  * 模拟map的时候注意, map[key] = val, 这个key要是找不到的话,
  * map里面默认的应该值是0, 这里也要如此判断一下找不到的情况.
  */
-template<typename tp>
-class __node {
-public:
-	using node = __node<tp>;
-	static node *null;
-	node *fa, *ch[2], *&ls = ch[0], *&rs = ch[1];
-	tp key;
-	int fix, size;
-	// 附加信息
-	//int val;// map用, 对应看map版本的insert里面.
-	node *assign(node *f, tp k) {
-		fa = f, ls = rs = null;
-		key = k, fix = rand(), size = 1;
-		return this;
-	}
-	node *pull() {
-		size = ls->size + rs->size + 1;
-		return this;
-	}
-};
-template<typename tp>
-__node<tp> *__node<tp>::null;
-
-template<typename tp, size_t pon = 0>
-struct allocator {
-	vector<tp *> buf;
-	allocator() { buf.reserve(pon); }
-	tp *operator ()(){
-		buf.push_back(new tp());
-		return buf.back();
-	}
-	void clear() {
-		fup (i, 0, buf.size() - 1) if (buf[i])
-			delete buf[i];
-		buf.clear();
-	}
-};
-
 template<typename tp, size_t dsn, size_t pon>
 class treap {
-public:
-	using node = __node<tp>;
 private:
+	class node {
+	public:
+		static node *null;
+		node *fa, *ch[2], *&ls = ch[0], *&rs = ch[1];
+		tp key;
+		int fix, size;
+		// 附加信息
+		//int val;// map用, 对应看map版本的insert里面.
+		node *assign(node *f, tp k) {
+			fa = f, ls = rs = null;
+			key = k, fix = rand(), size = 1;
+			return this;
+		}
+		node *pull() {
+			size = ls->size + rs->size + 1;
+			return this;
+		}
+	};
 	allocator<node, pon> alloc;
 public:
 	node *root[dsn], *&null = node::null;// null must be reference.
@@ -101,8 +79,7 @@ public:
 		node *lo, *mo, *ro;
 		tie(lo, mo) = split(o, x - 1);
 		tie(mo, ro) = split(mo, x);
-		mo = merge(mo->ls, mo->rs);
-		o = merge(merge(lo, mo), ro);
+		o = merge(merge(lo, merge(mo->ls, mo->rs)), ro);
 		return o;
 	}
 	/*
@@ -160,5 +137,7 @@ public:
 #undef dwn
 	}
 };
+template<typename tp, size_t dsn, size_t pon>
+typename treap<tp, dsn, pon>::node *treap<tp, dsn, pon>::node::null;
 
 #endif
