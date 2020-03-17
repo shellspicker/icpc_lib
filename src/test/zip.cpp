@@ -1,5 +1,7 @@
 #include "template.h"
 
+debuger bug;
+
 void test_43()
 {
 	zip<int> arr({4,3});
@@ -9,9 +11,9 @@ void test_43()
 			arr(i, j) = ++t;
 		}
 	}
-	debug(arr.data);
+	bug(arr.data);
 	fup (i, 0, 12 - 1) {
-		debug(arr.get_dim(i));
+		bug(arr.get_dim(i));
 	}
 }
 
@@ -30,7 +32,7 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug((t2 - t1) / 1000);
+	bug((t2 - t1) / 1000);
 
 	t1 = clock();
 	fup (j, 0, dim - 1) {
@@ -39,7 +41,7 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug((t2 - t1) / 1000);
+	bug((t2 - t1) / 1000);
 
 	t1 = clock();
 	fup (i, 0, dim - 1) {
@@ -48,7 +50,7 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug((t2 - t1) / 1000);
+	bug((t2 - t1) / 1000);
 
 	t1 = clock();
 	fup (j, 0, dim - 1) {
@@ -57,7 +59,7 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug((t2 - t1) / 1000);
+	bug((t2 - t1) / 1000);
 
 	memset(arr_normal, 0, sizeof(arr_normal));
 	t1 = clock();
@@ -67,7 +69,7 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug((t2 - t1) / 1000);
+	bug((t2 - t1) / 1000);
 
 	t1 = clock();
 	fup (j, 0, dim - 1) {
@@ -76,7 +78,7 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	debug((t2 - t1) / 1000);
+	bug((t2 - t1) / 1000);
 }
 
 int main()

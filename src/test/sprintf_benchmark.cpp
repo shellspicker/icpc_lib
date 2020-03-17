@@ -1,7 +1,6 @@
 #include "template.h"
 #include "basic/rand.h"
 
-
 class test {
 	static const int tn = 100000;
 	double data[tn];

@@ -38,16 +38,20 @@ void bkdr_hash_preprocess(const string &seq, vector<ull> &hash, ull seed, int i 
 {
 	if (hash.size() < i + seq.size())
 		hash.resize(i + seq.size());
-	for (auto h : seq)
-		hash[i] = presum_point(hash, i - 1) * seed + h;
+	for (auto h : seq) {
+		hash[i] = special(hash, i - 1, 0llu) * seed + h;
+		i++;
+	}
 }
 template<typename tp>
 void bkdr_hash_preprocess(const vector<tp> &seq, vector<ull> &hash, ull seed, int i = 0)
 {
 	if (hash.size() < i + seq.size())
 		hash.resize(i + seq.size());
-	for (auto h : seq)
-		hash[i] = presum_point(hash, i - 1) * seed + h;
+	for (auto h : seq) {
+		hash[i] = special(hash, i - 1, 0llu) * seed + h;
+		i++;
+	}
 }
 ull bkdr_hash_once(const string &seq, ull seed)
 {
@@ -66,7 +70,7 @@ ull bkdr_hash_once(const vector<tp> &seq, ull seed)
 }
 ull bkdr_hash_range(const vector<ull> &hash, const vector<ull> &exp, int l, int r)
 {
-	return hash[r] - presum_point(hash, l - 1) * exp[length(l, r)];
+	return hash[r] - special(hash, l - 1, 0llu) * exp[length(l, r)];
 }
 
 #endif

@@ -1,6 +1,9 @@
 #ifndef TRANSFORMER_H
 #define TRANSFORMER_H 1
 
+#include "math/gcd_lcm.h"
+#include "math/mod.h"
+
 /*
  * 置换类, 魔方类...
  */
@@ -13,7 +16,8 @@ class permutation {
 			hs[i] = hash_val(vector<int>(mat[i], mat[i] + dn));
 	}
 	void ginv() {
-		auto fn = [=, i = 0](int x) mutable { mat[1][x] = i++; };
+		int i = 0;
+		auto fn = [&](int x) { mat[1][x] = i++; };
 		for_each(mat[0], mat[0] + dn, fn);
 	}
 	void gcyc() {

@@ -1,5 +1,6 @@
 #include "template.h"
 #include "basic/rand.h"
+
 debuger bug;
 
 template<typename tp>
