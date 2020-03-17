@@ -552,10 +552,10 @@ public:
 		assert(sizeof...(args) == dim.size());
 		int idx = 0;
 		iter it = dim.begin();
-		auto product = [](int &ret, iter &it, int val) {
-			ret += *it++ * val;
+		auto product = [&](int val) {
+			idx += *it++ * val;
 		};
-		initializer_list<int>{(product(idx, it, forward<var>(args)), 0)...};
+		initializer_list<int>{(product(forward<var>(args)), 0)...};
 		return data[idx];
 	}
 	vector<tp> get_dim(int idx) {
