@@ -1,4 +1,4 @@
-#define FAST_IO 0
+#define FAST_IO 1
 
 #include "template.h"
 #include "data_structure/treap_rotate.h"
@@ -72,7 +72,7 @@ class task {
 	}
 	void out() {
 		for (auto x : ans)
-			cout << x << endl;
+			fio.out(x, '\n');
 	}
 public:
 	task(

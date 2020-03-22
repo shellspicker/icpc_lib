@@ -1,7 +1,7 @@
 #define FAST_IO 1
 
 #include "template.h"
-#include "data_structure/treap_split.h"
+#include "data_structure/secapegoat_tree.h"
 
 class query {
 public:
@@ -19,7 +19,7 @@ class task {
 	debuger bug;
 	vector<query> qa;
 	vector<int> ans;
-	treap<int, 1, 100233> dsm;
+	secapegoat<int, 1, 100233> dsm;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
@@ -48,23 +48,23 @@ class task {
 					break;
 				}
 				case 3: {
-					auto fd = dsm.search(dsm(0), q.x, 0, 1);
-					ans.emplace_back(fd.first);
+					auto fd = dsm.search(dsm(0), q.x);
+					ans.emplace_back(fd);
 					break;
 				}
 				case 4: {
-					auto fd = dsm.kth(dsm(0), q.x, 0);
+					auto fd = dsm.kth(dsm(0), q.x);
 					ans.emplace_back(fd->key);
 					break;
 				}
 				case 5: {
-					auto fd = dsm.search(dsm(0), q.x, 0, 0);
-					ans.emplace_back(fd.second->key);
+					auto fd = dsm.kth(dsm(0), dsm.search(dsm(0), q.x) - 1);
+					ans.emplace_back(fd->key);
 					break;
 				}
 				case 6: {
-					auto fd = dsm.search(dsm(0), q.x, 1, 0);
-					ans.emplace_back(fd.second->key);
+					auto fd = dsm.kth(dsm(0), dsm.search(dsm(0), q.x + 1));
+					ans.emplace_back(fd->key);
 					break;
 				}
 			}

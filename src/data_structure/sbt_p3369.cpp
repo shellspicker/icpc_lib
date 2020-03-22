@@ -1,7 +1,7 @@
 #define FAST_IO 1
 
 #include "template.h"
-#include "data_structure/treap_split.h"
+#include "data_structure/sbt.h"
 
 class query {
 public:
@@ -19,7 +19,7 @@ class task {
 	debuger bug;
 	vector<query> qa;
 	vector<int> ans;
-	treap<int, 1, 100233> dsm;
+	sbt<int, 1, 100233> dsm;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
@@ -40,7 +40,7 @@ class task {
 		for (auto q : qa) {
 			switch (q.op) {
 				case 1: {
-					dsm.insert(dsm(0), q.x);
+					dsm.insert(dsm(0), 0, q.x);
 					break;
 				}
 				case 2: {

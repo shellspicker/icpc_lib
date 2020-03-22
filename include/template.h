@@ -585,17 +585,28 @@ public:
 };
 template<typename tp, size_t pon = 0>
 class allocator {
-	vector<tp *> buf;
+	vector<tp> mem;
+	queue<tp *> cache;
 public:
-	allocator() { buf.reserve(pon); }
-	tp *operator ()(){
-		buf.push_back(new tp());
-		return buf.back();
+	allocator() { mem.reserve(pon); }
+	tp *operator ()() {
+		tp *ret;
+		if (cache.empty()) {
+			mem.emplace_back(tp());
+			ret = &mem.back();
+		} else {
+			ret = cache.front();
+			cache.pop();
+		}
+		return ret;
+	}
+	void operator ()(tp *o) {
+		cache.push(o);
 	}
 	void clear() {
-		fup (i, 0, buf.size() - 1) if (buf[i])
-			delete buf[i];
-		buf.clear();
+		mem.clear();
+		while (!cache.empty())
+			cache.pop();
 	}
 };
 
