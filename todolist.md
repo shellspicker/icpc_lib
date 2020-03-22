@@ -1,21 +1,20 @@
 # todolist
 
-## tips
-
-写在手机上便笺和电脑桌面了, 待移动过来.
-
 ## template
 
 - [ ] 一些数学函数, 几何相关?
 - [ ] 二维, 三维数组的遍历方向数组. 二维的4向, 8向; 三维的6向, 26向(可能不需要)...
 - [x] 快速读入, istream.rdbuf->sgetn(buf, sizeof(buf)), 配合readint...
 - [ ] 开栈.
-- [ ] efg_cvt, 浮点数截断.
+- [x] efg_cvt, 浮点数截断, 暂时弃了.
 - [ ] 整理一份全局符号表.
 
 ## data structure
 
-- [ ] 各种平衡树, treap已经有旋转版本了.
+- [x] 各种平衡树.
+- [ ] 笛卡尔树.
+- [ ] lct.
+- [ ] 线段树以及类似的带push和pull的区间结构.
 - [ ] 分块. 以及延申的xx分治. 再就是块状链表.
 - [ ] pbds头文件, 好像win上编译不了? 各种数据结构都要测试一下.
 - [ ] 堆.
@@ -23,6 +22,11 @@
 ## math
 
 - [ ] 大浮点数, 大整数已经有了, 稍微改一下, poj1001.
+- [ ] 分数类, uva12558.
+
+## graph theory
+
+- [ ] 各种图结构.
 
 ## trick
 
@@ -36,8 +40,8 @@
 
 - [ ] 自实现allocator, 可用于vector的那种. 参考cppreference里的vector::reserve.
 - [x] 可变参数模板, 用initializer_list一行展开.
-- [ ] 各种比较级函数, 传入lambda, 用function接收.
-- [ ] cppreference里面能用到的函数都列一遍, 做个lib整理.
+- [ ] 各种比较级函数(min, max, 大于, 小于之类的), 传入lambda, 用function接收, 比如rmq里面用到.
+- [ ] cppreference里面能用到的函数都列一遍, 做个lib整理, 模板里面有using了.
 - [ ] github上的3份很好的模板都合并过来.
 - [ ] 魔方模板把2个类合并到一起.
 
