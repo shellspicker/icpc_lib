@@ -21,6 +21,9 @@ private:
 	class node : public bst<tp>::node {
 	public:
 		static node *null;
+		using bst<tp>::node::ls;
+		using bst<tp>::node::rs;
+		using bst<tp>::node::size;
 		int cover;
 		bool exist;
 		// 附加信息
@@ -30,12 +33,12 @@ private:
 			cover = exist = 1;
 		}
 		bool bad() {
-			return (cover * alpha + 5 < ((node *)this->ls)->cover) ||
-				(cover * alpha + 5 < ((node *)this->rs)->cover);
+			return (cover * alpha + 5 < ((node *)ls)->cover) ||
+				(cover * alpha + 5 < ((node *)rs)->cover);
 		}
 		node *pull() {
-			this->size = this->ls->size + this->rs->size + exist;
-			this->cover = ((node *)this->ls)->cover + ((node *)this->rs)->cover + 1;
+			size = ls->size + rs->size + exist;
+			cover = ((node *)ls)->cover + ((node *)rs)->cover + 1;
 			return this;
 		}
 	};
@@ -47,6 +50,7 @@ public:
 		null = new (alloc()) node(null, -1);
 		bst<tp>::null = null;
 		null->size = null->cover = 0;
+		null->ls = null->rs = null;
 		fup (i, 0, dsn - 1)
 			root[i] = null;
 	}
@@ -82,8 +86,7 @@ public:
 		divide(o, 0, v.size() - 1);
 	}
 	void insert(node *&o, tp x) {
-		function<node **(node *&, tp)> helper =
-		[&](node *&o, tp x) -> node** {
+		function<node **(node *&, tp)> helper = [&](node *&o, tp x) {
 			node **ret;
 			if (o == null) {
 				o = new (alloc()) node(null, x);
@@ -91,19 +94,19 @@ public:
 			} else {
 				bool d = o->key < x;// equal or not is don't care.
 				o->size++, o->cover++;
-				ret = help((node *&)o->ch[d], x);
+				ret = helper((node *&)o->ch[d], x);
 				if (o->bad())
 					ret = &o;
 			}
 			return ret;
 		};
-		node **fix = help(o, x);
+		node **fix = helper(o, x);
 		if (*fix != null)
 			rebuild(*fix);
 	}
 	void remove(node *&o, tp x) {
 		int k = search(o, x);
-		function<void(node *, int)> help = [&](node *o, int k) -> void {
+		function<void(node *, int)> helper = [&](node *o, int k) {
 			while (o != null) {
 				o->size--;
 				int s = o->ls->size + o->exist;
@@ -117,7 +120,7 @@ public:
 					k -= s;
 			}
 		};
-		help(o, k);
+		helper(o, k);
 		if (o->size < o->cover * alpha)
 			rebuild(o);
 	}

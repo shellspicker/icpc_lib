@@ -27,21 +27,25 @@ public:
 		null = new (alloc()) node(null, -1);
 		bst<tp>::null = null;
 		null->size = 0;
+		null->ls = null->rs = null;
 		fup (i, 0, dsn - 1)
 			root[i] = null;
 	}
 	node *&operator ()(int idx) {
 		return root[idx];
 	}
-	node *rotate(node *&o, int d) {
-		auto link = [](node *u, int d, node *v) {
-			return (u->ch[d] = v)->fa = u;
+	// d方向的子结点旋转上来.
+	void rotate(node *&o, int d) {
+		auto helper = [](node *o, int d) {
+#define link(u, d, v) ((u->ch[d] = v)->fa = u)
+			node *k = (node *)o->ch[d], *ac = (node *)o->fa;
+			link(o, d, k->ch[d ^ 1])->pull();
+			link(k, d ^ 1, o);
+			link(ac, ac->rs == o, k);
+			return k;
+#undef link
 		};
-		node *k = (node *)o->ch[d], *ac = (node *)o->fa;
-		link(o, d, (node *)k->ch[d ^ 1])->pull();
-		link(k, d ^ 1, o);
-		(o = k)->fa = ac;
-		return o;
+		o = helper(o, d);
 	}
 	void maintain(node *&o, int d)
 	{
@@ -50,7 +54,7 @@ public:
 		if (o->ch[d ^ 1]->size < o->ch[d]->ch[d]->size) {
 			rotate(o, d);
 		} else if(o->ch[d ^ 1]->size < o->ch[d]->ch[d ^ 1]->size) {
-			rotate((node *&)o->ch[d],d ^ 1);
+			rotate((node *&)o->ch[d], d ^ 1);
 			rotate(o, d);
 		} else {
 			goto end;

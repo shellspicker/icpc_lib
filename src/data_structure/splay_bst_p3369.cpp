@@ -41,8 +41,7 @@ class task {
 		for (auto q : qa) {
 			switch (q.op) {
 				case 1: {
-					dsm.insert(dsm(0), 0, q.x);
-					dsm.go(dsm(0), (dsm(0)->size + 1) / 2, dsm.null);
+					dsm.insert(dsm(0), q.x);
 					break;
 				}
 				case 2: {

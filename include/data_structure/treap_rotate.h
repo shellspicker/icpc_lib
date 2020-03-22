@@ -31,21 +31,25 @@ public:
 		null = new (alloc()) node(null, -1);
 		bst<tp>::null = null;
 		null->size = 0;
+		null->ls = null->rs = null;
 		fup (i, 0, dsn - 1)
 			root[i] = null;
 	}
 	node *&operator ()(int idx) {
 		return root[idx];
 	}
-	node *rotate(node *&o, int d) {
-		auto link = [](node *u, int d, node *v) {
-			return (u->ch[d] = v)->fa = u;
+	// d方向的子结点旋转上来.
+	void rotate(node *&o, int d) {
+		auto helper = [](node *o, int d) {
+#define link(u, d, v) ((u->ch[d] = v)->fa = u)
+			node *k = (node *)o->ch[d], *ac = (node *)o->fa;
+			link(o, d, k->ch[d ^ 1])->pull();
+			link(k, d ^ 1, o);
+			k->fa = ac;
+			return k;
+#undef link
 		};
-		node *k = (node *)o->ch[d], *ac = (node *)o->fa;
-		link(o, d, (node *)k->ch[d ^ 1])->pull();
-		link(k, d ^ 1, o);
-		(o = k)->fa = ac;
-		return o;
+		o = helper(o, d);
 	}
 	// multiset
 	void insert(node *&o, node *f, tp x) {
@@ -71,8 +75,9 @@ public:
 				(o = o->ls != null ? (node *)o->ls : (node *)o->rs)->fa = fa;
 				ok = 1;
 			} else {
-				int d = (((node *)o->ls)->fix > ((node *)o->rs)->fix ? 0 : 1);
-				ok = remove((node *&)rotate(o, d)->ch[d ^ 1], x);
+				int d = (((node *)o->ls)->fix > ((node *)o->rs)->fix ? 0 : 1);// heap.
+				rotate(o, d);
+				ok = remove((node *&)o->ch[d ^ 1], x);
 			}
 		} else {
 			ok = remove((node *&)o->ch[o->key < x], x);

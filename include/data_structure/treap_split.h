@@ -32,6 +32,7 @@ public:
 		null = new (alloc()) node(null, -1);
 		bst<tp>::null = null;
 		null->size = 0;
+		null->ls = null->rs = null;
 		fup (i, 0, dsn - 1)
 			root[i] = null;
 	}
