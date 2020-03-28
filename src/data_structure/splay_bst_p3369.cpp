@@ -37,34 +37,37 @@ class task {
 	void deal() {
 		ans.clear();
 		dsm.init();
-		int qtime = 1;
 		for (auto q : qa) {
 			switch (q.op) {
 				case 1: {
-					dsm.insert(dsm(0), q.x);
+					dsm.insert(0, q.x);
 					break;
 				}
 				case 2: {
-					dsm.remove(dsm(0), q.x);
+					dsm.remove(0, q.x);
 					break;
 				}
 				case 3: {
 					auto fd = dsm.search(dsm(0), q.x, 0, 1);
+					dsm.balance(0, q.x);
 					ans.emplace_back(fd.first);
 					break;
 				}
 				case 4: {
 					auto fd = dsm.kth(dsm(0), q.x, 0);
+					dsm.balance(0, q.x);
 					ans.emplace_back(fd->key);
 					break;
 				}
 				case 5: {
 					auto fd = dsm.search(dsm(0), q.x, 0, 0);
+					dsm.balance(0, q.x);
 					ans.emplace_back(fd.second->key);
 					break;
 				}
 				case 6: {
 					auto fd = dsm.search(dsm(0), q.x, 1, 0);
+					dsm.balance(0, q.x);
 					ans.emplace_back(fd.second->key);
 					break;
 				}

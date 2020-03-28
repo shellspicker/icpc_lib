@@ -4,6 +4,8 @@
 /*
  * 二叉搜索树.
  * 只有搜索的功能, 其他的由平衡树来继承.
+ * 有父结点, 可直接从某点开始, logn做中序遍历.
+ * 有必要的时候, 记得手动连接父结点.
  */
 template<typename tp>
 class bst {
@@ -15,9 +17,9 @@ protected:
 		tp key;
 		int size;
 		node() {}
-		node(node *f, tp k) {
-			ls = rs = null;
-			fa = f, key = k, size = 1;
+		node(tp k) {
+			ls = rs = fa = null;
+			key = k, size = 1;
 		}
 		node *pull() {
 			size = ls->size + rs->size + 1;
@@ -27,8 +29,8 @@ protected:
 	node *&null = node::null;
 public:
 	/*
-	 * 前驱后继, 需要父结点
-	 * d: 0为前驱, 1为后继
+	 * 前驱后继, 需要父结点.
+	 * d: 0为前驱, 1为后继.
 	 */
 	node *order(node *o, bool d) {
 		if (o->ch[d] != null) {
@@ -62,9 +64,10 @@ public:
 	 * 最后端点都会往右边超界.
 	 * 如果返回排名的话, 对应ans得到的是[), ans-1得到的是(].
 	 * 类似的还有直接返回对应结点, so, 能返回的信息有<rank, node*>.
-	 * 参数和原理类比数组版本的二分.
+	 * 参数和原理类比数组版本的二分, (d, contain).
+	 * 增加一个fuzzy参数, 模糊查找.
 	 */
-	pair<int, node *> search(node *o, tp x, bool d, bool contain) {
+	pair<int, node *> search(node *o, tp x, bool d, bool contain, bool fuzzy = 0) {
 #define dwn(cond) \
 		if ((cond)) ans += o->ls->size + 1, o = o->ch[lastdir = 1];\
 		else o = o->ch[lastdir = 0]
@@ -73,10 +76,12 @@ public:
 		bool lastdir;
 		while (o != null) {
 			last = o;
-			dwn((d == 0 && o->key < x) || (d == 1 && !(x < o->key)));
+			dwn((!d && o->key < x) || (d && !(x < o->key)));
 		}
 		ans = d ^ contain ? ans : ans - 1;
 		o = d ^ contain ^ lastdir ? last : order(last, lastdir);
+		if (fuzzy && o->key ^ x)
+			o = last;
 		return {ans, o};
 #undef dwn
 	}

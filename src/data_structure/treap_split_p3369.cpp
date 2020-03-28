@@ -40,11 +40,11 @@ class task {
 		for (auto q : qa) {
 			switch (q.op) {
 				case 1: {
-					dsm.insert(dsm(0), q.x);
+					dsm.insert(0, q.x);
 					break;
 				}
 				case 2: {
-					dsm.remove(dsm(0), q.x);
+					dsm.remove(0, q.x);
 					break;
 				}
 				case 3: {
