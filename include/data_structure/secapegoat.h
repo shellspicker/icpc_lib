@@ -1,5 +1,5 @@
-#ifndef SECAPEGOAT_TREE_H
-#define SECAPEGOAT_TREE_H 1
+#ifndef SECAPEGOAT_H
+#define SECAPEGOAT_H 1
 
 #include "data_structure/bst.h"
 

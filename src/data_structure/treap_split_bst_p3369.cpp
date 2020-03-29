@@ -1,7 +1,7 @@
 #define FAST_IO 1
 
 #include "template.h"
-#include "data_structure/treap_split.h"
+#include "data_structure/treap_split_bst.h"
 
 class query {
 public:

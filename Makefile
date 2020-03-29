@@ -25,18 +25,15 @@ MAKEFILE = Makefile
 # 文件扩展名相关.
 SRCEXT = .c .cc .cpp .cxx .c++
 
+# default target
+default: all
+
 # recipe and compile rule.
 # args: (id).
 define recipe
 $(ALL_$(1)): $(REQ_$(1))
 	$$(call compile_$(MODE_$(1)),$(CC_$(1)))
 endef
-
-# default target
-default: all
-fake_all: $(TARGET)
-fake_clean:
-	rm -f *.orig *~ $(obj_all) $(obj_all:.o=.d)
 
 # 万事具备, 展开所有必要的静态规则.
 ifneq ($(aimid_all),)
@@ -68,7 +65,7 @@ init_all:
 	$(eval export aimid_all TARGET)
 
 # 以下一般不需要改
-.PHONY: build rebuild all clean cleanall
+.PHONY: build rebuild all clean cleanall fake_all fake_clean fake_view
 build: all
 rebuild: cleanall build
 all: init_all
@@ -77,6 +74,13 @@ clean: init_all
 	@$(MAKE) -f $(MAKEFILE) fake_clean
 cleanall: clean
 	rm -f $(TARGET)
+view: init_all
+	@$(MAKE) -f $(MAKEFILE) fake_view
+fake_all: $(TARGET)
+fake_clean:
+	rm -f *.orig *~ $(obj_all) $(obj_all:.o=.d)
+fake_view:
+	@echo $(foreach id,$(aimid_all),$(call debug,$(id)))
 
 # 约定俗成的根据源文件自动生成头文件依赖.
 # func: get dependence rule file.
@@ -134,7 +138,7 @@ define preprocess
 	$(eval $(call init_suffix,$(SRCS_$(1)),SUFFIX_$(1)))
 	$(eval $(call init_compiler,$(SUFFIX_$(1)),CC_$(1)))
 	OBJS_$(1) = $(SRCS_$(1):$(SUFFIX_$(1))=.o)
-	export OBJS_$(id) CC_$(id)
+	export OBJS_$(id) CC_$(id) SUFFIX_$(1)
 endef
 
 # compile relevant.
@@ -166,17 +170,16 @@ endef
 # debug key info.
 # args: (id).
 # call as below.
-#	@$(foreach id,$(aimid_all),$(call debug,$(id)))
+#	@echo $(foreach id,$(aimid_all),$(call debug,$(id)))
 define debug
-	@echo ""
-	@echo "debug begin!!!"
-	@echo "suffix: $(SUFFIX_$(1))$$"
-	@echo "cc: $(CC_$(1))$$"
-	@echo "objs: $(OBJS_$(1))$$"
-	@echo "all: $(ALL_$(1))$$"
-	@echo "srcs: $(SRCS_$(1))$$"
-	@echo "req: $(REQ_$(1))$$"
-	@echo "mode: $(MODE_$(1))$$"
-	@echo "debug end!!!"
-	@echo ""
+"\n"\
+"\bdebug begin!!!\n"\
+"suffix: $(SUFFIX_$(1))\n"\
+"cc: $(CC_$(1))\n"\
+"objs: $(OBJS_$(1))\n"\
+"all: $(ALL_$(1))\n"\
+"srcs: $(SRCS_$(1))\n"\
+"req: $(REQ_$(1))\n"\
+"mode: $(MODE_$(1))\n"\
+"\bdebug end!!!\n"
 endef

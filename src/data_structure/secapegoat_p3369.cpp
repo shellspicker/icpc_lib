@@ -1,7 +1,7 @@
 #define FAST_IO 1
 
 #include "template.h"
-#include "data_structure/secapegoat_tree.h"
+#include "data_structure/secapegoat.h"
 
 class query {
 public:

@@ -1,5 +1,5 @@
-#ifndef TREAP_SPLIT_H
-#define TREAP_SPLIT_H 1
+#ifndef TREAP_SPLIT_BST_H
+#define TREAP_SPLIT_BST_H 1
 
 #include "data_structure/bst.h"
 
@@ -10,6 +10,7 @@
  */
 template<typename tp, size_t dsn, size_t pon>
 class treap : public bst<tp> {
+#define link(u, d, v) ((u->ch[d] = v)->fa = u)
 	class node : public bst<tp>::node {
 	public:
 		static node *null;
@@ -22,42 +23,57 @@ class treap : public bst<tp> {
 		}
 	};
 	allocator<node, pon> alloc;
-	node *link(node *fa, node *son) {
-		son->fa = fa;
-		return fa;
-	}
 	pair<node *, node *> split_by_val(node *t, tp x) {
-		if (t == null)
-			return {null, null};
-		node *lo, *ro;
-		if (t->key <= x) {// note: <=.
-			tie(lo, ro) = split_by_val((node *)t->rs, x);
-			return {(node *)link(t, (node *)(t->rs = lo))->pull(), ro};
-		} else {
-			tie(lo, ro) = split_by_val((node *)t->ls, x);
-			return {lo, (node *)link(t, (node *)(t->ls = ro))->pull()};
+		node *lo = null, *ro = null;
+		if (t != null) {
+			if (t->key <= x) {// note: <=.
+				tie(lo, ro) = split_by_val((node *)t->ch[1], x);
+				lo = (node *)link(t, 1, lo)->pull();
+			} else {
+				tie(lo, ro) = split_by_val((node *)t->ch[0], x);
+				ro = (node *)link(t, 0, ro)->pull();
+			}
 		}
+		return {lo, ro};
 	}
 	node *merge(node *lo, node *ro) {
-		if (lo == null || ro == null)
-			return lo == null ? ro : lo;
-		if (lo->fix > ro->fix) {// heap.
-			return (node *)link(lo, (node *)(lo->rs = merge((node *)lo->rs, ro)))->pull();
+		node *ret;
+		if (lo == null || ro == null) {
+			ret = lo == null ? ro : lo;
 		} else {
-			return (node *)link(ro, (node *)(ro->ls = merge(lo, (node *)ro->ls)))->pull();
+			if (lo->fix > ro->fix) {// heap.
+				ro = merge((node *)lo->ch[1], ro);
+				ret = (node *)link(lo, 1, ro)->pull();
+			} else {
+				lo = merge(lo, (node *)ro->ch[0]);
+				ret = (node *)link(ro, 0, lo)->pull();
+			}
 		}
+		return ret;
 	}
-	void insert(node *&t, int x) {
+	template<typename ...var>
+	node *merge(node *t, var ...args) {
+		initializer_list<int>{(t = merge(t, args), 0)...};
+		return t;
+	}
+	void segment(node *&t, tp l, tp r, node *&lo, node *&mo, node *&ro) {
+		pair<node *, node *> fd;
+		fd = split_by_val(t, r);
+		ro = fd.second;
+		fd = split_by_val(fd.first, l - 1);
+		lo = fd.first;
+		mo = fd.second;
+	}
+	void insert(node *&t, tp x) {
 		node *lo, *ro;
 		tie(lo, ro) = split_by_val(t, x);
-		t = merge(merge(lo, new (alloc()) node(x)), ro);
+		t = merge(lo, new (alloc()) node(x), ro);
 	}
-	void remove(node *&t, int x) {
+	void remove(node *&t, tp x) {
 		node *lo, *mo, *ro;
-		tie(lo, mo) = split_by_val(t, x - 1);
-		tie(mo, ro) = split_by_val(mo, x);
+		segment(t, x, x, lo, mo, ro);
 		alloc(mo);
-		t = merge(merge(lo, merge((node *)mo->ls, (node *)mo->rs)), ro);
+		t = merge(lo, (node *)mo->ls, (node *)mo->rs, ro);
 	}
 public:
 	node *&null = node::null;// null must be reference.
@@ -81,6 +97,7 @@ public:
 	void remove(int tid, tp x) {
 		remove(root[tid], x);
 	}
+#undef link
 };
 template<typename tp, size_t dsn, size_t pon>
 typename treap<tp, dsn, pon>::node *treap<tp, dsn, pon>::node::null;
