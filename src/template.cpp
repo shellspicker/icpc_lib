@@ -7,10 +7,6 @@ class task {
 	do {\
 		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
-	int testcase = 1 << 30;
-	stringstream tid;
-	direct_io fio;
-	debuger bug;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
@@ -26,6 +22,8 @@ public:
 		bool multicase = 0,
 		bool testid = 0,
 		bool blankline = 0) {
+		static int testcase = 1 << 30;
+		static stringstream tid;
 		preprocess();
 		if (multicase)
 			fio.in(testcase);
@@ -33,11 +31,12 @@ public:
 			deal();
 			if (blankline && 1 < ti)
 				fio.out('\n');
-			tid << "Case #" << ti << ": ";
-			if (testid)
+			if (testid) {
+				tid << "Case #" << ti << ": ";
 				fio.out(tid.str());
+				tid.str("");
+			}
 			out();
-			tid.str("");
 		}
 	}
 #undef ioend

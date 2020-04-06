@@ -1,9 +1,11 @@
 #ifndef TEMPLATE_H
 #define TEMPLATE_H
 
-#pragma GCC optimize(1,2,3,"Ofast","inline")
+#pragma GCC optimize(2)
 #include <cstddef>
+#if 201103L <= __cplusplus
 #include <cstdint>
+#endif
 #include <climits>
 #include <ctime>
 #include <cstdlib>
@@ -19,18 +21,24 @@
 #include <functional>
 #include <algorithm>
 #include <numeric>
+#if 201103L <= __cplusplus
 #include <random>
+#endif
 #include <vector>
 #include <deque>
 #include <list>
 #include <set>
 #include <map>
+#if 201103L <= __cplusplus
 #include <unordered_set>
 #include <unordered_map>
+#endif
 #include <stack>
 #include <queue>
 #include <bitset>
+#if 201103L <= __cplusplus
 #include <tr2/dynamic_bitset>
+#endif
 #ifdef linux
 #include <ext/pb_ds/assoc_container.hpp>
 #endif
@@ -44,11 +52,13 @@ using std::cin;
 using std::cout;
 using std::cerr;
 using std::string;
+#if 201103L <= __cplusplus
 using std::move;
 using std::forward;
 using std::tuple;
 using std::tie;
 using std::get;
+#endif
 using std::pair;
 using std::make_pair;
 using std::vector;
@@ -57,11 +67,14 @@ using std::list;
 using std::stack;
 using std::queue;
 using std::bitset;
+#if 201103L <= __cplusplus
 using std::tr2::dynamic_bitset;
+#endif
 using std::set;
 using std::map;
 using std::multiset;
 using std::multimap;
+#if 201103L <= __cplusplus
 using std::unordered_set;
 using std::unordered_map;
 using std::unordered_multiset;
@@ -70,24 +83,31 @@ using std::initializer_list;
 using std::all_of;
 using std::any_of;
 using std::none_of;
+#endif
 using std::for_each;
 using std::count;
 using std::count_if;
 using std::mismatch;
 using std::find;
 using std::find_if;
+#if 201103L <= __cplusplus
 using std::find_if_not;
+#endif
 using std::find_end;
 using std::find_first_of;
 using std::adjacent_find;
 using std::search;
 using std::search_n;
 using std::copy;
+#if 201103L <= __cplusplus
 using std::copy_if;
 using std::copy_n;
+#endif
 using std::copy_backward;
+#if 201103L <= __cplusplus
 using std::move;
 using std::move_backward;
+#endif
 using std::fill;
 using std::fill_n;
 using std::transform;
@@ -108,16 +128,24 @@ using std::reverse;
 using std::reverse_copy;
 using std::rotate;
 using std::rotate_copy;
+#if 201103L <= __cplusplus
 using std::shuffle;
+#endif
 using std::unique;
 using std::unique_copy;
+#if 201103L <= __cplusplus
 using std::is_partitioned;
+#endif
 using std::partition;
+#if 201103L <= __cplusplus
 using std::partition_copy;
+#endif
 using std::stable_partition;
+#if 201103L <= __cplusplus
 using std::partition_point;
 using std::is_sorted;
 using std::is_sorted_until;
+#endif
 using std::sort;
 using std::partial_sort;
 using std::partial_sort_copy;
@@ -134,8 +162,10 @@ using std::set_difference;
 using std::set_intersection;
 using std::set_symmetric_difference;
 using std::set_union;
+#if 201103L <= __cplusplus
 using std::is_heap;
 using std::is_heap_until;
+#endif
 using std::make_heap;
 using std::push_heap;
 using std::pop_heap;
@@ -144,21 +174,29 @@ using std::max;
 using std::max_element;
 using std::min;
 using std::min_element;
+#if 201103L <= __cplusplus
 using std::minmax;
 using std::minmax_element;
+#endif
 using std::equal;
 using std::lexicographical_compare;
+#if 201103L <= __cplusplus
 using std::is_permutation;
+#endif
 using std::next_permutation;
 using std::prev_permutation;
+#if 201103L <= __cplusplus
 using std::iota;
+#endif
 using std::accumulate;
 using std::inner_product;
 using std::adjacent_difference;
 using std::partial_sum;
+#if 201103L <= __cplusplus
 using std::begin;
 using std::end;
 using std::function;
+#endif
 using std::plus;
 using std::minus;
 using std::multiplies;
@@ -177,12 +215,14 @@ using std::logical_not;
 using std::bit_and;
 using std::bit_or;
 using std::bit_xor;
+#if 201103L <= __cplusplus
 using std::hash;
 using std::mt19937;
 using std::mt19937_64;
 using std::random_device;
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
+#endif
 #ifdef linux
 template<typename key>
 using ordered_set = __gnu_pbds::tree<
@@ -194,10 +234,16 @@ using ordered_map = __gnu_pbds::tree<
 						__gnu_pbds::tree_order_statistics_node_update>;
 #endif
 #define endl '\n'
+#define fup_s2(i, lr, s) fup_s(i, lr, s)
+#define fwn_s2(i, lr, s) fwn_s(i, lr, s)
 #define fup_s(i, a, b, s) for (int i = a, foc = b; i <= foc; i += s)
 #define fwn_s(i, a, b, s) for (int i = b, foc = a; foc <= i; i -= s)
+#define fup2(i, lr) fup(i, lr)
+#define fwn2(i, lr) fwn(i, lr)
 #define fup(i, a, b) fup_s(i, a, b, 1)
 #define fwn(i, a, b) fwn_s(i, a, b, 1)
+#define fup_range(i, st, off) fup2(i, range(st, off))
+#define fwn_range(i, ed, off) fwn2(i, range(ed, off))
 #define it_each(obj) (obj).begin(), (obj).end()
 #define it_i(obj, i) (obj).begin() + (i)
 #define it_i_rev(obj, i) (obj).end() - 1 - (i)
@@ -341,7 +387,7 @@ tp presum_range(const vector<tp> &sum, int l, int r)
 }
 template<typename tp>
 void presum_preprocess(
-						vector<tp> &&sum, const vector<tp> &data,
+						vector<tp> &sum, const vector<tp> &data,
 						int l, int r, int st)
 {
 	int len = length(l, r);
@@ -356,7 +402,7 @@ tp premul_range(const vector<tp> &mul, int l, int r)
 }
 template<typename tp>
 void premul_preprocess(
-						vector<tp> &&mul, const vector<tp> &data,
+						vector<tp> &mul, const vector<tp> &data,
 						int l, int r, int st)
 {
 	int len = length(l, r);
@@ -378,9 +424,9 @@ ll round_shift(ll x, ll dist, ll l, ll r)
  */
 class direct_io {
 	static const int bsz = 1 << 20;
-	char ibuf[bsz], obuf[bsz], *ihead = 0, *itail = 0, *ohead = obuf;
+	char ibuf[bsz], obuf[bsz], *ihead, *itail, *ohead;
 	streambuf *isb, *osb;
-	int output_float_digit = 12;
+	int output_float_digit;
 	bool status;
 	void set_status(bool ok) {
 		status = ok;
@@ -449,8 +495,14 @@ end:
 			putchar(*s);
 	}
 	void output(const string &s) {
-		for (auto ch : s)
+#if 201103L <= __cplusplus
+		for (auto ch : s) {
+#else
+		fup_range (i, 0, s.length()) {
+			char ch = s[i];
+#endif
 			putchar(ch);
+		}
 	}
 	template<typename tp>
 	void output(tp x) {
@@ -465,7 +517,11 @@ end:
 		} while (xn);
 		while (cnt)
 			putchar(buf[cnt--]);
+#if 201103L <= __cplusplus
 		if (std::is_same<typename std::decay<tp>::type, double>::value) {
+#else
+		if (tp(x + 0.5) != x) {
+#endif
 			putchar('.');
 			x -= ll(x);
 			fup (t, 1, output_float_digit) {
@@ -483,13 +539,22 @@ public:
 		cout.precision(12);
 		isb = cin.rdbuf();
 		osb = cout.rdbuf();
+		ihead = itail = 0;
+		ohead = obuf;
+		output_float_digit = 12;
 	}
 	~direct_io() { osb->sputn(obuf, ohead - obuf); }
 	void set_output_float_digit(int d) {
 		output_float_digit = d;
 	}
+#if 201103L <= __cplusplus
 	template<typename ...var>
 	bool in(var &&...args) {
+#else
+	template<typename tp>
+	bool in(tp &x) {
+#endif
+#if 201103L <= __cplusplus
 #if FAST_IO
 		initializer_list<int>{(input(forward<var>(args)), 0)...};
 		return status;
@@ -497,29 +562,74 @@ public:
 		initializer_list<int>{(cin >> forward<var>(args), 0)...};
 		return cin.good();
 #endif
+#else
+#if FAST_IO
+		input(x);
+		return status;
+#else
+		cin >> x;
+		return cin.good();
+#endif
+#endif
 	}
+#if 201103L <= __cplusplus
 	template<typename ...var>
 	void out(var &&...args) {
+#else
+	template<typename tp>
+	void out(tp x) {
+#endif
+#if 201103L <= __cplusplus
 #if FAST_IO
 		initializer_list<int>{(output(forward<var>(args)), 0)...};
 #else
 		initializer_list<int>{(cout << forward<var>(args), 0)...};
 #endif
+#else
+#if FAST_IO
+		output(x);
+#else
+		cout << x;
+#endif
+#endif
 	}
-};
+	void msg(const char *fmt, ...) {
+		static char buf[1 << 10];
+		va_list args;
+		va_start(args, fmt);
+		vsprintf(buf, fmt, args);
+		va_end(args);
+#if FAST_IO
+		output((const char *)buf);
+#else
+		cout << buf;
+#endif
+	}
+} fio;
 class debuger {
 	string delim;
 	template<typename tp>
 	void print(const tp &x) { cerr << x << delim; }
 	template<typename tp>
-	void print(const vector<tp> &v) { for (auto x : v) cerr << x << delim; }
+	void print(const vector<tp> &v) {
+#if 201103L <= __cplusplus
+		for (auto x : v) {
+#else
+		fup_range (i, 0, v.size()) {
+			tp x = v[i];
+#endif
+			cerr << x << delim;
+		}
+	}
 public:
 	debuger(string s = " ") : delim(s) {}
+#if 201103L <= __cplusplus
 	template<typename ...var>
 	void operator ()(var &&...args) {
 		initializer_list<int>{(print(forward<var>(args)), 0)...};
 		cerr << endl;
 	}
+#endif
 	void msg(const char *fmt, ...) {
 		static char buf[1 << 10];
 		va_list args;
@@ -528,7 +638,8 @@ public:
 		va_end(args);
 		cerr << buf << endl;
 	}
-};
+} bug;
+#if 201103L <= __cplusplus
 template<typename tp>
 class zip {
 	using iter = typename vector<tp>::iterator;
@@ -568,6 +679,7 @@ public:
 		return ret;
 	}
 };
+#endif
 template<typename tp>
 class descrete {
 	vector<tp> data;
@@ -576,8 +688,14 @@ public:
 		data.assign(it_each(v));
 		sort(it_each(data));
 		data.erase(unique(it_each(data)), data.end());
-		for (auto &x : v)
+#if 201103L <= __cplusplus
+		for (auto &x : v) {
+#else
+		fup_range (i, 0, data.size()) {
+			tp &x = data[i];
+#endif
 			x = lower_bound(it_each(data), x) - data.begin();
+		}
 	}
 	tp get(int i) {
 		return data[i];
