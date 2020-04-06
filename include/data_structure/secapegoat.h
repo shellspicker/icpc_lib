@@ -1,6 +1,7 @@
 #ifndef SECAPEGOAT_H
 #define SECAPEGOAT_H 1
 
+#define FATHER 0
 #include "data_structure/bst.h"
 
 /*
@@ -15,13 +16,12 @@
  */
 template<typename tp, size_t dsn, size_t pon>
 class secapegoat : public bst<tp> {
+#define ls ch[0]
+#define rs ch[1]
 	static constexpr double alpha = 0.75;
 	class node : public bst<tp>::node {
 	public:
 		static node *null;
-		using bst<tp>::node::ls;
-		using bst<tp>::node::rs;
-		using bst<tp>::node::size;
 		int cover;
 		bool exist;
 		// 附加信息
@@ -31,12 +31,12 @@ class secapegoat : public bst<tp> {
 			cover = exist = 1;
 		}
 		bool bad() {
-			return (cover * alpha + 5 < ((node *)ls)->cover) ||
-				(cover * alpha + 5 < ((node *)rs)->cover);
+			return (cover * alpha + 5 < ((node *)this->ls)->cover) ||
+				(cover * alpha + 5 < ((node *)this->rs)->cover);
 		}
 		node *pull() {
-			size = ls->size + rs->size + exist;
-			cover = ((node *)ls)->cover + ((node *)rs)->cover + 1;
+			this->size = this->ls->size + this->rs->size + exist;
+			cover = ((node *)this->ls)->cover + ((node *)this->rs)->cover + 1;
 			return this;
 		}
 	};
@@ -148,6 +148,8 @@ public:
 		return ans;
 #undef dwn
 	}
+#undef ls
+#undef rs
 };
 template<typename tp, size_t dsn, size_t pon>
 typename secapegoat<tp, dsn, pon>::node *secapegoat<tp, dsn, pon>::node::null;

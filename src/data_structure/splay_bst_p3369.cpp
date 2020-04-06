@@ -1,22 +1,18 @@
 #define FAST_IO 1
 
 #include "template.h"
-#include "data_structure/splay_bst.h"
-
-class query {
-public:
-	int op, x;
-};
+#define FUNC_BST 1
+#include "data_structure/splay.h"
 
 class task {
 #define ioend(cond) \
 	do {\
 		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
-	int testcase = 1 << 30;
-	stringstream tid;
-	direct_io fio;
-	debuger bug;
+	class query {
+	public:
+		int op, x;
+	};
 	vector<query> qa;
 	vector<int> ans;
 	splay<int, 1, 100233> dsm;
@@ -49,25 +45,26 @@ class task {
 				}
 				case 3: {
 					auto fd = dsm.search(dsm(0), q.x, 0, 1);
-					dsm.balance(0, q.x);
+					dsm.select_by_val(0, q.x);
 					ans.emplace_back(fd.first);
 					break;
 				}
 				case 4: {
 					auto fd = dsm.kth(dsm(0), q.x, 0);
-					dsm.balance(0, q.x);
+					if (fd != dsm.null)
+						dsm.select_by_val(0, fd->key);
 					ans.emplace_back(fd->key);
 					break;
 				}
 				case 5: {
 					auto fd = dsm.search(dsm(0), q.x, 0, 0);
-					dsm.balance(0, q.x);
+					dsm.select_by_val(0, q.x);
 					ans.emplace_back(fd.second->key);
 					break;
 				}
 				case 6: {
 					auto fd = dsm.search(dsm(0), q.x, 1, 0);
-					dsm.balance(0, q.x);
+					dsm.select_by_val(0, q.x);
 					ans.emplace_back(fd.second->key);
 					break;
 				}
@@ -83,6 +80,8 @@ public:
 		bool multicase = 0,
 		bool testid = 0,
 		bool blankline = 0) {
+		static int testcase = 1 << 30;
+		static stringstream tid;
 		preprocess();
 		if (multicase)
 			fio.in(testcase);
@@ -90,11 +89,12 @@ public:
 			deal();
 			if (blankline && 1 < ti)
 				fio.out('\n');
-			tid << "Case #" << ti << ": ";
-			if (testid)
+			if (testid) {
+				tid << "Case #" << ti << ": ";
 				fio.out(tid.str());
+				tid.str("");
+			}
 			out();
-			tid.str("");
 		}
 	}
 #undef ioend

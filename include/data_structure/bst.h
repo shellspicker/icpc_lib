@@ -4,21 +4,31 @@
 /*
  * 二叉搜索树.
  * 只有搜索的功能, 其他的由平衡树来继承.
- * 有父结点, 可直接从某点开始, logn做中序遍历.
+ *
+ * 宏: FATHER(默认0), 使用父结点.
+ * 可直接从某点开始, logn做前后结点查找, 二分查找操作与此相关.
  * 有必要的时候, 记得手动连接父结点.
  */
 template<typename tp>
 class bst {
+#define ls ch[0]
+#define rs ch[1]
 protected:
 	class node {
 	public:
 		static node *null;
-		node *fa, *ch[2], *&ls = ch[0], *&rs = ch[1];
+		node *ch[2];
+#if FATHER
+		node *fa;
+#endif
 		tp key;
 		int size;
 		node() {}
 		node(tp k) {
-			ls = rs = fa = null;
+			ls = rs = null;
+#if FATHER
+			fa = null;
+#endif
 			key = k, size = 1;
 		}
 		node *pull() {
@@ -28,6 +38,21 @@ protected:
 	};
 	node *&null = node::null;
 public:
+	node *kth(node *o, int k, bool d) {
+		if (!inrange(k, 1, o->size))
+			return null;
+		while (o != null) {
+			int s = o->ch[d]->size + 1;
+			if (k == s)
+				return o;
+			bool ok = s < k;
+			o = o->ch[ok];
+			if (ok)
+				k -= s;
+		}
+		return null;
+	}
+#if FATHER
 	/*
 	 * 前驱后继, 需要父结点.
 	 * d: 0为前驱, 1为后继.
@@ -44,20 +69,6 @@ public:
 			o = (last = o)->fa;
 		} while (o != null && o->ch[d ^ 1] != last);
 		return o;
-	}
-	node *kth(node *o, int k, bool d) {
-		if (!inrange(k, 1, o->size))
-			return null;
-		while (o != null) {
-			int s = o->ch[d]->size + 1;
-			if (k == s)
-				return o;
-			bool ok = s < k;
-			o = o->ch[ok];
-			if (ok)
-				k -= s;
-		}
-		return null;
 	}
 	/*
 	 * 二分系列其实平衡树只能找到[)端点, 因为只能向下走,
@@ -85,6 +96,9 @@ public:
 		return {ans, o};
 #undef dwn
 	}
+#endif
+#undef ls
+#undef rs
 };
 template<typename tp>
 typename bst<tp>::node *bst<tp>::node::null;

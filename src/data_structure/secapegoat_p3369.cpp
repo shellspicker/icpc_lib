@@ -3,20 +3,15 @@
 #include "template.h"
 #include "data_structure/secapegoat.h"
 
-class query {
-public:
-	int op, x;
-};
-
 class task {
 #define ioend(cond) \
 	do {\
 		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
-	int testcase = 1 << 30;
-	stringstream tid;
-	direct_io fio;
-	debuger bug;
+	class query {
+	public:
+		int op, x;
+	};
 	vector<query> qa;
 	vector<int> ans;
 	secapegoat<int, 1, 100233> dsm;
@@ -79,6 +74,8 @@ public:
 		bool multicase = 0,
 		bool testid = 0,
 		bool blankline = 0) {
+		static int testcase = 1 << 30;
+		static stringstream tid;
 		preprocess();
 		if (multicase)
 			fio.in(testcase);
@@ -86,11 +83,12 @@ public:
 			deal();
 			if (blankline && 1 < ti)
 				fio.out('\n');
-			tid << "Case #" << ti << ": ";
-			if (testid)
+			if (testid) {
+				tid << "Case #" << ti << ": ";
 				fio.out(tid.str());
+				tid.str("");
+			}
 			out();
-			tid.str("");
 		}
 	}
 #undef ioend

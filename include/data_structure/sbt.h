@@ -1,6 +1,7 @@
 #ifndef SBT_H
 #define SBT_H 1
 
+#define FATHER 1
 #include "data_structure/bst.h"
 
 /*
@@ -11,7 +12,13 @@
  */
 template<typename tp, size_t dsn, size_t pon>
 class sbt : public bst<tp> {
-#define link(u, d, v) ((u->ch[d] = v)->fa = u)
+#define ls ch[0]
+#define rs ch[1]
+#if FATHER
+#  define link(u, d, v) ((u->ch[d] = v)->fa = u)
+#else
+#  define link(u, d, v) ((u->ch[d] = v), u)
+#endif
 	class node : public bst<tp>::node {
 	public:
 		static node *null;
@@ -23,14 +30,16 @@ class sbt : public bst<tp> {
 	allocator<node, pon> alloc;
 	// d方向的子结点旋转上来.
 	void rotate(node *&t, int d) {
-		auto helper = [](node *t, int d) {
-			node *k = (node *)t->ch[d], *ac = (node *)t->fa;
-			link(t, d, k->ch[d ^ 1])->pull();
-			link(k, d ^ 1, t);
-			link(ac, ac->rs == t, k);
-			return k;
-		};
-		t = helper(t, d);
+		node *k = (node *)t->ch[d];
+#if FATHER
+		node *ac = (node *)t->fa;
+#endif
+		link(t, d, k->ch[d ^ 1])->pull();
+		link(k, d ^ 1, t);
+#if FATHER
+		link(ac, ac->rs == t, k);
+#endif
+		t = k;
 	}
 	void maintain(node *&t, int d) {
 		if (t->ch[d] == null)
@@ -113,6 +122,8 @@ public:
 			return;
 		remove(root[tid], x);
 	}
+#undef ls
+#undef rs
 #undef link
 };
 template<typename tp, size_t dsn, size_t pon>
