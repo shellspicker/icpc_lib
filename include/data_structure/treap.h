@@ -7,10 +7,6 @@
 #define SPLIT 0
 #define ROTATE 1
 
-#ifdef FUNC_BST
-#define FATHER 1
-#endif
-
 #include "data_structure/bst.h"
 
 /*
@@ -152,20 +148,20 @@ class treap : public bst<tp> {
 #else
 	void insert_back(node *&t, vector<node *> &st, tp x, int f) {
 #endif
-		node *o = new (alloc()) node(x, f), *fix = null;
+		node *o = new (alloc()) node(x, f), *lx = null;
 #if FATHER
 		while (last != null && o->fix > last->fix)// heap.
 			last = (node *)last->pull()->fa;
-		fix = (node *)last->rs;
+		lx = (node *)last->rs;
 #else
 		node *last;
 		while (!st.empty() && o->fix > st.back()->fix) {// heap.
-			fix = (node *)st.back()->pull();
+			lx = (node *)st.back()->pull();
 			st.pop_back();
 		}
 		last = st.empty() ? null : st.back();
 #endif
-		link(o, 0, fix)->pull();
+		link(o, 0, lx)->pull();
 		link(last, 1, o);
 #if FATHER
 		last = o;
@@ -253,7 +249,11 @@ class treap : public bst<tp> {
 			t = new (alloc()) node(x);
 		} else {
 			bool d = t->key < x;// equal or not is don't care.
+#if FATHER
 			insert((node *&)t->ch[d], x)->fa = t;
+#else
+			insert((node *&)t->ch[d], x);
+#endif
 			if (((node *)t->ch[d])->fix > t->fix)// heap.
 				rotate(t, d);
 			t->pull();
@@ -267,9 +267,12 @@ class treap : public bst<tp> {
 		bool ok;
 		if (x == t->key) {
 			if (t->ls == null || t->rs == null) {
-				node *fa = (node *)t->fa;
 				alloc(t);
-				(t = t->ls != null ? (node *)t->ls : (node *)t->rs)->fa = fa;
+				node *tmp = t->ls != null ? (node *)t->ls : (node *)t->rs;
+#if FATHER
+				tmp->fa = t->fa;
+#endif
+				t = tmp;
 				ok = 1;
 			} else {
 				int d = (((node *)t->ls)->fix > ((node *)t->rs)->fix ? 0 : 1);// heap.

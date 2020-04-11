@@ -1,7 +1,6 @@
 #ifndef SBT_H
 #define SBT_H 1
 
-#define FATHER 1
 #include "data_structure/bst.h"
 
 /*
@@ -64,7 +63,11 @@ end:
 			t = new (alloc()) node(x);
 		} else {
 			bool d = t->key < x;// equal or not is don't care.
+#if FATHER
 			insert((node *&)t->ch[d], x)->fa = t;
+#else
+			insert((node *&)t->ch[d], x);
+#endif
 			maintain(t, d);
 		}
 		return t;
@@ -84,7 +87,9 @@ end:
 			if(t->ls == null || t->rs == null) {// 对应后面2个条件, 删除的不一定是准确值.
 				alloc(t);
 				node *tmp = t->ls != null? (node *)t->ls: (node *)t->rs;
+#if FATHER
 				tmp->fa = t->fa;
+#endif
 				t = tmp;
 			} else {
 				// 替换成子树中最接近当前结点的值.
@@ -92,7 +97,7 @@ end:
 				t->key = remove((node *&)t->ch[d], t->key + (!d ? 1 : -1));
 			}
 		} else {
-			// case2:
+			// case2.
 			ret = remove((node *&)t->ch[t->key < x], x);
 		}
 		if (t != null)

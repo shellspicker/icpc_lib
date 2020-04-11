@@ -599,11 +599,7 @@ public:
 		va_start(args, fmt);
 		vsprintf(buf, fmt, args);
 		va_end(args);
-#if FAST_IO
-		output((const char *)buf);
-#else
-		cout << buf;
-#endif
+		out((const char *)buf);
 	}
 } fio;
 class debuger {

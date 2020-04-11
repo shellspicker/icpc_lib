@@ -1,6 +1,7 @@
 #define FAST_IO 1
 
 #include "template.h"
+#define FATHER 0
 #include "data_structure/sbt.h"
 
 class task {

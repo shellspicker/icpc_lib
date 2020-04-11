@@ -1,6 +1,10 @@
 #ifndef BST_H
 #define BST_H 1
 
+#ifndef FATHER
+#  define FATHER 0
+#endif
+
 /*
  * 二叉搜索树.
  * 只有搜索的功能, 其他的由平衡树来继承.
@@ -37,6 +41,9 @@ protected:
 		}
 	};
 	node *&null = node::null;
+#if !FATHER
+	vector<node *> chain;
+#endif
 public:
 	node *kth(node *o, int k, bool d) {
 		if (!inrange(k, 1, o->size))
@@ -52,7 +59,6 @@ public:
 		}
 		return null;
 	}
-#if FATHER
 	/*
 	 * 前驱后继, 需要父结点.
 	 * d: 0为前驱, 1为后继.
@@ -65,9 +71,19 @@ public:
 			return o;
 		}
 		node *last;
+#if FATHER
 		do {
 			o = (last = o)->fa;
 		} while (o != null && o->ch[d ^ 1] != last);
+#else
+		last = o;
+		chain.pop_back();
+		while (!chain.empty() && chain.back()->ch[d ^ 1] != last) {
+			last = chain.back();
+			chain.pop_back();
+		}
+		o = chain.empty() ? null : chain.back();
+#endif
 		return o;
 	}
 	/*
@@ -86,6 +102,9 @@ public:
 		node *last = null;
 		bool lastdir;
 		while (o != null) {
+#if !FATHER
+			chain.push_back(o);
+#endif
 			last = o;
 			dwn((!d && o->key < x) || (d && !(x < o->key)));
 		}
@@ -93,10 +112,12 @@ public:
 		o = d ^ contain ^ lastdir ? last : order(last, lastdir);
 		if (fuzzy && o->key ^ x)
 			o = last;
+#if !FATHER
+		chain.clear();
+#endif
 		return {ans, o};
 #undef dwn
 	}
-#endif
 #undef ls
 #undef rs
 };

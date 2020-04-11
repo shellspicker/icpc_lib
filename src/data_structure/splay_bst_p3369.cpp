@@ -2,6 +2,7 @@
 
 #include "template.h"
 #define FUNC_BST 1
+#define FATHER 0
 #include "data_structure/splay.h"
 
 class task {

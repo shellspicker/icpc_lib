@@ -2,6 +2,7 @@
 
 #include "template.h"
 #define FUNC_BST 1
+#define FATHER 0
 #define BST_MODE SPLIT
 #include "data_structure/treap.h"
 

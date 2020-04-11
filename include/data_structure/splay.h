@@ -10,9 +10,6 @@
 #if SELECT_MODE == DOWN_TOP
 #define FATHER 1
 #endif
-#ifdef FUNC_BST
-#define FATHER 1
-#endif
 
 #include "data_structure/bst.h"
 
@@ -276,7 +273,10 @@ class splay : public bst<tp> {
 			t->ch[d] = null;
 			t = (node *)link(o, d ^ 1, t->pull());
 		}
-		t->pull()->fa = null;
+		t->pull();
+#if FATHER
+		t->fa = null;
+#endif
 	}
 	void remove(node *&t, tp x) {
 		select_by_val(t, x);
@@ -290,9 +290,11 @@ class splay : public bst<tp> {
 			select_by_val((node *&)t->ch[d], t->key + (d ? -1 : 1));
 			t = (node *)link(t->ch[d], d ^ 1, t->ch[d ^ 1]);
 		}
-		t->fa = null;
 		if (t != null)
 			t->pull();
+#if FATHER
+		t->fa = null;
+#endif
 	}
 #endif
 public:
