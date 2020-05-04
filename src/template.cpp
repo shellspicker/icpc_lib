@@ -1,4 +1,4 @@
-#define FAST_IO 0
+#define FAST_IO 1
 
 #include "template.h"
 

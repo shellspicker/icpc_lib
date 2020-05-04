@@ -234,23 +234,25 @@ using ordered_map = __gnu_pbds::tree<
 						__gnu_pbds::tree_order_statistics_node_update>;
 #endif
 #define endl '\n'
-#define fup_s2(i, lr, s) fup_s(i, lr, s)
-#define fwn_s2(i, lr, s) fwn_s(i, lr, s)
 #define fup_s(i, a, b, s) for (int i = a, foc = b; i <= foc; i += s)
 #define fwn_s(i, a, b, s) for (int i = b, foc = a; foc <= i; i -= s)
-#define fup2(i, lr) fup(i, lr)
-#define fwn2(i, lr) fwn(i, lr)
+#define fup_s2(i, lr, s) fup_s(i, lr, s)
+#define fwn_s2(i, lr, s) fwn_s(i, lr, s)
 #define fup(i, a, b) fup_s(i, a, b, 1)
 #define fwn(i, a, b) fwn_s(i, a, b, 1)
+#define fup2(i, lr) fup(i, lr)
+#define fwn2(i, lr) fwn(i, lr)
 #define fup_range(i, st, off) fup2(i, range(st, off))
-#define fwn_range(i, ed, off) fwn2(i, range(ed, off))
+#define fup_range_r(i, ed, off) fup2(i, range_r(ed, off))
+#define fwn_range(i, st, off) fwn2(i, range(st, off))
+#define fwn_range_r(i, ed, off) fwn2(i, range_r(ed, off))
 #define it_each(obj) (obj).begin(), (obj).end()
-#define it_i(obj, i) (obj).begin() + (i)
-#define it_i_rev(obj, i) (obj).end() - 1 - (i)
-#define it_seg2(obj, lr) it_seg(obj, lr)
+#define it_i(obj, i) ((obj).begin() + (i))
+#define it_i_rev(obj, i) ((obj).end() - 1 - (i))
 #define it_seg(obj, l, r) it_i(obj, l), it_i(obj, r)
-#define it_seg_rev2(obj, lr) it_seg_rev(obj, lr)
+#define it_seg2(obj, lr) it_seg(obj, lr)
 #define it_seg_rev(obj, l, r) it_i_rev(obj, r), it_i_rev(obj, l)
+#define it_seg_rev2(obj, lr) it_seg_rev(obj, lr)
 #define it_range(obj, st, off) it_seg2(obj, range(st, off))
 #define it_range_r(obj, ed, off) it_seg2(obj, range_r(ed, off))
 #define it_range_rev(obj, st, off) it_seg_rev2(obj, range(obj, st, off))
@@ -324,7 +326,8 @@ ll ltor(ll l, ll len) { return l + len - 1; }
 ll rtol(ll r, ll len) { return r - len + 1; }
 ll length(ll l, ll r) { return (r < l) ? 0 : r - l + 1; }
 bool inrange(ll x, ll l, ll r) { return r < l ? 0 : l <= x && x <= r; }
-ll midpoint(ll l, ll r) { return l + ((r - l) >> 1); }
+// when length is even, return exactly right segment's start.
+ll midpoint(ll l, ll r) { return l + (length(l, r) >> 1); }
 template<typename tp>
 void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
 /*
@@ -412,6 +415,7 @@ void premul_preprocess(
 }
 ull div_roundup(ull x, ull div) { return (x + div - 1) / div; }
 ull div_rounddown(ull x, ull div) { return x / div; }
+ull div_last_offset(ull x, ull div) { return div_rounddown(x - 1, div); }
 ll round_shift(ll x, ll dist, ll l, ll r)
 {
 	int len = length(l, r);
@@ -442,8 +446,8 @@ class direct_io {
 		*ohead++ = ch;
 	}
 	void input(char &ch) {
-		for (; ch = getchar(), ch ^ -1 && !isgraph(ch););
-		set_status(ch ^ -1);
+		for (; ch = getchar(), ~ch && !isgraph(ch););
+		set_status(~ch);
 	}
 	void input(char *s) {
 		char ch;
@@ -699,15 +703,15 @@ public:
 };
 template<typename tp, size_t pon = 0>
 class allocator {
-	vector<tp> mem;
+	vector<tp *> mem;
 	queue<tp *> cache;
 public:
 	allocator() { mem.reserve(pon); }
 	tp *operator ()() {
 		tp *ret;
 		if (cache.empty()) {
-			mem.emplace_back(tp());
-			ret = &mem.back();
+			mem.push_back(new tp());
+			ret = mem.back();
 		} else {
 			ret = cache.front();
 			cache.pop();
@@ -719,6 +723,8 @@ public:
 	}
 	void clear() {
 		mem.clear();
+		fup_range (i, 0, mem.size())
+			delete mem[i];
 		while (!cache.empty())
 			cache.pop();
 	}

@@ -8,13 +8,17 @@
 
 记得各种类型数据范围，int爆就long long，再爆就unsigned long long。
 
+string.find失败了, 是-1还是-1llu? 不同平台好像有不同表现, 但是string::npos是统一的, 所以要避免写-1.
+
 运算符优先级用ascii画图画个表格。（注意位移和逻辑判断）
 
-跳过空白输入，isblank只跳空格，isspace跳空格和换行，cin>>ws能跳任何空白。
+跳过空白输入，isblank只跳空格，isspace跳空格和换行，cin\>\>ws能跳任何空白。
 
 字符串输出" \n"[i == n - 1]，从语法分析来看，这是字符串数组。
 
 有返回值的函数一定要写明返回值，即使没有接收返回值，否则一些环境会re。
+
+不要把字符\[0, 9\]写成int\[0, 9\].
 
 ## thinking
 
