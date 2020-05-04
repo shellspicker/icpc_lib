@@ -6,6 +6,7 @@ if [ $# -ne 1 ]; then
 fi
 
 file=$1
+prepend=/home/zgh/git/icpc_lib
 
-./replace.sh $file -q -ocf.cpp
-g++ -ocf cf.cpp
+$prepend/replace.sh $file -q -otest.cpp
+g++ -Wall -otest test.cpp
