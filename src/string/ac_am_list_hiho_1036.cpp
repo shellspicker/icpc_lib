@@ -1,47 +1,41 @@
 #define FAST_IO 1
 
 #include "template.h"
-#include "data_structure/rmq.h"
+#define FUNC_AM 1
+#define FIND_MODE LIST
+#include "string/ac_am.h"
 
 class task {
 #define ioend(cond) \
 	do {\
 		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
-	class query {
-	public:
-		int l, r, ans;
-	};
-	vector<int> v;
-	vector<query> qa;
+	ac_am<1000233> dsm;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
 	istream &in() {
-		int vn, qn;
-		ioend(fio.in(vn, qn));
-		v.resize(vn);
-		fup_range (i, 0, vn)
-			fio.in(v[i]);
-		qa.resize(qn);
-		fup_range (i, 0, qn) {
-			int l, r;
-			fio.in(l, r);
-			l--, r--;
-			qa[i] = {l, r, 0};
+		int n;
+		ioend(fio.in(n));
+		dsm.init();
+		fup (i, 1, n) {
+			string s;
+			fio.in(s);
+			dsm.insert(s);
 		}
+		dsm.build();
+		string text;
+		fio.in(text);
+		dsm.find(text);
+		if (dsm.is_find)
+			fio.out("YES\n");
+		else
+			fio.out("NO\n");
 		return cin;
 	}
 	void deal() {
-		rmq<int> dsm(
-				[](int a, int b) { return max(a, b); });
-		dsm.init(v);
-		for (auto &q : qa)
-			q.ans = dsm.range_query(q.l, q.r);
 	}
 	void out() {
-		for (auto &q : qa)
-			fio.out(q.ans, '\n');
 	}
 public:
 	task(

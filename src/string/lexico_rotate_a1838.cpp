@@ -1,47 +1,44 @@
+/*
+ * 正序求最大表示的第一个位置, 逆序求最大表示的最后一个位置.
+ */
 #define FAST_IO 1
 
 #include "template.h"
-#include "data_structure/rmq.h"
+#include "string/lexico_rotate.h"
 
 class task {
 #define ioend(cond) \
 	do {\
 		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
-	class query {
-	public:
-		int l, r, ans;
-	};
-	vector<int> v;
-	vector<query> qa;
+	int len;
+	string text, rev;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
 	istream &in() {
-		int vn, qn;
-		ioend(fio.in(vn, qn));
-		v.resize(vn);
-		fup_range (i, 0, vn)
-			fio.in(v[i]);
-		qa.resize(qn);
-		fup_range (i, 0, qn) {
-			int l, r;
-			fio.in(l, r);
-			l--, r--;
-			qa[i] = {l, r, 0};
-		}
+		ioend(fio.in(len, text));
 		return cin;
 	}
 	void deal() {
-		rmq<int> dsm(
-				[](int a, int b) { return max(a, b); });
-		dsm.init(v);
-		for (auto &q : qa)
-			q.ans = dsm.range_query(q.l, q.r);
 	}
 	void out() {
-		for (auto &q : qa)
-			fio.out(q.ans, '\n');
+		rev = text;
+		auto cw = lexico_rotate<greater<int>>(text, 1);
+		reverse(it_each(rev));
+		auto ccw = lexico_rotate<greater<int>>(rev, 0);
+		ccw.first = i_rev(len, ccw.first);
+		int lexico = cw.second.compare(ccw.second);
+		if (lexico >= 0) {
+			if (!lexico && ccw.first < cw.first) {
+				fio.out(ccw.first + 1, ' ', 1, '\n');
+			} else {
+				fio.out(cw.first + 1, ' ', 0, '\n');
+			}
+		} else {
+			fio.out(ccw.first + 1, ' ', 1, '\n');
+		}
+		return;
 	}
 public:
 	task(
@@ -66,7 +63,7 @@ public:
 		}
 	}
 #undef ioend
-} gkd(0, 0, 0);
+} gkd(1, 0, 0);
 
 int main()
 {

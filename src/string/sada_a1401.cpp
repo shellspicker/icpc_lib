@@ -1,47 +1,47 @@
+/*
+ * 后缀数组, 下标跳跃.
+ * 注意不需要在字符串结尾加最小字符了.
+ */
 #define FAST_IO 1
 
 #include "template.h"
-#include "data_structure/rmq.h"
+#define STEP 1
+#include "string/sada.h"
 
 class task {
 #define ioend(cond) \
 	do {\
 		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
-	class query {
-	public:
-		int l, r, ans;
-	};
-	vector<int> v;
-	vector<query> qa;
+	int len;
+	string text, ans;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
 	istream &in() {
-		int vn, qn;
-		ioend(fio.in(vn, qn));
-		v.resize(vn);
-		fup_range (i, 0, vn)
-			fio.in(v[i]);
-		qa.resize(qn);
-		fup_range (i, 0, qn) {
-			int l, r;
-			fio.in(l, r);
-			l--, r--;
-			qa[i] = {l, r, 0};
-		}
+		ioend(fio.in(len, text));
 		return cin;
 	}
 	void deal() {
-		rmq<int> dsm(
-				[](int a, int b) { return max(a, b); });
-		dsm.init(v);
-		for (auto &q : qa)
-			q.ans = dsm.range_query(q.l, q.r);
+		getans();
 	}
 	void out() {
-		for (auto &q : qa)
-			fio.out(q.ans, '\n');
+		fio.out(ans, '\n');
+	}
+	void getans() {
+		auto nxt = [=](ll i) {
+			return (i * i + 1) % len;
+		};
+		sada<> sa(nxt);
+		sa.init(text);
+		sa.init_sa();
+
+		int m2 = sa.sa[len - 1];
+		ans.clear();
+		fup (t, 1, len) {
+			ans += text[m2];
+			m2 = nxt(m2);
+		}
 	}
 public:
 	task(
@@ -66,7 +66,7 @@ public:
 		}
 	}
 #undef ioend
-} gkd(0, 0, 0);
+} gkd(1, 1, 0);
 
 int main()
 {

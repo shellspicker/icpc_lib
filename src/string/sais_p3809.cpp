@@ -1,57 +1,57 @@
+#define FAST_IO 1
+
 #include "template.h"
 #include "string/sais.h"
 
-class data {
+class task {
+#define ioend(cond) \
+	do {\
+		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
+	} while(0)
 	string s;
 	sais sa;
-	istream &ioend() {
-		cin.setstate(ios_base::badbit);
-		return cin;
+	void preprocess() {
+		fio.set_output_float_digit(12);
 	}
-public:
 	istream &in() {
-		cin >> s;
+		ioend(fio.in(s));
 		return cin;
 	}
 	void deal() {
+		s += '$';
 		sa.init(s);
+		sa.init_sa();
 	}
 	void out() {
 		fup (i, 1, sa.sa.size() - 1)
-			cout << sa.sa[i] + 1 << " \n"[i == sa.sa.size() - 1];
+			fio.out(sa.sa[i] + 1, " \n"[i == sa.sa.size() - 1]);
 	}
-};
-
-class task {
-	int testcase = 1 << 30;
-	stringstream tid;
-	data gkd{};
 public:
 	task(
-		bool multicase = false,
-		bool testid = false,
-		bool blankline = false) {
-		ios::sync_with_stdio(0);
-		cin.tie(0);
-		cout.setf(ios::fixed);
-		cout.precision(20);
+		bool multicase = 0,
+		bool testid = 0,
+		bool blankline = 0) {
+		static int testcase = 1 << 30;
+		static stringstream tid;
+		preprocess();
 		if (multicase)
-			cin >> testcase;
-		for (int ti = 1; ti <= testcase && gkd.in(); ++ti) {
-			gkd.deal();
+			fio.in(testcase);
+		for (int ti = 1; ti <= testcase && in(); ++ti) {
+			deal();
 			if (blankline && 1 < ti)
-				cout << endl;
-			tid << "Case #" << ti << ": ";
-			if (testid)
-				cout << tid.str();
-			gkd.out();
-			tid.str("");
+				fio.out('\n');
+			if (testid) {
+				tid << "Case #" << ti << ": ";
+				fio.out(tid.str());
+				tid.str("");
+			}
+			out();
 		}
 	}
-};
+#undef ioend
+} gkd(0, 0, 0);
 
 int main()
 {
-	task gkd(0, 0, 0);
 	return 0;
 }

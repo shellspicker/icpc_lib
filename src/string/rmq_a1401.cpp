@@ -1,6 +1,7 @@
 #define FAST_IO 1
 
 #include "template.h"
+#define FUNC_HASH 1
 #include "data_structure/rmq.h"
 
 class task {
@@ -8,40 +9,50 @@ class task {
 	do {\
 		if (!(cond)) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
-	class query {
-	public:
-		int l, r, ans;
-	};
-	vector<int> v;
-	vector<query> qa;
+	int len;
+	string text, ans;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
 	istream &in() {
-		int vn, qn;
-		ioend(fio.in(vn, qn));
-		v.resize(vn);
-		fup_range (i, 0, vn)
-			fio.in(v[i]);
-		qa.resize(qn);
-		fup_range (i, 0, qn) {
-			int l, r;
-			fio.in(l, r);
-			l--, r--;
-			qa[i] = {l, r, 0};
-		}
+		ioend(fio.in(len, text));
 		return cin;
 	}
 	void deal() {
-		rmq<int> dsm(
-				[](int a, int b) { return max(a, b); });
-		dsm.init(v);
-		for (auto &q : qa)
-			q.ans = dsm.range_query(q.l, q.r);
+		getans<ull, 3137>();
 	}
 	void out() {
-		for (auto &q : qa)
-			fio.out(q.ans, '\n');
+		fio.out(ans, '\n');
+	}
+	template<typename tp, tp seed>
+	void getans() {
+		auto nxt = [=](ll i) {
+			return (i * i + 1) % len;
+		};
+		vector<int> idx_nxt;
+		idx_nxt.resize(len);
+		fup_range (i, 0, len)
+			idx_nxt[i] = nxt(i);
+
+		vector<tp> vstr;
+		vstr.assign(it_each(text));
+
+		rmq<tp, greater<tp>, seed> dsm(
+				[](tp a, tp b) { return a + b; },
+				idx_nxt);
+		dsm.init(vstr);
+
+		int m2 = 0;
+		fup_range (i, 0, len) {
+			if (dsm.range_query(i, m2))
+				m2 = i;
+		}
+
+		ans.clear();
+		fup (t, 1, len) {
+			ans += text[m2];
+			m2 = nxt(m2);
+		}
 	}
 public:
 	task(
@@ -66,7 +77,7 @@ public:
 		}
 	}
 #undef ioend
-} gkd(0, 0, 0);
+} gkd(1, 1, 0);
 
 int main()
 {

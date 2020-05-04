@@ -5,19 +5,19 @@ class sais {
 public:
 	string origin;
 	vector<int> val, sa, rk, lcp;
-	void init(const string &str) {
-		origin.assign(str);
-		origin += '#';
-		int sz = origin.size();
-		val.resize(sz);
-		sa.resize(sz);
-		rk.resize(sz);
-		lcp.resize(sz);
-		val.assign(it_each(origin));
-		get_sa(val, sa);
-		get_lcp();
+	int len;
+	void init(const string &s) {
+		val.assign(it_each(s));
 	}
-	void get_sa(vector<int> &text, vector<int> &sa) {
+	void init(const vector<int> &v) {
+		val.assign(it_each(v));
+	}
+	void init_sa() {
+		int len = val.size();
+		sa.resize(len);
+		init_sa(val, sa);
+	}
+	void init_sa(vector<int> &text, vector<int> &sa) {
 		int len = text.size(), vmx = *max_element(it_each(text));
 		vector<int> bk(vmx + 1), lbk(vmx + 1), sbk(vmx + 1), lms;
 		vector<bool> type(len);
@@ -50,13 +50,15 @@ public:
 		auto induced_sort = [&]() {
 			fill(it_each(sa), -1);
 			reset_bk();
-			fwn (i, 0, lms.size() - 1)
+			fwn_range (i, 0, lms.size())
 				push_sbk(lms[i]);
-			fup (i, 0, sa.size() - 1) if (0 < sa[i] && type[sa[i] - 1])
-				push_lbk(sa[i] - 1);
+			fup_range (i, 0, sa.size())
+				if (0 < sa[i] && type[sa[i] - 1])
+					push_lbk(sa[i] - 1);
 			reset_bk();
-			fwn (i, 0, sa.size() - 1) if (0 < sa[i] && !type[sa[i] - 1])
-				push_sbk(sa[i] - 1);
+			fwn_range (i, 0, sa.size())
+				if (0 < sa[i] && !type[sa[i] - 1])
+					push_sbk(sa[i] - 1);
 		};
 		for (auto x : text)
 			bk[x]++;
@@ -71,7 +73,7 @@ public:
 		vector<int> rr(len);
 		int cc = 0, last = -1;
 		fill(it_each(rr), -1);
-		fup (i, 0, len - 1) {
+		fup_range (i, 0, len) {
 			int pos = sa[i];
 			if (is_lms_char(pos)) {
 				if (~last && !is_lms_equal(pos, last))
@@ -82,22 +84,25 @@ public:
 		}
 		bool flag = cc + 1 == lms.size();
 		vector<int> text1(lms.size()), sa1(lms.size());
-		copy_if(it_each(rr), text1.begin(), [](int x) { return x ^ -1; });
+		copy_if(it_each(rr), text1.begin(), [](int x) { return ~x; });
 		if (flag)
-			fup (i, 0, lms.size() - 1)
+			fup_range (i, 0, lms.size())
 				sa1[text1[i]] = i;
 		else
-			get_sa(text1, sa1);
+			init_sa(text1, sa1);
 		transform(it_each(sa1), sa1.begin(), [&](int x) { return lms[x]; });
 		lms.swap(sa1);
 		induced_sort();
 	}
-	void get_lcp() {
-		fup (i, 0, sa.size() - 1)
+	void init_lcp() {
+		int len = val.size();
+		rk.resize(len);
+		lcp.resize(len);
+		fup_range (i, 0, len)
 			rk[sa[i]] = i;
-		int d = 0;
+		lcp.resize(len);
 		lcp[0] = 0;
-		fup (p1, 0, sa.size() - 2) {
+		for (int d = 0, p1 = 0; p1 < len - 1; ++p1) {
 			if (d)
 				d--;
 			int p2 = sa[rk[p1] - 1];

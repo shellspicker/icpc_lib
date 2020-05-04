@@ -9,13 +9,6 @@ void combine(size_t &seed, const tp &x)
 {
 	seed ^= hash<tp>()(x) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
-void hash_val(size_t &seed) {}
-template<typename tp, typename ...var>
-void hash_val(size_t &seed, tp &val, var &&...args)
-{
-	combine(seed, val);
-	hash_val(seed, forward<var>(args)...);
-}
 template<typename tp>
 size_t hash_val(vector<tp> &&vec)
 {
@@ -28,7 +21,7 @@ template<typename ...var>
 size_t hash_val(var &&...args)
 {
 	size_t seed = 0;
-	hash_val(seed, forward<var>(args)...);
+	initializer_list<int>{(combine(seed, forward<var>(args)), 0)...};
 	return seed;
 }
 /*
