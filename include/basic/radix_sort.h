@@ -12,7 +12,7 @@ void radix_sort(vector<tp> &v, uint blk = 1 << 8)
 		for (auto x : v)
 			cnt[bit(x)]++;
 		partial_sum(it_each(cnt), cnt.begin());
-		fwn (i, 0, v.size() - 1) {
+		fwn_range (i, 0, v.size()) {
 			tp &x = v[i];
 			cp[--cnt[bit(x)]] = x;
 		}

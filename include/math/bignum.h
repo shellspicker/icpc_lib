@@ -55,7 +55,7 @@ struct bignum {
 				sign = 1;
 		}
 		st = s.find_first_not_of("0"); // 前导0.
-		if (st == -1llu) {
+		if (st == string::npos) {
 			vd.assign(1, 0);
 			return;
 		}

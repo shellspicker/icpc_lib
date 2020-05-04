@@ -70,7 +70,7 @@ public:
 			bool ok;
 			string plus("+-"), multiply("*/%^");
 			ok = rig != ')' && (lef == '(' || rig == '('
-				|| (plus.find(lef) != -1ull && multiply.find(rig) != -1ull));
+				|| (plus.find(lef) != string::npos && multiply.find(rig) != string::npos));
 			return ok;
 		};
 		while (cur < len) {
@@ -78,7 +78,7 @@ public:
 				cur++;
 			if (isdigit(ch)) {
 				size_t ed = exp.find_first_not_of("0123456789", cur);
-				if (ed == -1ull)
+				if (ed == string::npos)
 					ed = len;
 				if (sizeof(tp) - 4)
 					push_num(nop, stoll(exp.substr(cur, ed - cur)) * minus);
