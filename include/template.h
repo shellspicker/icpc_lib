@@ -326,6 +326,18 @@ ll ltor(ll l, ll len) { return l + len - 1; }
 ll rtol(ll r, ll len) { return r - len + 1; }
 ll length(ll l, ll r) { return (r < l) ? 0 : r - l + 1; }
 bool inrange(ll x, ll l, ll r) { return r < l ? 0 : l <= x && x <= r; }
+ll range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
+{
+	if (lef_r < lef_l || rig_r < rig_l)
+		return 0;
+	if (lef_r < rig_l || rig_r < lef_l)
+		return 0;
+	if (rig_l <= lef_l && lef_r <= rig_r)
+		return length(lef_l, lef_r);
+	if (lef_l <= rig_l && rig_r <= lef_r)
+		return length(rig_l, rig_r);
+	return min(length(lef_l, rig_r), length(rig_l, lef_r));
+}
 // when length is even, return exactly right segment's start.
 ll midpoint(ll l, ll r) { return l + (length(l, r) >> 1); }
 template<typename tp>
@@ -339,6 +351,7 @@ void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
  * check point in range and compare with key or condition again.
  * a rule is, must return error condition point, it will fix point
  * to last correct range, or it is alrealdy in correct range.
+ * consume vecotr sort by less<>, you can find the pattern in the table below.
  * +-----------------------------+
  * |                             |
  * | dir           0   0   1   1 |
@@ -362,18 +375,29 @@ void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
  * | xor error_dir               |
  * |                             |
  * +-----------------------------+
+ * for sort by greater<>, just use cmp function instead of <.
+ * return: (found, index, value).
  */
-template<typename tp>
-int binary_search(
+template<typename tp, class func_cmp = less<tp>>
+pair<bool, pair<int, tp>> binary_search(
 		const vector<tp> &v, int lo, int hi, tp key, bool dir, bool contain)
 {
 #define look(cond) if ((cond)) lo = mid + 1; else hi = mid - 1;
-	range_normalize(lo, hi);
+	assert(lo <= hi);
+	func_cmp cmp = func_cmp();
+	int locp = lo, hicp = hi;
+	pair<bool, pair<int, tp>> ret = {0, {0, 0}};
 	while (lo <= hi) {
 		int mid = midpoint(lo, hi), now = v[mid];
-		look((!dir && now < key) || (dir && !(key < now)));
+		look((!dir && cmp(now, key)) || (dir && !cmp(key, now)));
 	}
-	return dir ^ contain ? lo : hi;
+	int pos = dir ^ contain ? lo : hi;
+	ret.second.first = pos;
+	if (inrange(pos, locp, hicp)) {
+		ret.first = 1;
+		ret.second.second = v[pos];
+	}
+	return ret;
 #undef look
 }
 template<typename tp>
