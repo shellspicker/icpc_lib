@@ -326,17 +326,19 @@ ll ltor(ll l, ll len) { return l + len - 1; }
 ll rtol(ll r, ll len) { return r - len + 1; }
 ll length(ll l, ll r) { return (r < l) ? 0 : r - l + 1; }
 bool inrange(ll x, ll l, ll r) { return r < l ? 0 : l <= x && x <= r; }
-ll range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
+tuple<ll, pair<ll, ll>> range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
 {
 	if (lef_r < lef_l || rig_r < rig_l)
-		return 0;
+		return {0, make_pair(-1, -1)};
 	if (lef_r < rig_l || rig_r < lef_l)
-		return 0;
+		return {0, make_pair(-1, -1)};
 	if (rig_l <= lef_l && lef_r <= rig_r)
-		return length(lef_l, lef_r);
+		return {length(lef_l, lef_r), make_pair(lef_l, lef_r)};
 	if (lef_l <= rig_l && rig_r <= lef_r)
-		return length(rig_l, rig_r);
-	return min(length(lef_l, rig_r), length(rig_l, lef_r));
+		return {length(rig_l, rig_r), make_pair(rig_l, rig_r)};
+	return {
+			min(length(lef_l, rig_r), length(rig_l, lef_r)),
+			make_pair(max(lef_l, rig_l), min(lef_r, rig_r))};
 }
 // when length is even, return exactly right segment's start.
 ll midpoint(ll l, ll r) { return l + (length(l, r) >> 1); }
@@ -379,25 +381,25 @@ void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
  * return: (found, index, value).
  */
 template<typename tp, class func_cmp = less<tp>>
-pair<bool, pair<int, tp>> binary_search(
-		const vector<tp> &v, int lo, int hi, tp key, bool dir, bool contain)
+tuple<bool, pair<ll, tp>> binary_search(
+		const vector<tp> &v, ll lo, ll hi, tp key, bool dir, bool contain)
 {
 #define look(cond) if ((cond)) lo = mid + 1; else hi = mid - 1;
 	assert(lo <= hi);
 	func_cmp cmp = func_cmp();
-	int locp = lo, hicp = hi;
-	pair<bool, pair<int, tp>> ret = {0, {0, 0}};
+	ll locp = lo, hicp = hi, fd_index = -1;
+	tp fd_value;
+	bool found = 0;
 	while (lo <= hi) {
 		int mid = midpoint(lo, hi), now = v[mid];
 		look((!dir && cmp(now, key)) || (dir && !cmp(key, now)));
 	}
 	int pos = dir ^ contain ? lo : hi;
-	ret.second.first = pos;
 	if (inrange(pos, locp, hicp)) {
-		ret.first = 1;
-		ret.second.second = v[pos];
+		found = 1;
+		fd_value = v[fd_index = pos];
 	}
-	return ret;
+	return {found, make_pair(fd_index, fd_value)};
 #undef look
 }
 template<typename tp>
