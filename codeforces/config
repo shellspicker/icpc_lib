@@ -1,0 +1,26 @@
+{
+  "template": [
+    {
+      "alias": "cpp",
+      "lang": "50",
+      "path": "/home/zgh/git/icpc_lib/src/template.cpp",
+      "suffix": [
+        "cpp"
+      ],
+      "before_script": "/home/zgh/git/icpc_lib/codeforces/run.sh $%full%$",
+      "script": "./test",
+      "after_script": "rm -f test"
+    }
+  ],
+  "default": 0,
+  "gen_after_parse": true,
+  "host": "https://codeforc.es",
+  "proxy": "",
+  "folder_name": {
+    "acmsguru": "acmsguru",
+    "contest": "contest",
+    "group": "group",
+    "gym": "gym",
+    "root": "."
+  }
+}
