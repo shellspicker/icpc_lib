@@ -8,6 +8,12 @@
 - [ ] 开栈.
 - [x] efg_cvt, 浮点数截断, 暂时弃了.
 - [ ] 整理一份全局符号表.
+- [ ] div_t, round之类的math.h或stdlib.h的好东西.
+
+## basic
+
+- [ ] 各种随机数据生成器, 参考cyaron.
+- [ ] 时间or日期类, 用作debug或计算.
 
 ## data structure
 
@@ -16,7 +22,7 @@
 - [x] 平衡树把ls和rs的引用去掉, 这个会占很多空间.
 - [x] 自顶向下搜索树操作.
 - [ ] lct.
-- [ ] 线段树以及类似的带push和pull的区间结构.
+- [ ] 线段树以及类似的带push和pull的区间结构, 文本编辑器, 数列维修.
 - [ ] 分块. 以及延申的xx分治. 再就是块状链表.
 - [ ] pbds头文件, 好像win上编译不了? 各种数据结构都要测试一下.
 - [ ] 堆.
@@ -25,6 +31,8 @@
 
 - [ ] 大浮点数, 大整数已经有了, 稍微改一下, poj1001.
 - [ ] 分数类, uva12558.
+- [ ] 模运算类, 已经有一个了, 但是可以改进一下.
+- [ ] 牛顿插值(对比拉格朗日插值).
 
 ## graph theory
 
@@ -33,7 +41,8 @@
 
 ## string
 
-- [ ] 所有模板.
+- [ ] 后缀自动机, 后缀树.
+- [ ] hash表.
 - [ ] hash的可变参数计算函数重写一下.
 
 ## trick
@@ -46,7 +55,7 @@
 
 ## other
 
-- [ ] 自实现allocator, 可用于vector的那种. 参考cppreference里的vector::reserve.
+- [x] ~~自实现allocator, 可用于vector的那种. 参考cppreference里的vector::reserve.~~
 - [x] 可变参数模板, 用initializer_list一行展开.
 - [ ] 各种比较级函数(min, max, 大于, 小于之类的), 传入lambda, 用function接收, 比如rmq里面用到.
 - [ ] cppreference里面能用到的函数都列一遍, 做个lib整理, 模板里面有using了.
