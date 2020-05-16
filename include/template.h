@@ -66,6 +66,7 @@ using std::deque;
 using std::list;
 using std::stack;
 using std::queue;
+using std::priority_queue;
 using std::bitset;
 #if 201103L <= __cplusplus
 using std::tr2::dynamic_bitset;
