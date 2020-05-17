@@ -327,19 +327,45 @@ ll ltor(ll l, ll len) { return l + len - 1; }
 ll rtol(ll r, ll len) { return r - len + 1; }
 ll length(ll l, ll r) { return (r < l) ? 0 : r - l + 1; }
 bool inrange(ll x, ll l, ll r) { return r < l ? 0 : l <= x && x <= r; }
+#if 201103L <= __cplusplus
 tuple<ll, pair<ll, ll>> range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
+#else
+pair<ll, pair<ll, ll>> range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
+#endif
 {
 	if (lef_r < lef_l || rig_r < rig_l)
-		return {0, make_pair(-1, -1)};
+#if 201103L <= __cplusplus
+		return make_tuple(0, make_pair(-1, -1));
+#else
+		return make_pair(0, make_pair(-1, -1));
+#endif
 	if (lef_r < rig_l || rig_r < lef_l)
-		return {0, make_pair(-1, -1)};
+#if 201103L <= __cplusplus
+		return make_tuple(0, make_pair(-1, -1));
+#else
+		return make_pair(0, make_pair(-1, -1));
+#endif
 	if (rig_l <= lef_l && lef_r <= rig_r)
-		return {length(lef_l, lef_r), make_pair(lef_l, lef_r)};
+#if 201103L <= __cplusplus
+		return make_tuple(length(lef_l, lef_r), make_pair(lef_l, lef_r));
+#else
+		return make_pair(length(lef_l, lef_r), make_pair(lef_l, lef_r));
+#endif
 	if (lef_l <= rig_l && rig_r <= lef_r)
-		return {length(rig_l, rig_r), make_pair(rig_l, rig_r)};
-	return {
+#if 201103L <= __cplusplus
+		return make_tuple(length(rig_l, rig_r), make_pair(rig_l, rig_r));
+#else
+		return make_pair(length(rig_l, rig_r), make_pair(rig_l, rig_r));
+#endif
+#if 201103L <= __cplusplus
+	return make_tuple(
 			min(length(lef_l, rig_r), length(rig_l, lef_r)),
-			make_pair(max(lef_l, rig_l), min(lef_r, rig_r))};
+			make_pair(max(lef_l, rig_l), min(lef_r, rig_r)));
+#else
+	return make_tuple(
+			min(length(lef_l, rig_r), length(rig_l, lef_r)),
+			make_pair(max(lef_l, rig_l), min(lef_r, rig_r)));
+#endif
 }
 // when length is even, return exactly right segment's start.
 ll midpoint(ll l, ll r) { return l + (length(l, r) >> 1); }
@@ -382,8 +408,13 @@ void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
  * return: (found, index, value).
  */
 template<typename tp, class func_cmp = less<tp>>
+#if 201103L <= __cplusplus
 tuple<bool, pair<ll, tp>> binary_search(
 		const vector<tp> &v, ll lo, ll hi, tp key, bool dir, bool contain)
+#else
+pair<bool, pair<ll, tp>> binary_search(
+		const vector<tp> &v, ll lo, ll hi, tp key, bool dir, bool contain)
+#endif
 {
 #define look(cond) if ((cond)) lo = mid + 1; else hi = mid - 1;
 	assert(lo <= hi);
@@ -400,7 +431,11 @@ tuple<bool, pair<ll, tp>> binary_search(
 		found = 1;
 		fd_value = v[fd_index = pos];
 	}
-	return {found, make_pair(fd_index, fd_value)};
+#if 201103L <= __cplusplus
+	return make_tuple(found, make_pair(fd_index, fd_value));
+#else
+	return make_pair(found, make_pair(fd_index, fd_value));
+#endif
 #undef look
 }
 template<typename tp>
@@ -479,7 +514,7 @@ class direct_io {
 	void input(char *s) {
 		char ch;
 		input(ch);
-		if (!status)
+		if (!ok())
 			return;
 		do {
 			*s++ = ch;
@@ -490,7 +525,7 @@ class direct_io {
 		s.clear();
 		char ch;
 		input(ch);
-		if (!status)
+		if (!ok())
 			return;
 		do {
 			s += ch;
@@ -502,7 +537,7 @@ class direct_io {
 		int sgn;
 		tp bit = 0.1;
 		input(ch);
-		if (!status)
+		if (!ok())
 			return;
 		sgn = (ch == '-') ? -1 : 1;
 		ret = isdigit(ch) ? (ch ^ 48) : 0;
@@ -526,12 +561,8 @@ end:
 			putchar(*s);
 	}
 	void output(const string &s) {
-#if 201103L <= __cplusplus
-		for (auto ch : s) {
-#else
 		fup_range (i, 0, s.length()) {
 			char ch = s[i];
-#endif
 			putchar(ch);
 		}
 	}
@@ -549,10 +580,11 @@ end:
 		while (cnt)
 			putchar(buf[cnt--]);
 #if 201103L <= __cplusplus
-		if (std::is_same<typename std::decay<tp>::type, double>::value) {
+		if (std::is_same<typename std::decay<tp>::type, double>::value)
 #else
-		if (tp(x + 0.5) != x) {
+		if (tp(x + 0.5) != x)
 #endif
+		{
 			putchar('.');
 			x -= ll(x);
 			fup (t, 1, output_float_digit) {
@@ -573,55 +605,76 @@ public:
 		ihead = itail = 0;
 		ohead = obuf;
 		output_float_digit = 12;
+		status = 1;
 	}
 	~direct_io() { osb->sputn(obuf, ohead - obuf); }
+	bool ok() {
+		return status;
+	}
 	void set_output_float_digit(int d) {
 		output_float_digit = d;
 	}
 #if 201103L <= __cplusplus
 	template<typename ...var>
-	bool in(var &&...args) {
+	bool in(var &&...args)
 #else
 	template<typename tp>
-	bool in(tp &x) {
+	bool in(tp &x)
 #endif
+	{
 #if 201103L <= __cplusplus
-#if FAST_IO
+#  if FAST_IO
 		initializer_list<int>{(input(forward<var>(args)), 0)...};
-		return status;
-#else
+		return ok();
+#  else
 		initializer_list<int>{(cin >> forward<var>(args), 0)...};
 		return cin.good();
-#endif
+#  endif
 #else
-#if FAST_IO
+#  if FAST_IO
 		input(x);
-		return status;
-#else
+		return ok();
+#  else
 		cin >> x;
 		return cin.good();
+#  endif
 #endif
+	}
+	bool getline(string &line, char delim = '\n') {
+#if FAST_IO
+		line.clear();
+		char ch = getchar();
+		set_status(~ch);
+		if (ch == -1)
+			return 0;
+		for (; ~ch && ch ^ delim; ch = getchar())
+			line += ch;
+		return 1;
+#else
+		std::getline(cin, line, delim);
+		return !cin.fail();
 #endif
 	}
 #if 201103L <= __cplusplus
 	template<typename ...var>
-	void out(var &&...args) {
+	void out(var &&...args)
 #else
 	template<typename tp>
-	void out(tp x) {
+	void out(tp x)
 #endif
+	{
 #if 201103L <= __cplusplus
-#if FAST_IO
+#  if FAST_IO
 		initializer_list<int>{(output(forward<var>(args)), 0)...};
-#else
+#  else
 		initializer_list<int>{(cout << forward<var>(args), 0)...};
-#endif
+#  endif
 #else
-#if FAST_IO
+#  if FAST_IO
 		output(x);
-#else
+#  else
 		cout << x;
-#endif
+#  endif
 #endif
 	}
 	void msg(const char *fmt, ...) {
@@ -639,12 +692,8 @@ class debuger {
 	void print(const tp &x) { cerr << x << delim; }
 	template<typename tp>
 	void print(const vector<tp> &v) {
-#if 201103L <= __cplusplus
-		for (auto x : v) {
-#else
 		fup_range (i, 0, v.size()) {
 			tp x = v[i];
-#endif
 			cerr << x << delim;
 		}
 	}
@@ -715,12 +764,8 @@ public:
 		data.assign(it_each(v));
 		sort(it_each(data));
 		data.erase(unique(it_each(data)), data.end());
-#if 201103L <= __cplusplus
-		for (auto &x : v) {
-#else
 		fup_range (i, 0, data.size()) {
 			tp &x = data[i];
-#endif
 			x = lower_bound(it_each(data), x) - data.begin();
 		}
 	}
