@@ -17,7 +17,7 @@ class task {
 	}
 	istream &in() {
 		paragraph.clear();
-		while (fio.getline(line)) {
+		while (fio.readline(line)) {
 			if (line == "####")
 				break;
 			paragraph.push_back(line);

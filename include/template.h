@@ -46,6 +46,7 @@ using std::ios;
 using std::ios_base;
 using std::istream;
 using std::ostream;
+using std::getline;
 using std::stringstream;
 using std::streambuf;
 using std::cin;
@@ -640,7 +641,7 @@ public:
 #  endif
 #endif
 	}
-	bool getline(string &line, char delim = '\n') {
+	bool readline(string &line, char delim = '\n') {
 #if FAST_IO
 		line.clear();
 		char ch = getchar();
@@ -651,7 +652,7 @@ public:
 			line += ch;
 		return 1;
 #else
-		std::getline(cin, line, delim);
+		getline(cin, line, delim);
 		return !cin.fail();
 #endif
 	}
