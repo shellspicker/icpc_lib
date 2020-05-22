@@ -24,6 +24,7 @@
 #if 201103L <= __cplusplus
 #include <random>
 #endif
+#include <valarray>
 #include <vector>
 #include <deque>
 #include <list>
@@ -62,6 +63,7 @@ using std::get;
 #endif
 using std::pair;
 using std::make_pair;
+using std::valarray;
 using std::vector;
 using std::deque;
 using std::list;
@@ -235,7 +237,6 @@ using ordered_map = __gnu_pbds::tree<
 						key, val, less<key>, __gnu_pbds::rb_tree_tag,
 						__gnu_pbds::tree_order_statistics_node_update>;
 #endif
-#define endl '\n'
 #define fup_s(i, a, b, s) for (int i = a, foc = b; i <= foc; i += s)
 #define fwn_s(i, a, b, s) for (int i = b, foc = a; foc <= i; i -= s)
 #define fup_s2(i, lr, s) fup_s(i, lr, s)
@@ -270,6 +271,7 @@ using ordered_map = __gnu_pbds::tree<
 #define range_r_rev(len, ed, off) seg_rev2((len), range_r(ed, off))
 #define finput(is, cls, obj) friend istream &operator >>(istream &is, cls &obj)
 #define foutput(os, cls, obj) friend ostream &operator <<(ostream &os, const cls &obj)
+#define vaddr(arr, index) &arr[(index)]
 typedef unsigned int uint;
 typedef long long ll;
 typedef unsigned long long ull;
@@ -453,13 +455,14 @@ tp presum_range(const vector<tp> &sum, int l, int r)
 }
 template<typename tp>
 void presum_preprocess(
-						vector<tp> &sum, const vector<tp> &data,
-						int l, int r, int st)
+						const vector<tp> &src, int l, int r,
+						vector<tp> &dest, int st)
 {
 	int len = length(l, r);
-	sum.resize(sum.size() + len);
-	for (int i = st, d = l; d <= r; ++i, ++d)
-		sum[i] = special(sum, i - 1, 0) + data[d];
+	if (dest.size() < st + len)
+		dest.resize(st + len);
+	for (int di = st, si = l; si <= r; ++si, ++di)
+		dest[di] = special(dest, di - 1, 0) + src[si];
 }
 template<typename tp>
 tp premul_range(const vector<tp> &mul, int l, int r)
@@ -468,13 +471,14 @@ tp premul_range(const vector<tp> &mul, int l, int r)
 }
 template<typename tp>
 void premul_preprocess(
-						vector<tp> &mul, const vector<tp> &data,
-						int l, int r, int st)
+						const vector<tp> &src, int l, int r,
+						vector<tp> &dest, int st)
 {
 	int len = length(l, r);
-	mul.resize(mul.size() + len);
-	for (int i = st, d = l; d <= r; ++i, ++d)
-		mul[i] = special(mul, i - 1, 1) * data[d];
+	if (dest.size() < st + len)
+		dest.resize(st + len);
+	for (int di = st, si = l; si <= r; ++si, ++di)
+		dest[di] = special(dest, di - 1, 1) * src[si];
 }
 ull div_roundup(ull x, ull div) { return (x + div - 1) / div; }
 ull div_rounddown(ull x, ull div) { return x / div; }
@@ -704,7 +708,7 @@ public:
 	template<typename ...var>
 	void operator ()(var &&...args) {
 		initializer_list<int>{(print(forward<var>(args)), 0)...};
-		cerr << endl;
+		cerr << '\n';
 	}
 #endif
 	void msg(const char *fmt, ...) {
@@ -713,7 +717,7 @@ public:
 		va_start(args, fmt);
 		vsprintf(buf, fmt, args);
 		va_end(args);
-		cerr << buf << endl;
+		cerr << buf << '\n';
 	}
 } bug;
 #if 201103L <= __cplusplus
@@ -737,6 +741,10 @@ public:
 	}
 	template<typename ...var>
 	tp &operator ()(var &&...args) {
+		return data[index(args...)];
+	}
+	template<typename ...var>
+	int index(var &&...args) {
 		assert(sizeof...(args) == dim.size());
 		int idx = 0;
 		iter it = dim.begin();
@@ -744,9 +752,9 @@ public:
 			idx += *it++ * val;
 		};
 		initializer_list<int>{(product(forward<var>(args)), 0)...};
-		return data[idx];
+		return idx;
 	}
-	vector<tp> get_dim(int idx) {
+	vector<tp> dimension(int idx) {
 		assert(inrange(idx, 0, tot - 1));
 		vector<tp> ret(dim.size());
 		fup (i, 0, ret.size() - 1) {
