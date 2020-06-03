@@ -40,8 +40,11 @@
 #if 201103L <= __cplusplus
 #include <tr2/dynamic_bitset>
 #endif
-#ifdef linux
+#ifdef __linux__
 #include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/hash_policy.hpp>
+#include <ext/pb_ds/priority_queue.hpp>
 #endif
 using std::ios;
 using std::ios_base;
@@ -227,7 +230,7 @@ using std::random_device;
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
 #endif
-#ifdef linux
+#ifdef __linux__
 template<typename key>
 using ordered_set = __gnu_pbds::tree<
 						key, __gnu_pbds::null_type, less<key>, __gnu_pbds::rb_tree_tag,
@@ -236,6 +239,10 @@ template<typename key, typename val>
 using ordered_map = __gnu_pbds::tree<
 						key, val, less<key>, __gnu_pbds::rb_tree_tag,
 						__gnu_pbds::tree_order_statistics_node_update>;
+using __gnu_pbds::cc_hash_table;
+using __gnu_pbds::gp_hash_table;
+template<typename tp, class cmp>
+using pairing_heap = __gnu_pbds::priority_queue<tp, cmp, __gnu_pbds::pairing_heap_tag>;
 #endif
 #define fup_s(i, a, b, s) for (int i = a, foc = b; i <= foc; i += s)
 #define fwn_s(i, a, b, s) for (int i = b, foc = a; foc <= i; i -= s)
@@ -252,6 +259,7 @@ using ordered_map = __gnu_pbds::tree<
 #define it_each(obj) (obj).begin(), (obj).end()
 #define it_i(obj, i) ((obj).begin() + (i))
 #define it_i_rev(obj, i) ((obj).end() - 1 - (i))
+// it_xxx maybe useless.
 #define it_seg(obj, l, r) it_i(obj, l), it_i(obj, r)
 #define it_seg2(obj, lr) it_seg(obj, lr)
 #define it_seg_rev(obj, l, r) it_i_rev(obj, r), it_i_rev(obj, l)
@@ -260,6 +268,7 @@ using ordered_map = __gnu_pbds::tree<
 #define it_range_r(obj, ed, off) it_seg2(obj, range_r(ed, off))
 #define it_range_rev(obj, st, off) it_seg_rev2(obj, range(obj, st, off))
 #define it_range_r_rev(obj, ed, off) it_seg_rev2(obj, range_r(obj, ed, off))
+// it_xxx useless end.
 #define it_prefix(obj, i) (obj).begin(), it_i(obj, i)
 #define it_suffix(obj, i) it_i(obj, i), (obj).end()
 #define i_rev(len, i) ((len) - 1 - (i))
@@ -271,7 +280,6 @@ using ordered_map = __gnu_pbds::tree<
 #define range_r_rev(len, ed, off) seg_rev2((len), range_r(ed, off))
 #define finput(is, cls, obj) friend istream &operator >>(istream &is, cls &obj)
 #define foutput(os, cls, obj) friend ostream &operator <<(ostream &os, const cls &obj)
-#define vaddr(arr, index) &arr[(index)]
 typedef unsigned int uint;
 typedef long long ll;
 typedef unsigned long long ull;
@@ -442,43 +450,96 @@ pair<bool, pair<ll, tp>> binary_search(
 #undef look
 }
 template<typename tp>
-tp special(const vector<tp> &v, int i, tp val)
+tp special(tp val, const tp *arr, int len, int i, int m1 = -1, int m2 = -1)
 {
-	if (inrange(i, 0, int(v.size() - 1)))
+	if (!~m1 || !~m2)
+		m1 = 0, m2 = len - 1;
+	if (inrange(i, m1, m2))
+		return arr[i];
+	return val;
+}
+template<typename tp>
+tp special(tp val, const vector<tp> &v, int i, int m1 = -1, int m2 = -1)
+{
+	if (!~m1 || !~m2)
+		m1 = 0, m2 = v.size() - 1;
+	if (inrange(i, m1, m2))
 		return v[i];
 	return val;
 }
 template<typename tp>
-tp presum_range(const vector<tp> &sum, int l, int r)
+tp presum_range(const tp *sum, int len, int l, int r, int m1 = -1, int m2 = -1)
 {
-	return sum[r] - special(sum, l - 1, 0);
+	if (!~m1 || !~m2)
+		m1 = 0, m2 = len - 1;
+	return sum[r] - special(0, sum, len, l - 1, m1, m2);
+}
+template<typename tp>
+tp presum_range(const vector<tp> &sum, int l, int r, int m1 = -1, int m2 = -1)
+{
+	if (!~m1 || !~m2)
+		m1 = 0, m2 = sum.size() - 1;
+	return sum[r] - special(0, sum, l - 1, m1, m2);
+}
+template<typename tp>
+void presum_preprocess(
+						const tp *src, int l, int r,
+						tp *dest, int len, int st, int m1 = -1, int m2 = -1)
+{
+	if (!~m1 || !~m2)
+		m1 = 0, m2 = len - 1;
+	for (int di = st, si = l; si <= r; ++si, ++di)
+		dest[di] = special(0, dest, len, di - 1, m1, m2) + src[si];
 }
 template<typename tp>
 void presum_preprocess(
 						const vector<tp> &src, int l, int r,
-						vector<tp> &dest, int st)
+						vector<tp> &dest, int st, int m1 = -1, int m2 = -1)
 {
 	int len = length(l, r);
 	if (dest.size() < st + len)
 		dest.resize(st + len);
+	if (!~m1 || !~m2)
+		m1 = 0, m2 = dest.size() - 1;
 	for (int di = st, si = l; si <= r; ++si, ++di)
-		dest[di] = special(dest, di - 1, 0) + src[si];
+		dest[di] = special(0, dest, di - 1, m1, m2) + src[si];
 }
 template<typename tp>
-tp premul_range(const vector<tp> &mul, int l, int r)
+tp premul_range(const tp *mul, int len, int l, int r, int m1 = -1, int m2 = -1)
 {
-	return mul[r] / special(mul, l - 1, 1);
+	if (!~m1 || !~m2)
+		m1 = 0, m2 = len - 1;
+	return mul[r] / special(1, mul, len, l - 1, m1, m2);
+}
+template<typename tp>
+tp premul_range(const vector<tp> &mul, int l, int r, int m1 = -1, int m2 = -1)
+{
+	if (!~m1 || !~m2)
+		m1 = 0, m2 = mul.size() - 1;
+	return mul[r] / special(1, mul, l - 1, m1, m2);
+}
+template<typename tp>
+void premul_preprocess(
+						const tp *src, int l, int r,
+						tp *dest, int len, int st, int m1 = -1, int m2 = -1)
+{
+	if (!~m1 || !~m2)
+		m1 = 0, m2 = len - 1;
+	for (int di = st, si = l; si <= r; ++si, ++di)
+		dest[di] = special(1, dest, len, di - 1, m1, m2) * src[si];
 }
 template<typename tp>
 void premul_preprocess(
 						const vector<tp> &src, int l, int r,
-						vector<tp> &dest, int st)
+						vector<tp> &dest, int st, int m1 = -1, int m2 = -1)
 {
 	int len = length(l, r);
 	if (dest.size() < st + len)
 		dest.resize(st + len);
+	if (!~m1 || !~m2)
+		m1 = 0, m2 = dest.size() - 1;
 	for (int di = st, si = l; si <= r; ++si, ++di)
-		dest[di] = special(dest, di - 1, 1) * src[si];
+		dest[di] = special(1, dest, di - 1, m1, m2) * src[si];
 }
 ull div_roundup(ull x, ull div) { return (x + div - 1) / div; }
 ull div_rounddown(ull x, ull div) { return x / div; }
@@ -722,13 +783,12 @@ public:
 } bug;
 #if 201103L <= __cplusplus
 template<typename tp>
-class zip {
-	using iter = typename vector<tp>::iterator;
+class zip_vector {
 public:
 	int tot;
 	vector<tp> data;
 	vector<int> dim;
-	zip(const vector<int> &v) {
+	zip_vector(const vector<int> &v) {
 		dim.resize(v.size());
 		copy(it_each(v), dim.begin());
 		tot = 1;
@@ -747,7 +807,49 @@ public:
 	int index(var &&...args) {
 		assert(sizeof...(args) == dim.size());
 		int idx = 0;
-		iter it = dim.begin();
+		auto it = dim.begin();
+		auto product = [&](int val) {
+			idx += *it++ * val;
+		};
+		initializer_list<int>{(product(forward<var>(args)), 0)...};
+		return idx;
+	}
+	vector<tp> dimension(int idx) {
+		assert(inrange(idx, 0, tot - 1));
+		vector<tp> ret(dim.size());
+		fup (i, 0, ret.size() - 1) {
+			ret[i] = idx / dim[i];
+			idx -= ret[i] * dim[i];
+		}
+		return ret;
+	}
+};
+template<typename tp>
+class zip_valarray {
+public:
+	int tot;
+	valarray<tp> data;
+	valarray<int> dim;
+	zip_valarray(const vector<int> &v) {
+		dim.resize(v.size());
+		copy(it_each(v), begin(dim));
+		tot = 1;
+		fwn (i, 0, dim.size() - 1) {
+			int suf = tot;
+			tot *= dim[i];
+			dim[i] = suf;
+		}
+		data.resize(tot);
+	}
+	template<typename ...var>
+	tp &operator ()(var &&...args) {
+		return data[index(args...)];
+	}
+	template<typename ...var>
+	int index(var &&...args) {
+		assert(sizeof...(args) == dim.size());
+		int idx = 0;
+		auto it = begin(dim);
 		auto product = [&](int val) {
 			idx += *it++ * val;
 		};
@@ -784,15 +886,20 @@ public:
 };
 template<typename tp, size_t pon = 0>
 class allocator {
-	vector<tp *> mem;
+	int cur;
+	vector<tp> mem;
 	queue<tp *> cache;
 public:
-	allocator() { mem.reserve(pon); }
+	allocator() {
+		cur = 0;
+		mem.reserve(pon);
+	}
 	tp *operator ()() {
 		tp *ret;
 		if (cache.empty()) {
-			mem.push_back(new tp());
-			ret = mem.back();
+			if (mem.size() <= cur)
+				mem.push_back(tp());
+			ret = &mem[cur++];
 		} else {
 			ret = cache.front();
 			cache.pop();
@@ -803,9 +910,7 @@ public:
 		cache.push(o);
 	}
 	void clear() {
-		mem.clear();
-		fup_range (i, 0, mem.size())
-			delete mem[i];
+		cur = 0;
 		while (!cache.empty())
 			cache.pop();
 	}

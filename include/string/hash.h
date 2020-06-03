@@ -32,7 +32,7 @@ void bkdr_hash_preprocess(const string &seq, vector<ull> &hash, ull seed, int i 
 	if (hash.size() < i + seq.size())
 		hash.resize(i + seq.size());
 	for (auto h : seq) {
-		hash[i] = special(hash, i - 1, 0llu) * seed + h;
+		hash[i] = special(0llu, hash, i - 1, 0, hash.size() - 1) * seed + h;
 		i++;
 	}
 }
@@ -42,7 +42,7 @@ void bkdr_hash_preprocess(const vector<tp> &seq, vector<ull> &hash, ull seed, in
 	if (hash.size() < i + seq.size())
 		hash.resize(i + seq.size());
 	for (auto h : seq) {
-		hash[i] = special(hash, i - 1, 0llu) * seed + h;
+		hash[i] = special(0llu, hash, i - 1, 0, hash.size() - 1) * seed + h;
 		i++;
 	}
 }
@@ -63,7 +63,7 @@ ull bkdr_hash_once(const vector<tp> &seq, ull seed)
 }
 ull bkdr_hash_range(const vector<ull> &hash, const vector<ull> &exp, int l, int r)
 {
-	return hash[r] - special(hash, l - 1, 0llu) * exp[length(l, r)];
+	return hash[r] - special(0llu, hash, l - 1, 0, hash.size() - 1) * exp[length(l, r)];
 }
 
 #endif

@@ -8,8 +8,12 @@ template<typename tp, class twist = mt19937_64>
 class random_int {
 	using dist = uniform_int_distribution<tp>;
 	dist segment;
-	twist gen{random_device{}()};
+	twist gen;
 public:
+	random_int() {
+		srand(time(0));
+		new (&gen) twist{(size_t)rand()};
+	}
 	void set(tp l, tp r) {
 		new (&segment) dist{l, r};
 	}
@@ -29,8 +33,12 @@ template<typename tp, class twist = mt19937_64>
 class random_real {
 	using dist = uniform_real_distribution<tp>;
 	dist segment;
-	twist gen{random_device{}()};
+	twist gen;
 public:
+	random_real() {
+		srand(time(0));
+		new (&gen) twist{(size_t)rand()};
+	}
 	void set(tp l, tp r) {
 		new (&segment) dist{l, r};
 	}
