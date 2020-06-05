@@ -7,6 +7,8 @@ class task {
 	do {\
 		if (!(cond) || !fio.ok()) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
+	direct_io fio;
+	debuger bug;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}

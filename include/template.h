@@ -751,7 +751,7 @@ public:
 		va_end(args);
 		out((const char *)buf);
 	}
-} fio;
+};
 class debuger {
 	string delim;
 	template<typename tp>
@@ -780,7 +780,7 @@ public:
 		va_end(args);
 		cerr << buf << '\n';
 	}
-} bug;
+};
 #if 201103L <= __cplusplus
 template<typename tp>
 class zip_vector {
