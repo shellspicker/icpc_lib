@@ -661,11 +661,13 @@ end:
 	}
 public:
 	direct_io() {
+#if !FAST_IO
 		ios::sync_with_stdio(0);
 		cin.tie(0);
 		cout.tie(0);
 		cout.setf(ios::fixed);
 		cout.precision(12);
+#endif
 		isb = cin.rdbuf();
 		osb = cout.rdbuf();
 		ihead = itail = 0;
@@ -751,24 +753,30 @@ public:
 		va_end(args);
 		out((const char *)buf);
 	}
-};
+} fio;
 class debuger {
 	string delim;
+public:
 	template<typename tp>
-	void print(const tp &x) { cerr << x << delim; }
+	void out(const tp &x) { cerr << x << delim; }
 	template<typename tp>
-	void print(const vector<tp> &v) {
+	void out(const vector<tp> &v) {
 		fup_range (i, 0, v.size()) {
 			tp x = v[i];
 			cerr << x << delim;
 		}
 	}
-public:
+	template<typename tp>
+	void out(const tp *arr, int len) {
+		fup_range (i, 0, len)
+			cerr << arr[i] << delim;
+		cerr << '\n';
+	}
 	debuger(string s = " ") : delim(s) {}
 #if 201103L <= __cplusplus
 	template<typename ...var>
 	void operator ()(var &&...args) {
-		initializer_list<int>{(print(forward<var>(args)), 0)...};
+		initializer_list<int>{(out(forward<var>(args)), 0)...};
 		cerr << '\n';
 	}
 #endif
@@ -780,7 +788,7 @@ public:
 		va_end(args);
 		cerr << buf << '\n';
 	}
-};
+} bug;
 #if 201103L <= __cplusplus
 template<typename tp>
 class zip_vector {

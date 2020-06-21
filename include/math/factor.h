@@ -1,5 +1,5 @@
-#ifndef PRIME_H
-#define PRIME_H 1
+#ifndef FACTOR_H
+#define FACTOR_H 1
 
 /*
  * 求所有因子.

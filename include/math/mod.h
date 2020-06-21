@@ -21,19 +21,41 @@ ll pow_mod(ll x, ll n, ll mod)
 	}
 	return res;
 }
-class modular {
+class modulo {
 	ll x;
 public:
 	static ll mod;
-	modular(ll x_) : x(x_) {}
+	modulo() : x(0) {}
+	modulo(ll v) : x(v) {
+		if (mod <= abs(x))
+			x %= mod;
+		if (x < 0)
+			x += mod;
+	}
 	operator ll() const { return x; }
-	modular operator +(const modular &y) const { return modular((x + y) % mod); }
-	modular operator -(const modular &y) const { return modular((x - y + mod) % mod); }
-	modular operator *(const modular &y) const { return modular(mul_mod(x, y, mod)); }
-	modular operator /(const modular &y) const { return *this * y.inverse(); }
-	modular operator ^(const modular &y) const { return pow_mod(x, y, mod); }
-	modular inverse() const { return modular(mod_inv(x, mod)); }
+	modulo operator +(const modulo &y) const { return x + y; }
+	modulo operator -(const modulo &y) const { return x - y; }
+	modulo operator *(const modulo &y) const { return mul_mod(x, y, mod); }
+	modulo operator /(const modulo &y) const { return *this * y.inverse(); }
+	modulo operator ^(const modulo &y) const { return pow_mod(x, y, mod); }
+	modulo operator +=(const modulo &y) { *this = *this + y; return *this; }
+	modulo operator -=(const modulo &y) { *this = *this - y; return *this; }
+	modulo operator *=(const modulo &y) { *this = *this * y; return *this; }
+	modulo operator /=(const modulo &y) { *this = *this / y; return *this; }
+	modulo operator -() const { return -x; }
+	modulo operator =(const ll &y) { x = y; return *this; }
+	modulo operator ++() { return ++x; }
+	modulo operator ++(int) { return x++; }
+	modulo operator --() { return --x; }
+	modulo operator --(int) { return x--; }
+	modulo inverse() const { return mod_inv(x, mod); }
+	bool operator ==(const modulo &y) const { return x == y; }
+	bool operator !=(const modulo &y) const { return x != y; }
+	bool operator <(const modulo &y) const { return x < y; }
+	bool operator <=(const modulo &y) const { return x <= y; }
+	bool operator >(const modulo &y) const { return x > y; }
+	bool operator >=(const modulo &y) const { return x >= y; }
 };
-ll modular::mod;
+ll modulo::mod;
 
 #endif

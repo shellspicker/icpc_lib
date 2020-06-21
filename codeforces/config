@@ -13,8 +13,8 @@
     }
   ],
   "default": 0,
-  "gen_after_parse": true,
-  "host": "https://codeforc.es",
+  "gen_after_parse": false,
+  "host": "https://codeforces.com",
   "proxy": "",
   "folder_name": {
     "acmsguru": "acmsguru",
