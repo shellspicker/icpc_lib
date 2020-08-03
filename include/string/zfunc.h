@@ -12,11 +12,13 @@
 
 class zfunc {
 public:
-	zfunc() {}
 	/*
 	 * 单串
 	 */
-	vector<int> gao(const string &s) {
+	static
+	vector<int>
+	gao(
+		const string &s) {
 		int len = s.length();
 		vector<int> ret(len);
 		for (int i = 1, c = 0, r = 0; i < len; ++i) {
@@ -31,18 +33,27 @@ public:
 		return ret;
 	}
 	/*
-	 * 求pattern的所有后缀和text的lcp.
-	 * 拼接2个串.
-	 */
-	vector<int> gao(const string &t, const string &p) {
-		string s = t + '$' + p;
-		return gao(s);
+	* 求pattern的所有后缀和text的lcp.
+	* 拼接2个串.
+	*/
+	static
+	vector<int>
+	gao(
+		const string &t,
+		const string &p) {
+		   string s = t + '$' + p;
+		   return gao(s);
 	}
 	/*
 	 * 求pattern的所有后缀和text的lcp.
 	 * text, 需要预处理zfunc.
 	 */
-	vector<int> gao(const string &t, const vector<int> &tz, const string &p) {
+	static
+	vector<int>
+	gao(
+		const string &t,
+		const vector<int> &tz,
+		const string &p) {
 		int tlen = t.length(), plen = p.length();
 		vector<int> ret(plen);
 		for (int i = 0, c = 0, r = 0; i < plen; ++i) {

@@ -252,6 +252,10 @@ using pairing_heap = __gnu_pbds::priority_queue<tp, cmp, __gnu_pbds::pairing_hea
 #define fwn(i, a, b) fwn_s(i, a, b, 1)
 #define fup2(i, lr) fup(i, lr)
 #define fwn2(i, lr) fwn(i, lr)
+#define fup_range_s(i, st, off, s) fup_s2(i, range(st, off), s)
+#define fup_range_rs(i, ed, off, s) fup_s2(i, range_r(ed, off), s)
+#define fwn_range_s(i, st, off, s) fwn_s2(i, range(st, off), s)
+#define fwn_range_rs(i, ed, off, s) fwn_s2(i, range_r(ed, off), s)
 #define fup_range(i, st, off) fup2(i, range(st, off))
 #define fup_range_r(i, ed, off) fup2(i, range_r(ed, off))
 #define fwn_range(i, st, off) fwn2(i, range(st, off))
@@ -259,16 +263,16 @@ using pairing_heap = __gnu_pbds::priority_queue<tp, cmp, __gnu_pbds::pairing_hea
 #define it_each(obj) (obj).begin(), (obj).end()
 #define it_i(obj, i) ((obj).begin() + (i))
 #define it_i_rev(obj, i) ((obj).end() - 1 - (i))
-// it_xxx maybe useless.
-#define it_seg(obj, l, r) it_i(obj, l), it_i(obj, r)
+// it_xxx rev maybe useless.
+#define it_seg(obj, l, r) it_i(obj, l), it_i(obj, r + 1)
 #define it_seg2(obj, lr) it_seg(obj, lr)
-#define it_seg_rev(obj, l, r) it_i_rev(obj, r), it_i_rev(obj, l)
-#define it_seg_rev2(obj, lr) it_seg_rev(obj, lr)
+//#define it_seg_rev(obj, l, r) it_i_rev(obj, r), it_i_rev(obj, l)
+//#define it_seg_rev2(obj, lr) it_seg_rev(obj, lr)
 #define it_range(obj, st, off) it_seg2(obj, range(st, off))
 #define it_range_r(obj, ed, off) it_seg2(obj, range_r(ed, off))
-#define it_range_rev(obj, st, off) it_seg_rev2(obj, range(obj, st, off))
-#define it_range_r_rev(obj, ed, off) it_seg_rev2(obj, range_r(obj, ed, off))
-// it_xxx useless end.
+//#define it_range_rev(obj, st, off) it_seg_rev2(obj, range(obj, st, off))
+//#define it_range_r_rev(obj, ed, off) it_seg_rev2(obj, range_r(obj, ed, off))
+// it_xxx rev useless end.
 #define it_prefix(obj, i) (obj).begin(), it_i(obj, i)
 #define it_suffix(obj, i) it_i(obj, i), (obj).end()
 #define i_rev(len, i) ((len) - 1 - (i))
@@ -556,7 +560,7 @@ ll round_shift(ll x, ll dist, ll l, ll r)
  */
 class direct_io {
 	static const int bsz = 1 << 20;
-	char ibuf[bsz], obuf[bsz], *ihead, *itail, *ohead;
+	char ibuf[bsz], obuf[bsz], *ihead, *itail, *ohead, *g_buf, *g_cur;
 	streambuf *isb, *osb;
 	int output_float_digit;
 	bool status;
@@ -590,12 +594,17 @@ class direct_io {
 	void input(string &s) {
 		s.clear();
 		char ch;
-		input(ch);
-		if (!ok())
-			return;
-		do {
-			s += ch;
-		} while (ch = getchar(), isgraph(ch));
+		if (g_buf) {
+			input(g_cur = g_buf);
+			s.assign(g_buf);
+		} else {
+			input(ch);
+			if (!ok())
+				return;
+			do {
+				s += ch;
+			} while (ch = getchar(), isgraph(ch));
+		}
 	}
 	template<typename tp>
 	void input(tp &ret) {
@@ -674,6 +683,7 @@ public:
 		ohead = obuf;
 		output_float_digit = 12;
 		status = 1;
+		g_buf = g_cur = 0;
 	}
 	~direct_io() { osb->sputn(obuf, ohead - obuf); }
 	bool ok() {
@@ -681,6 +691,9 @@ public:
 	}
 	void set_output_float_digit(int d) {
 		output_float_digit = d;
+	}
+	void set_g_buf(char *buf) {
+		g_buf = buf;
 	}
 #if 201103L <= __cplusplus
 	template<typename ...var>

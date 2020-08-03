@@ -11,6 +11,7 @@
 - [ ] div_t, round之类的math.h或stdlib.h的好东西.
 - [ ] direct_io和debug类合并, debug保留换行符输出选项.
 - [ ] direct_io是什么时候绑定io的? 现在会了交互题, 再看看普通io快速读入的题, 不要生成全局对象, 另外加一个交互类(很简单).
+- [ ] direct_io.msg, 输出string.data()或string.c_str()时, 会re, 见not_found_shit的la6976提交记录.
 - [x] 前缀预处理完善一下(1d), 配合的zip需要可以导出一个迭代器, 方便一行的操作(一般用在二维数组的情况). 顺便可以看看valarray怎么实现隔离块的拼接.
 
 ## basic
@@ -39,8 +40,9 @@
 
 ## graph theory
 
-- [ ] 各种图结构.
+- [ ] 已经有有向图和无向图的结构, 还差网络流的结构.
 - [ ] lca的5种写法, 倍增, rmq, tarjan, 树链剖分, lct.
+- [ ] 树的非递归, 加上命令行参数选择递归或非递归模式.
 
 ## string
 

@@ -1,6 +1,9 @@
 #ifndef RAND_H
 #define RAND_H 1
 
+#include "graph/graph.h"
+#include "data_structure/dsu.h"
+
 /*
  * 随机数生成器, 整数版本.
  */
@@ -86,6 +89,74 @@ public:
 	void swap(int pos) {
 		string tmp(ref);
 		ref = tmp.substr(pos) + tmp.substr(0, pos);
+	}
+};
+/*
+ * 随机二叉树
+ */
+class random_binary_tree {
+	random_int<int> rd_int;
+	undigraph<int> g;
+	dsu group;
+	vector<int> deg_in, deg_out;
+	int root;
+public:
+	random_binary_tree(int vn = 0) { resize(vn); }
+	void resize(int vn) {
+		rd_int.set(0, vn - 1);
+		g.resize(vn);
+		group.init(vn);
+		deg_in.assign(vn, 0);
+		deg_out.assign(vn, 0);
+		root = rd_int();
+	}
+	void gao() {
+		int remain_edges = g.n - 1;
+		while (remain_edges) {
+			int a, b;
+			do {
+				a = rd_int();
+				b = rd_int();
+				if ((a == b) ||
+					(group.set(a) == group.set(b)))
+					continue;
+				if (a == root || b == root) {
+					int other = a == root ? b : a;
+					if (deg_in[other] == 1 || deg_out[root] == 2)
+						continue;
+					deg_out[root]++;
+					deg_in[other]++;
+				} else {
+					if (deg_out[a] < 2 && deg_in[b] < 1) {
+						deg_out[a]++;
+						deg_in[b]++;
+					} else if (deg_out[b] < 2 && deg_in[a] < 1) {
+						deg_out[b]++;
+						deg_in[a]++;
+					} else {
+						continue;
+					}
+				}
+				g.add(a, b);
+				group.link(a, b);
+				remain_edges--;
+			} while (0);
+		}
+	}
+	void print() {
+		assert(g.edges.size() == (g.n - 1) * 2);
+		fup_range (i, 0, g.n) {
+			if (i == root)
+				assert(deg_in[i] == 0);
+			else
+				assert(deg_in[i] == 1);
+			assert(deg_out[i] <= 2);
+		}
+		fio.msg("%d %d\n", root, g.n);
+		fup_range_s (i, 0, g.edges.size(), 2) {
+			auto e = g.edges[i];
+			fio.msg("%d %d\n", e.from, e.to);
+		}
 	}
 };
 
