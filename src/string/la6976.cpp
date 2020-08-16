@@ -8,6 +8,7 @@ class task {
 	do {\
 		if (!(cond) || !fio.ok()) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
+	char buf[1000233];
 	const ull seed = 3137;
 	string json;
 	int qn, cur;
@@ -16,6 +17,7 @@ class task {
 	map<ull, pair<int, int>> dict;
 	void preprocess() {
 		fio.set_output_float_digit(12);
+		fio.set_g_buf(buf);
 	}
 	istream &in() {
 		fio.in(json);
@@ -32,7 +34,7 @@ class task {
 	void deal() {
 		cur = 0;
 		dict.clear();
-		parse(0);
+		parse_json(0);
 		ans.resize(qn);
 		fup_range (i, 0, qn) {
 			ans[i] = get_ans(qs[i]);
@@ -44,36 +46,52 @@ class task {
 			if (ac.first == -1 || ac.second == -1) {
 				fio.msg("Error!\n");
 			} else {
-				fio.out(json.substr(ac.first, length(ac.first, ac.second)).data(), '\n');
-				//fio.msg("%s\n",
-				//json.substr(ac.first, length(ac.first, ac.second)).c_str());
+				fio.msg("%s\n",
+				json.substr(ac.first, length(ac.first, ac.second)).data());
 			}
 		}
 	}
-	void parse(ull pre_key) {
-		cur++;
-		while (cur < (int)json.length() && json[cur] != '}') {
-			int rig = json.find_first_of(":}", cur);
-			if (json[rig] == '}') {
-				cur = rig;
-				return;
-			}
-			ull sub_key = pre_key;
-			fup (i, cur, rig - 1)
-				sub_key = sub_key * seed + json[i];
-			cur = ++rig;
-			assert(inrange(rig, 0, json.size()));
-			if (json[rig] == '{') {
-				parse(sub_key * seed + '.');
-			} else {
-				cur = json.find('"', rig + 1);
-				assert(inrange(cur, 0, json.length()));
-			}
-			dict[sub_key] = {rig, cur};
-			assert(inrange(cur + 1, 0, json.size()));
-			if (json[++cur] == ',')
-				cur++;
+	pair<int, int> parse_json(ull pre) {
+		pair<int, int> ret;
+		ret.first = cur++;
+		if (json[cur] == '}') {
+			ret.second = cur++;
+			return ret;
 		}
+		parse_kv(pre);
+		while (cur < json.size() && json[cur] == ',') {
+			cur++;
+			parse_kv(pre);
+		}
+		ret.second = cur++;
+		return ret;
+	}
+	void parse_kv(ull pre) {
+		ull key;
+		pair<int, int> val;
+		key = parse_key(pre);
+		cur++;
+		val = parse_val(key);
+		dict[key] = val;
+	}
+	ull parse_key(ull pre) {
+		ull ret = pre;
+		int p1, p2;
+		p1 = cur++;
+		p2 = json.find('"', cur);
+		fup (i, p1, p2)
+			ret = ret * seed + json[i];
+		cur = p2 + 1;
+		return ret;
+	}
+	pair<int, int> parse_val(ull pre) {
+		pair<int, int> ret;
+		if (json[cur] == '{')
+			return parse_json(pre * seed + '.');
+		ret.first = cur++;
+		ret.second = json.find('"', cur);
+		cur = ret.second + 1;
+		return ret;
 	}
 	pair<int, int> get_ans(ull hs) {
 		if (dict.count(hs))

@@ -567,6 +567,7 @@ class direct_io {
 	void set_status(bool ok) {
 		status = ok;
 	}
+	void flush() { osb->sputn(obuf, ohead - obuf); }
 	char getchar() {
 		if (ihead == itail)
 			itail = (ihead = ibuf) + isb->sgetn(ibuf, bsz);
@@ -685,7 +686,7 @@ public:
 		status = 1;
 		g_buf = g_cur = 0;
 	}
-	~direct_io() { osb->sputn(obuf, ohead - obuf); }
+	~direct_io() { flush(); }
 	bool ok() {
 		return status;
 	}
@@ -759,12 +760,21 @@ public:
 #endif
 	}
 	void msg(const char *fmt, ...) {
-		static char buf[1 << 10];
+		assert(g_buf);
 		va_list args;
 		va_start(args, fmt);
-		vsprintf(buf, fmt, args);
+		vsprintf(g_buf, fmt, args);
 		va_end(args);
-		out((const char *)buf);
+		out((const char *)g_buf);
+	}
+	void bug(const char *fmt, ...) {
+		assert(g_buf);
+		va_list args;
+		va_start(args, fmt);
+		vsprintf(g_buf, fmt, args);
+		va_end(args);
+		out((const char *)g_buf);
+		flush();
 	}
 } fio;
 class debuger {

@@ -11,7 +11,8 @@
 - [ ] div_t, round之类的math.h或stdlib.h的好东西.
 - [ ] direct_io和debug类合并, debug保留换行符输出选项.
 - [ ] direct_io是什么时候绑定io的? 现在会了交互题, 再看看普通io快速读入的题, 不要生成全局对象, 另外加一个交互类(很简单).
-- [ ] direct_io.msg, 输出string.data()或string.c_str()时, 会re, 见not_found_shit的la6976提交记录.
+- [ ] direct_io.msg, 要和bug输出一起使用, 才能在assert之前输出东西. 测试的话使用一个无限递归函数, 每层输出函数名, assert固定层数, 如果不用bug输出, 那么fio.msg不会显示, 最后只有assert的显示.
+原因是ios::sync_with_stdio(0)之后, cout不能在assert前输出, 但是cerr可以.
 - [x] 前缀预处理完善一下(1d), 配合的zip需要可以导出一个迭代器, 方便一行的操作(一般用在二维数组的情况). 顺便可以看看valarray怎么实现隔离块的拼接.
 
 ## basic
