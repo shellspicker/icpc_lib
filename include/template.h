@@ -2,6 +2,7 @@
 #define TEMPLATE_H
 
 #pragma GCC optimize(2)
+#pragma GCC optimize("inline")
 #include <cstddef>
 #if 201103L <= __cplusplus
 #include <cstdint>
@@ -219,10 +220,10 @@ using std::less_equal;
 using std::logical_and;
 using std::logical_or;
 using std::logical_not;
+#if 201103L <= __cplusplus
 using std::bit_and;
 using std::bit_or;
 using std::bit_xor;
-#if 201103L <= __cplusplus
 using std::hash;
 using std::mt19937;
 using std::mt19937_64;
@@ -264,7 +265,7 @@ using pairing_heap = __gnu_pbds::priority_queue<tp, cmp, __gnu_pbds::pairing_hea
 #define it_i(obj, i) ((obj).begin() + (i))
 #define it_i_rev(obj, i) ((obj).end() - 1 - (i))
 // it_xxx rev maybe useless.
-#define it_seg(obj, l, r) it_i(obj, l), it_i(obj, r + 1)
+#define it_seg(obj, l, r) it_i(obj, l), it_i(obj, (r) + 1)
 #define it_seg2(obj, lr) it_seg(obj, lr)
 //#define it_seg_rev(obj, l, r) it_i_rev(obj, r), it_i_rev(obj, l)
 //#define it_seg_rev2(obj, lr) it_seg_rev(obj, lr)
@@ -277,11 +278,11 @@ using pairing_heap = __gnu_pbds::priority_queue<tp, cmp, __gnu_pbds::pairing_hea
 #define it_suffix(obj, i) it_i(obj, i), (obj).end()
 #define i_rev(len, i) ((len) - 1 - (i))
 #define seg_rev2(len, lr) seg_rev(len, lr)
-#define seg_rev(len, a, b) i_rev((len), (b)), i_rev((len), (a))
-#define range(st, off) (st), ((st) + (off) - 1)
-#define range_r(ed, off) ((ed) - (off) + 1), (ed)
-#define range_rev(len, st, off) seg_rev2((len), range(st, off))
-#define range_r_rev(len, ed, off) seg_rev2((len), range_r(ed, off))
+#define seg_rev(len, a, b) i_rev(len, b), i_rev(len, a)
+#define range(st, off) st, (st) + (off) - 1
+#define range_r(ed, off) (ed) - (off) + 1, ed
+#define range_rev(len, st, off) seg_rev2(len, range(st, off))
+#define range_r_rev(len, ed, off) seg_rev2(len, range_r(ed, off))
 #define finput(is, cls, obj) friend istream &operator >>(istream &is, cls &obj)
 #define foutput(os, cls, obj) friend ostream &operator <<(ostream &os, const cls &obj)
 typedef unsigned int uint;
@@ -292,6 +293,15 @@ const int inf32 = 1 << 30;
 const ll inf64 = 1ll << 60;
 const double pi = acos(-1);
 const double eps = 1e-6;
+template<typename tp>
+tp get_inf() {
+	tp ret;
+	if (4 < sizeof(ret))
+		ret = inf64;
+	else
+		ret = inf32;
+	return ret;
+}
 template<typename tp>
 int bitcount(tp x)
 {
@@ -345,7 +355,7 @@ bool inrange(ll x, ll l, ll r) { return r < l ? 0 : l <= x && x <= r; }
 #if 201103L <= __cplusplus
 tuple<ll, pair<ll, ll>> range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
 #else
-pair<ll, pair<ll, ll>> range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
+pair<ll, pair<ll, ll> > range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
 #endif
 {
 	if (lef_r < lef_l || rig_r < rig_l)
@@ -377,7 +387,7 @@ pair<ll, pair<ll, ll>> range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
 			min(length(lef_l, rig_r), length(rig_l, lef_r)),
 			make_pair(max(lef_l, rig_l), min(lef_r, rig_r)));
 #else
-	return make_tuple(
+	return make_pair(
 			min(length(lef_l, rig_r), length(rig_l, lef_r)),
 			make_pair(max(lef_l, rig_l), min(lef_r, rig_r)));
 #endif
@@ -422,14 +432,10 @@ void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
  * for sort by greater<>, just use cmp function instead of <.
  * return: (found, index, value).
  */
-template<typename tp, class func_cmp = less<tp>>
 #if 201103L <= __cplusplus
+template<typename tp, class func_cmp = less<tp>>
 tuple<bool, pair<ll, tp>> binary_search(
 		const vector<tp> &v, ll lo, ll hi, tp key, bool dir, bool contain)
-#else
-pair<bool, pair<ll, tp>> binary_search(
-		const vector<tp> &v, ll lo, ll hi, tp key, bool dir, bool contain)
-#endif
 {
 #define look(cond) if ((cond)) lo = mid + 1; else hi = mid - 1;
 	assert(lo <= hi);
@@ -446,13 +452,10 @@ pair<bool, pair<ll, tp>> binary_search(
 		found = 1;
 		fd_value = v[fd_index = pos];
 	}
-#if 201103L <= __cplusplus
 	return make_tuple(found, make_pair(fd_index, fd_value));
-#else
-	return make_pair(found, make_pair(fd_index, fd_value));
-#endif
 #undef look
 }
+#endif
 template<typename tp>
 tp special(tp val, const tp *arr, int len, int i, int m1 = -1, int m2 = -1)
 {
