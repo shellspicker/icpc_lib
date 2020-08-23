@@ -62,8 +62,10 @@ using std::string;
 using std::move;
 using std::forward;
 using std::tuple;
+using std::make_tuple;
 using std::tie;
 using std::get;
+using std::ignore;
 #endif
 using std::pair;
 using std::make_pair;
@@ -687,7 +689,8 @@ public:
 		ohead = obuf;
 		output_float_digit = 12;
 		status = 1;
-		g_buf = g_cur = 0;
+		g_cur = 0;
+		g_buf = (char *)malloc(1 << 20);
 	}
 	~direct_io() { flush(); }
 	bool ok() {
@@ -696,8 +699,8 @@ public:
 	void set_output_float_digit(int d) {
 		output_float_digit = d;
 	}
-	void set_g_buf(char *buf) {
-		g_buf = buf;
+	void set_bufsize(int size) {
+		g_buf = (char *)realloc(g_buf, size);
 	}
 #if 201103L <= __cplusplus
 	template<typename ...var>
@@ -918,9 +921,9 @@ public:
 		return data[i];
 	}
 };
-template<typename tp, size_t pon = 0>
+template<typename tp, size_t pon>
 class allocator {
-	int cur;
+	size_t cur;
 	vector<tp> mem;
 	queue<tp *> cache;
 public:
@@ -949,5 +952,13 @@ public:
 			cache.pop();
 	}
 };
+
+#pragma message \
+"\n\033[45;36;1;5mdebug tips!!!\033[0m\n" \
+"\033[37m" \
+"io类默认输出缓冲区大小: 1 << 20, 通过fio.set_bufsize(int)重置.\n" \
+"allocator必须设置预留大小, 可以非常大, 只有使用到的才会分配内存.\n" \
+"\033[0m" \
+"\n"
 
 #endif
