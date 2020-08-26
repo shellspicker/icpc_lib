@@ -595,22 +595,14 @@ class direct_io {
 		do {
 			*s++ = ch;
 		} while (ch = getchar(), isgraph(ch));
-		*s++ = 0;
+		*s = 0;
 	}
 	void input(string &s) {
 		s.clear();
-		char ch;
-		if (g_buf) {
-			input(g_cur = g_buf);
-			s.assign(g_buf);
-		} else {
-			input(ch);
-			if (!ok())
-				return;
-			do {
-				s += ch;
-			} while (ch = getchar(), isgraph(ch));
-		}
+		input(g_cur = g_buf);
+		if (!ok())
+			return;
+		s.assign(g_buf);
 	}
 	template<typename tp>
 	void input(tp &ret) {
@@ -642,24 +634,21 @@ end:
 			putchar(*s);
 	}
 	void output(const string &s) {
-		fup_range (i, 0, s.length()) {
-			char ch = s[i];
-			putchar(ch);
-		}
+		fup_range (i, 0, s.length())
+			putchar(s[i]);
 	}
 	template<typename tp>
 	void output(tp x) {
-		static char buf[1 << 8];
-		int cnt = 0;
+		g_cur = g_buf;
 		ll xn = ll(x);
 		if (xn < 0)
 			putchar('-'), xn = -xn;
 		do {
-			buf[++cnt] = xn % 10 | 48;
+			*g_cur++ = xn % 10 | 48;
 			xn /= 10;
 		} while (xn);
-		while (cnt)
-			putchar(buf[cnt--]);
+		while (g_buf != g_cur)
+			putchar(*--g_cur);
 #if 201103L <= __cplusplus
 		if (std::is_same<typename std::decay<tp>::type, double>::value)
 #else
@@ -735,8 +724,11 @@ public:
 		set_status(~ch);
 		if (ch == -1)
 			return 0;
-		for (; ~ch && ch ^ delim; ch = getchar())
-			line += ch;
+		g_cur = g_buf;
+		for (*g_cur++ = ch; ~ch && ch ^ delim; ch = getchar())
+			*g_cur++ = ch;
+		*g_cur = 0;
+		line.assign(g_buf);
 		return 1;
 #else
 		getline(cin, line, delim);
@@ -772,15 +764,6 @@ public:
 		vsprintf(g_buf, fmt, args);
 		va_end(args);
 		out((const char *)g_buf);
-	}
-	void bug(const char *fmt, ...) {
-		assert(g_buf);
-		va_list args;
-		va_start(args, fmt);
-		vsprintf(g_buf, fmt, args);
-		va_end(args);
-		out((const char *)g_buf);
-		flush();
 	}
 } fio;
 class debuger {
