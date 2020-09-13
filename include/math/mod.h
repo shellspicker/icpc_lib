@@ -1,5 +1,4 @@
-#ifndef MOD_H
-#define MOD_H 1
+#pragma once
 
 #include "math/exgcd.h"
 
@@ -57,5 +56,3 @@ public:
 	bool operator >=(const modulo &y) const { return x >= y; }
 };
 ll modulo::mod;
-
-#endif

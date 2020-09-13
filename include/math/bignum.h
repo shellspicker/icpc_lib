@@ -1,5 +1,4 @@
-#ifndef BIGNUM_H
-#define BIGNUM_H 1
+#pragma once
 
 /*
  * 大整数模板
@@ -265,5 +264,3 @@ struct bignum {
 };
 string bignum::table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 int bignum::base = 10;
-
-#endif

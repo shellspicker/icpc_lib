@@ -1,5 +1,4 @@
-#ifndef SPLAY_RANGE_H
-#define SPLAY_RANGE_H 1
+#pragma once
 
 #ifndef SELECT_MODE
 #define SELECT_MODE TOP_DOWN
@@ -368,5 +367,3 @@ typename splay<tp, dsn, pon>::node *splay<tp, dsn, pon>::node::null;
 #undef FATHER
 #undef FUNC_RANGE
 #undef FUNC_BST
-
-#endif

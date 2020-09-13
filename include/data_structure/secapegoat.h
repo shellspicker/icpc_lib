@@ -1,5 +1,4 @@
-#ifndef SECAPEGOAT_H
-#define SECAPEGOAT_H 1
+#pragma once
 
 #define FATHER 0
 #include "data_structure/bst.h"
@@ -153,5 +152,3 @@ public:
 };
 template<typename tp, size_t dsn, size_t pon>
 typename secapegoat<tp, dsn, pon>::node *secapegoat<tp, dsn, pon>::node::null;
-
-#endif

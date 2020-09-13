@@ -1,5 +1,4 @@
-#ifndef TRANSFORMER_H
-#define TRANSFORMER_H 1
+#pragma once
 
 #include "math/gcd_lcm.h"
 #include "math/mod.h"
@@ -138,5 +137,3 @@ public:
 };
 template<size_t dn>
 pm<dn> cube<dn>::origin;
-
-#endif

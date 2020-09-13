@@ -1,5 +1,4 @@
-#ifndef BIT_H
-#define BIT_H 1
+#pragma once
 
 /*
  * 注意, 下标起始1, 0是没有数据的.
@@ -50,5 +49,3 @@ public:
 		return x;
 	}
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef SAIS_H
-#define SAIS_H 1
+#pragma once
 
 class sais {
 public:
@@ -112,5 +111,3 @@ public:
 		}
 	}
 };
-
-#endif

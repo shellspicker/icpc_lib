@@ -1,5 +1,4 @@
-#ifndef IDREF_H
-#define IDREF_H 1
+#pragma once
 
 /*
  * 伪离散化.
@@ -32,5 +31,3 @@ public:
 		return orig[id];
 	}
 };
-
-#endif

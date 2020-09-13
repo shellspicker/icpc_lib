@@ -1,5 +1,4 @@
-#ifndef MANACHER_H
-#define MANACHER_H 1
+#pragma once
 
 /*
  * manacher, 最长回文串.
@@ -37,5 +36,3 @@ end:
 		return ret;
 	}
 };
-
-#endif

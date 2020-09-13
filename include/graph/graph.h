@@ -1,85 +1,58 @@
-#ifndef GRAPH_H
-#define GRAPH_H 1
+#pragma once
 
-template <typename tp>
-class graph {
-public:
+#pragma message \
+usage_begin("graph.h") \
+line("template<v_info, e_info>") \
+line("v_info: 结点信息.") \
+line("\t自定义的结构体.") \
+line("e_info: 边信息.") \
+line("\t自定义的结构体.") \
+line("\t空构造函数写好默认边信息, 加边函数省略参数用.") \
+usage_end()
+
+template<typename v_info, typename e_info>
+struct graph {
+	struct node {
+		int id;
+		vector<int> eid;
+		v_info info;
+		node() {}
+		node(int _1) : id(_1) {
+			eid.clear();
+		}
+	};
 	struct edge {
 		int from, to;
-		tp cost;
+		e_info info;
+		edge() {}
+		edge(int _1, int _2, e_info _3) : from(_1), to(_2), info(_3) {}
 	};
+	vector<node> nodes;
 	vector<edge> edges;
-	vector<vector<int>> g;
-	int n;
-	graph(int vn = 0) : n(vn) {
+	graph(int vn = 0) {
 		clear();
-		g.resize(vn);
+		nodes.resize(vn);
+		fup_range (i, 0, vn) {
+			auto &nd = nodes[i];
+			nd.id = i;
+			nd.eid.clear();
+		}
 	}
 	void clear() {
+		nodes.clear();
 		edges.clear();
-		for (auto &v : g)
-			v.clear();
-		g.clear();
 	}
-	virtual int add(int from, int to, tp cost) = 0;
-};
-template <typename tp>
-class digraph : public graph<tp> {
-public:
-	using typename graph<tp>::edge;
-	using graph<tp>::edges;
-	using graph<tp>::g;
-	using graph<tp>::n;
-	digraph(int vn = 0) : graph<tp>(vn) {}
 	void resize(int vn) {
-		new (this) digraph(vn);
+		new (this) graph(vn);
 	}
-	vector<int> &operator [](int u) {
-		return g[u];
+	void add(int from, int to, e_info e_if = e_info()) {
+		assert(inrange(from, range(0, nodes.size())));
+		assert(inrange(to, range(0, nodes.size())));
+		edges.push_back({from, to, e_if});
+		nodes[from].eid.push_back(edges.size() - 1);
 	}
-	edge &info(int i) {
-		return edges[i];
-	}
-	int add(int from, int to, tp cost = 1) {
-		assert(inrange(from, range(0, n)) && inrange(to, range(0, n)));
-		edges.push_back({from, to, cost});
-		int id = (int)edges.size();
-		g[from].push_back(id - 1);
-		return id;
-	}
-	digraph<tp> reverse() const {
-		digraph<tp> rev(n);
-		for (auto &e : edges)
-			rev.add(e.to, e.from, e.cost);
-		return rev;
+	void add2(int from, int to, e_info e_if = e_info()) {
+		add(from, to, e_if);
+		add(to, from, e_if);
 	}
 };
-template <typename tp>
-class undigraph : public graph<tp> {
-public:
-	using typename graph<tp>::edge;
-	using graph<tp>::edges;
-	using graph<tp>::g;
-	using graph<tp>::n;
-	undigraph(int vn = 0) : graph<tp>(vn) {}
-	void resize(int vn) {
-		new (this) undigraph(vn);
-	}
-	vector<int> &operator [](int u) {
-		return g[u];
-	}
-	edge &info(int i) {
-		return edges[i];
-	}
-	int add(int from, int to, tp cost = 1) {
-		assert(inrange(from, range(0, n)) && inrange(to, range(0, n)));
-		edges.push_back({from, to, cost});
-		edges.push_back({to, from, cost});
-		int id = (int)edges.size();
-		g[from].push_back(id - 2);
-		g[to].push_back(id - 1);
-		return id;
-	}
-};
-
-#endif

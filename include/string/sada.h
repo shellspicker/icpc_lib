@@ -1,5 +1,4 @@
-#ifndef SADA_H
-#define SADA_H 1
+#pragma once
 
 #ifndef STEP
 #define STEP 0
@@ -127,5 +126,3 @@ public:
 		}
 	}
 };
-
-#endif

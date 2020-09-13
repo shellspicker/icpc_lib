@@ -1,5 +1,4 @@
-#ifndef EXGCD_H
-#define EXGCD_H 1
+#pragma once
 
 #define FAST 1
 ll exgcd(ll a, ll b, ll &x, ll &y)
@@ -36,5 +35,3 @@ ll mod_inv(ll a, ll b)
 		return -1;
 	}
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef BST_H
-#define BST_H 1
+#pragma once
 
 #ifndef FATHER
 #  define FATHER 0
@@ -123,5 +122,3 @@ public:
 };
 template<typename tp>
 typename bst<tp>::node *bst<tp>::node::null;
-
-#endif

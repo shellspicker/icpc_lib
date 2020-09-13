@@ -266,27 +266,32 @@ using pairing_heap = __gnu_pbds::priority_queue<tp, cmp, __gnu_pbds::pairing_hea
 #define it_each(obj) (obj).begin(), (obj).end()
 #define it_i(obj, i) ((obj).begin() + (i))
 #define it_i_rev(obj, i) ((obj).end() - 1 - (i))
-// it_xxx rev maybe useless.
-#define it_seg(obj, l, r) it_i(obj, l), it_i(obj, (r) + 1)
+#define it_seg(obj, l, r) it_i(obj, l), (it_i(obj, r) + 1)
 #define it_seg2(obj, lr) it_seg(obj, lr)
-//#define it_seg_rev(obj, l, r) it_i_rev(obj, r), it_i_rev(obj, l)
-//#define it_seg_rev2(obj, lr) it_seg_rev(obj, lr)
+#define it_seg_rev(obj, l, r) it_i_rev(obj, r), (it_i_rev(obj, l) + 1)
+#define it_seg_rev2(obj, lr) it_seg_rev(obj, lr)
 #define it_range(obj, st, off) it_seg2(obj, range(st, off))
 #define it_range_r(obj, ed, off) it_seg2(obj, range_r(ed, off))
-//#define it_range_rev(obj, st, off) it_seg_rev2(obj, range(obj, st, off))
-//#define it_range_r_rev(obj, ed, off) it_seg_rev2(obj, range_r(obj, ed, off))
-// it_xxx rev useless end.
+#define it_range_rev(obj, st, off) it_seg_rev2(obj, range(obj, st, off))
+#define it_range_r_rev(obj, ed, off) it_seg_rev2(obj, range_r(obj, ed, off))
 #define it_prefix(obj, i) (obj).begin(), it_i(obj, i)
 #define it_suffix(obj, i) it_i(obj, i), (obj).end()
 #define i_rev(len, i) ((len) - 1 - (i))
 #define seg_rev2(len, lr) seg_rev(len, lr)
 #define seg_rev(len, a, b) i_rev(len, b), i_rev(len, a)
-#define range(st, off) st, (st) + (off) - 1
-#define range_r(ed, off) (ed) - (off) + 1, ed
+#define range(st, off) (st), ((st) + (off) - 1)
+#define range_r(ed, off) ((ed) - (off) + 1), (ed)
 #define range_rev(len, st, off) seg_rev2(len, range(st, off))
 #define range_r_rev(len, ed, off) seg_rev2(len, range_r(ed, off))
 #define finput(is, cls, obj) friend istream &operator >>(istream &is, cls &obj)
 #define foutput(os, cls, obj) friend ostream &operator <<(ostream &os, const cls &obj)
+#define usage_begin(title) \
+"\n\033[45;36;1;5m" title "\033[0m\n" \
+"\033[37m"
+#define usage_end() \
+"\033[0m" \
+"\n"
+#define line(msg) msg "\n"
 typedef unsigned int uint;
 typedef long long ll;
 typedef unsigned long long ull;
@@ -345,14 +350,25 @@ tp cto(tp x)
 		return x ? 1 << __builtin_ctz(x) : 0;
 }
 template<typename tp>
-tp roundup_pow_of_2(tp x) { return x ? clo(x) << 1 : 0; }
+tp roundup_pow_of_2(tp x) { return x ? clo(x) << bool(x - clo(x)) : 0; }
 template<typename tp>
 tp rounddown_pow_of_2(tp x) { return x ? clo(x) : 0; }
-template<typename tp>
-bool is_power_of_2(tp x) { return x && !(x & (x - 1)); }
+bool is_power_of_2(ll x) { return x && !(x & (x - 1)); }
+ull div_roundup(ull x, ull div) { return (x + div - 1) / div; }
+ull div_rounddown(ull x, ull div) { return x / div; }
+ull div_last_offset(ull x, ull div) { return div_rounddown(x - 1, div); }
 ll ltor(ll l, ll len) { return l + len - 1; }
 ll rtol(ll r, ll len) { return r - len + 1; }
 ll length(ll l, ll r) { return (r < l) ? 0 : r - l + 1; }
+// when length is even, return exactly right segment's start.
+ll midpoint(ll l, ll r) { return l + (length(l, r) >> 1); }
+template<typename tp>
+void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
+ll round_shift(ll x, ll dist, ll l, ll r)
+{
+	int len = length(l, r);
+	return (x - l + dist + len) % len + l;
+}
 bool inrange(ll x, ll l, ll r) { return r < l ? 0 : l <= x && x <= r; }
 #if 201103L <= __cplusplus
 tuple<ll, pair<ll, ll>> range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
@@ -360,13 +376,8 @@ tuple<ll, pair<ll, ll>> range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
 pair<ll, pair<ll, ll> > range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
 #endif
 {
-	if (lef_r < lef_l || rig_r < rig_l)
-#if 201103L <= __cplusplus
-		return make_tuple(0, make_pair(-1, -1));
-#else
-		return make_pair(0, make_pair(-1, -1));
-#endif
-	if (lef_r < rig_l || rig_r < lef_l)
+	if (!length(lef_l, lef_r) || !length(rig_l, rig_r) ||
+		(lef_r < rig_l || rig_r < lef_l))
 #if 201103L <= __cplusplus
 		return make_tuple(0, make_pair(-1, -1));
 #else
@@ -394,70 +405,6 @@ pair<ll, pair<ll, ll> > range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
 			make_pair(max(lef_l, rig_l), min(lef_r, rig_r)));
 #endif
 }
-// when length is even, return exactly right segment's start.
-ll midpoint(ll l, ll r) { return l + (length(l, r) >> 1); }
-template<typename tp>
-void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
-/*
- * dir: find in left or right.
- * contain: can be equal or not.
- * whatever, key can be not found, thus return index will flow,
- * be careful to check return point, if must.
- * one way to check the return point is
- * check point in range and compare with key or condition again.
- * a rule is, must return error condition point, it will fix point
- * to last correct range, or it is alrealdy in correct range.
- * consume vecotr sort by less<>, you can find the pattern in the table below.
- * +-----------------------------+
- * |                             |
- * | dir           0   0   1   1 |
- * |                             |
- * | contain       0   1   1   0 |
- * |                             |
- * | compare       <   >=  <=  > |
- * |                             |
- * | shape         (   [   ]   ) |
- * |                             |
- * | aim_dir       1   0   1   0 |
- * |                             |
- * | error_dir     0   1   0   1 |
- * |                             |
- * | dir                         |
- * | xor contain   1   1   1   1 |
- * | xor aim_dir                 |
- * |                             |
- * | dir                         |
- * | xor contain   0   0   0   0 |
- * | xor error_dir               |
- * |                             |
- * +-----------------------------+
- * for sort by greater<>, just use cmp function instead of <.
- * return: (found, index, value).
- */
-#if 201103L <= __cplusplus
-template<typename tp, class func_cmp = less<tp>>
-tuple<bool, pair<ll, tp>> binary_search(
-		const vector<tp> &v, ll lo, ll hi, tp key, bool dir, bool contain)
-{
-#define look(cond) if ((cond)) lo = mid + 1; else hi = mid - 1;
-	assert(lo <= hi);
-	func_cmp cmp = func_cmp();
-	ll locp = lo, hicp = hi, fd_index = -1;
-	tp fd_value;
-	bool found = 0;
-	while (lo <= hi) {
-		int mid = midpoint(lo, hi), now = v[mid];
-		look((!dir && cmp(now, key)) || (dir && !cmp(key, now)));
-	}
-	int pos = dir ^ contain ? lo : hi;
-	if (inrange(pos, locp, hicp)) {
-		found = 1;
-		fd_value = v[fd_index = pos];
-	}
-	return make_tuple(found, make_pair(fd_index, fd_value));
-#undef look
-}
-#endif
 template<typename tp>
 tp special(tp val, const tp *arr, int len, int i, int m1 = -1, int m2 = -1)
 {
@@ -475,88 +422,6 @@ tp special(tp val, const vector<tp> &v, int i, int m1 = -1, int m2 = -1)
 	if (inrange(i, m1, m2))
 		return v[i];
 	return val;
-}
-template<typename tp>
-tp presum_range(const tp *sum, int len, int l, int r, int m1 = -1, int m2 = -1)
-{
-	if (!~m1 || !~m2)
-		m1 = 0, m2 = len - 1;
-	return sum[r] - special(0, sum, len, l - 1, m1, m2);
-}
-template<typename tp>
-tp presum_range(const vector<tp> &sum, int l, int r, int m1 = -1, int m2 = -1)
-{
-	if (!~m1 || !~m2)
-		m1 = 0, m2 = sum.size() - 1;
-	return sum[r] - special(0, sum, l - 1, m1, m2);
-}
-template<typename tp>
-void presum_preprocess(
-						const tp *src, int l, int r,
-						tp *dest, int len, int st, int m1 = -1, int m2 = -1)
-{
-	if (!~m1 || !~m2)
-		m1 = 0, m2 = len - 1;
-	for (int di = st, si = l; si <= r; ++si, ++di)
-		dest[di] = special(0, dest, len, di - 1, m1, m2) + src[si];
-}
-template<typename tp>
-void presum_preprocess(
-						const vector<tp> &src, int l, int r,
-						vector<tp> &dest, int st, int m1 = -1, int m2 = -1)
-{
-	int len = length(l, r);
-	if (dest.size() < st + len)
-		dest.resize(st + len);
-	if (!~m1 || !~m2)
-		m1 = 0, m2 = dest.size() - 1;
-	for (int di = st, si = l; si <= r; ++si, ++di)
-		dest[di] = special(0, dest, di - 1, m1, m2) + src[si];
-}
-template<typename tp>
-tp premul_range(const tp *mul, int len, int l, int r, int m1 = -1, int m2 = -1)
-{
-	if (!~m1 || !~m2)
-		m1 = 0, m2 = len - 1;
-	return mul[r] / special(1, mul, len, l - 1, m1, m2);
-}
-template<typename tp>
-tp premul_range(const vector<tp> &mul, int l, int r, int m1 = -1, int m2 = -1)
-{
-	if (!~m1 || !~m2)
-		m1 = 0, m2 = mul.size() - 1;
-	return mul[r] / special(1, mul, l - 1, m1, m2);
-}
-template<typename tp>
-void premul_preprocess(
-						const tp *src, int l, int r,
-						tp *dest, int len, int st, int m1 = -1, int m2 = -1)
-{
-	if (!~m1 || !~m2)
-		m1 = 0, m2 = len - 1;
-	for (int di = st, si = l; si <= r; ++si, ++di)
-		dest[di] = special(1, dest, len, di - 1, m1, m2) * src[si];
-}
-template<typename tp>
-void premul_preprocess(
-						const vector<tp> &src, int l, int r,
-						vector<tp> &dest, int st, int m1 = -1, int m2 = -1)
-{
-	int len = length(l, r);
-	if (dest.size() < st + len)
-		dest.resize(st + len);
-	if (!~m1 || !~m2)
-		m1 = 0, m2 = dest.size() - 1;
-	for (int di = st, si = l; si <= r; ++si, ++di)
-		dest[di] = special(1, dest, di - 1, m1, m2) * src[si];
-}
-ull div_roundup(ull x, ull div) { return (x + div - 1) / div; }
-ull div_rounddown(ull x, ull div) { return x / div; }
-ull div_last_offset(ull x, ull div) { return div_rounddown(x - 1, div); }
-ll round_shift(ll x, ll dist, ll l, ll r)
-{
-	int len = length(l, r);
-	return (x - l + dist + len) % len + l;
 }
 /*
  * 加速io, 基本类型都支持.
@@ -674,11 +539,10 @@ public:
 #endif
 		isb = cin.rdbuf();
 		osb = cout.rdbuf();
-		ihead = itail = 0;
+		ihead = itail = ibuf;
 		ohead = obuf;
 		output_float_digit = 12;
 		status = 1;
-		g_cur = 0;
 		g_buf = (char *)malloc(1 << 20);
 	}
 	~direct_io() { flush(); }
@@ -766,182 +630,10 @@ public:
 		out((const char *)g_buf);
 	}
 } fio;
-class debuger {
-	string delim;
-public:
-	template<typename tp>
-	void out(const tp &x) { cerr << x << delim; }
-	template<typename tp>
-	void out(const vector<tp> &v) {
-		fup_range (i, 0, v.size()) {
-			tp x = v[i];
-			cerr << x << delim;
-		}
-	}
-	template<typename tp>
-	void out(const tp *arr, int len) {
-		fup_range (i, 0, len)
-			cerr << arr[i] << delim;
-		cerr << '\n';
-	}
-	debuger(string s = " ") : delim(s) {}
-#if 201103L <= __cplusplus
-	template<typename ...var>
-	void operator ()(var &&...args) {
-		initializer_list<int>{(out(forward<var>(args)), 0)...};
-		cerr << '\n';
-	}
-#endif
-	void msg(const char *fmt, ...) {
-		static char buf[1 << 10];
-		va_list args;
-		va_start(args, fmt);
-		vsprintf(buf, fmt, args);
-		va_end(args);
-		cerr << buf << '\n';
-	}
-} bug;
-#if 201103L <= __cplusplus
-template<typename tp>
-class zip_vector {
-public:
-	int tot;
-	vector<tp> data;
-	vector<int> dim;
-	zip_vector(const vector<int> &v) {
-		dim.resize(v.size());
-		copy(it_each(v), dim.begin());
-		tot = 1;
-		fwn (i, 0, dim.size() - 1) {
-			int suf = tot;
-			tot *= dim[i];
-			dim[i] = suf;
-		}
-		data.resize(tot);
-	}
-	template<typename ...var>
-	tp &operator ()(var &&...args) {
-		return data[index(args...)];
-	}
-	template<typename ...var>
-	int index(var &&...args) {
-		assert(sizeof...(args) == dim.size());
-		int idx = 0;
-		auto it = dim.begin();
-		auto product = [&](int val) {
-			idx += *it++ * val;
-		};
-		initializer_list<int>{(product(forward<var>(args)), 0)...};
-		return idx;
-	}
-	vector<tp> dimension(int idx) {
-		assert(inrange(idx, 0, tot - 1));
-		vector<tp> ret(dim.size());
-		fup (i, 0, ret.size() - 1) {
-			ret[i] = idx / dim[i];
-			idx -= ret[i] * dim[i];
-		}
-		return ret;
-	}
-};
-template<typename tp>
-class zip_valarray {
-public:
-	int tot;
-	valarray<tp> data;
-	valarray<int> dim;
-	zip_valarray(const vector<int> &v) {
-		dim.resize(v.size());
-		copy(it_each(v), begin(dim));
-		tot = 1;
-		fwn (i, 0, dim.size() - 1) {
-			int suf = tot;
-			tot *= dim[i];
-			dim[i] = suf;
-		}
-		data.resize(tot);
-	}
-	template<typename ...var>
-	tp &operator ()(var &&...args) {
-		return data[index(args...)];
-	}
-	template<typename ...var>
-	int index(var &&...args) {
-		assert(sizeof...(args) == dim.size());
-		int idx = 0;
-		auto it = begin(dim);
-		auto product = [&](int val) {
-			idx += *it++ * val;
-		};
-		initializer_list<int>{(product(forward<var>(args)), 0)...};
-		return idx;
-	}
-	vector<tp> dimension(int idx) {
-		assert(inrange(idx, 0, tot - 1));
-		vector<tp> ret(dim.size());
-		fup (i, 0, ret.size() - 1) {
-			ret[i] = idx / dim[i];
-			idx -= ret[i] * dim[i];
-		}
-		return ret;
-	}
-};
-#endif
-template<typename tp>
-class descrete {
-	vector<tp> data;
-public:
-	descrete(vector<tp> &v) {
-		data.assign(it_each(v));
-		sort(it_each(data));
-		data.erase(unique(it_each(data)), data.end());
-		fup_range (i, 0, data.size()) {
-			tp &x = data[i];
-			x = lower_bound(it_each(data), x) - data.begin();
-		}
-	}
-	tp get(int i) {
-		return data[i];
-	}
-};
-template<typename tp, size_t pon>
-class allocator {
-	size_t cur;
-	vector<tp> mem;
-	queue<tp *> cache;
-public:
-	allocator() {
-		cur = 0;
-		mem.reserve(pon);
-	}
-	tp *operator ()() {
-		tp *ret;
-		if (cache.empty()) {
-			if (mem.size() <= cur)
-				mem.push_back(tp());
-			ret = &mem[cur++];
-		} else {
-			ret = cache.front();
-			cache.pop();
-		}
-		return ret;
-	}
-	void operator ()(tp *o) {
-		cache.push(o);
-	}
-	void clear() {
-		cur = 0;
-		while (!cache.empty())
-			cache.pop();
-	}
-};
 
 #pragma message \
-"\n\033[45;36;1;5mdebug tips!!!\033[0m\n" \
-"\033[37m" \
-"io类默认输出缓冲区大小: 1 << 20, 通过fio.set_bufsize(int)重置.\n" \
-"allocator必须设置预留大小, 可以非常大, 只有使用到的才会分配内存.\n" \
-"\033[0m" \
-"\n"
+usage_begin("debug tips!!!") \
+line("io类默认输出缓冲区大小: 1 << 20, 通过fio.set_bufsize(int)重置.") \
+usage_end()
 
 #endif

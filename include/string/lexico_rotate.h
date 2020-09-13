@@ -1,5 +1,4 @@
-#ifndef LEXICO_ROTATE_H
-#define LEXICO_ROTATE_H 1
+#pragma once
 
 /*
  * 最(小/大)表示法.
@@ -90,5 +89,3 @@ pair<int, string> lexico_rotate(const string &s, bool first) {
 }
 
 #undef STEP
-
-#endif

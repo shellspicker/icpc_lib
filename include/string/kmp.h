@@ -1,5 +1,4 @@
-#ifndef KMP_H
-#define KMP_H 1
+#pragma once
 
 /*
  * kmp.
@@ -73,5 +72,3 @@ public:
 		return ret;
 	}
 };
-
-#endif

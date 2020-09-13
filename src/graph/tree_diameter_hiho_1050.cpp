@@ -3,13 +3,30 @@
 #include "template.h"
 #include "graph/graph.h"
 
+struct vif {
+	int chain;
+	bool vis;
+	vif() {
+		chain = vis = 0;
+	}
+	vif(int _1, bool _2) : chain(_1), vis(_2) {}
+};
+struct eif {
+	int cost;
+	eif() {
+		cost = 1;
+	}
+};
+
+#include "graph/tree_diameter.h"
+
 class task {
 #define ioend(cond) \
 	do {\
 		if (!(cond) || !fio.ok()) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
 	int n, ans;
-	undigraph<int> g;
+	graph<vif, eif> g;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
@@ -20,50 +37,16 @@ class task {
 			int a, b;
 			fio.in(a, b);
 			a--, b--;
-			g.add(a, b);
+			g.add2(a, b);
 		}
 		ioend(1);
 		return cin;
 	}
 	void deal() {
-		vector<int> dis1 = bfs(0);
-		int m2 = -inf32, cur;
-		fup_range (i, 0, n) {
-			if (m2 < dis1[i])
-				m2 = dis1[cur = i];
-		}
-		vector<int> dis2 = bfs(cur);
-		m2 = *max_element(it_each(dis2));
-		ans = m2;
+		ans = tree_diameter(&g);
 	}
 	void out() {
 		fio.out(ans, '\n');
-	}
-	vector<int> bfs(int s) {
-		struct state {
-			int x, d;
-		};
-		queue<state> que;
-		vector<int> dis(n);
-		vector<bool> vis(n);
-		que.push({s, 0});
-		while (!que.empty()) {
-			int u, v, d;
-			state now = que.front();
-			que.pop();
-			u = now.x;
-			d = now.d;
-			vis[u] = 1;
-			dis[u] = d;
-			for (auto e : g[u]) {
-				auto info = g.info(e);
-				v = info.to;
-				if (vis[v])
-					continue;
-				que.push({v, d + info.cost});
-			}
-		}
-		return dis;
 	}
 public:
 	task(

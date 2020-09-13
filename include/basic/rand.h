@@ -1,5 +1,4 @@
-#ifndef RAND_H
-#define RAND_H 1
+#pragma once
 
 #include "graph/graph.h"
 #include "data_structure/dsu.h"
@@ -159,5 +158,3 @@ public:
 		}
 	}
 };
-
-#endif

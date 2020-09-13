@@ -1,5 +1,4 @@
-#ifndef FACTOR_H
-#define FACTOR_H 1
+#pragma once
 
 /*
  * 求所有因子.
@@ -37,5 +36,3 @@ map<ll, ll> prime_factor(ll n)
 		res[n] = 1;
 	return res;
 }
-
-#endif

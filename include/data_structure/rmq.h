@@ -1,5 +1,4 @@
-#ifndef RMQ_H
-#define RMQ_H 1
+#pragma once
 
 vector<vector<int>> double_scale(const vector<int> &step) {
 	vector<vector<int>> ret;
@@ -134,5 +133,3 @@ public:
 
 #undef STEP
 #undef FUNC_HASH
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef TREAP_SPLIT_RANGE_H
-#define TREAP_SPLIT_RANGE_H 1
+#pragma once
 
 #ifndef BST_MODE
 #define BST_MODE SPLIT
@@ -352,5 +351,3 @@ typename treap<tp, dsn, pon>::node *treap<tp, dsn, pon>::node::null;
 #undef FATHER
 #undef FUNC_RANGE
 #undef FUNC_BST
-
-#endif

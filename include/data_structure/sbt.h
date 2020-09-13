@@ -1,5 +1,4 @@
-#ifndef SBT_H
-#define SBT_H 1
+#pragma once
 
 #include "data_structure/bst.h"
 
@@ -133,5 +132,3 @@ public:
 };
 template<typename tp, size_t dsn, size_t pon>
 typename sbt<tp, dsn, pon>::node *sbt<tp, dsn, pon>::node::null;
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef HASH_H
-#define HASH_H 1
+#pragma once
 
 /*
  * normal hash.
@@ -65,5 +64,3 @@ ull bkdr_hash_range(const vector<ull> &hash, const vector<ull> &exp, int l, int 
 {
 	return hash[r] - special(0llu, hash, l - 1, 0, hash.size() - 1) * exp[length(l, r)];
 }
-
-#endif

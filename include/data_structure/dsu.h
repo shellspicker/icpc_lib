@@ -1,5 +1,4 @@
-#ifndef DSU_H
-#define DSU_H 1
+#pragma once
 
 class dsu {
 	vector<int> fa, lev;
@@ -29,5 +28,3 @@ public:
 		return set(x) == set(y);
 	}
 };
-
-#endif

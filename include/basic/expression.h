@@ -1,5 +1,4 @@
-#ifndef EXPRESSION_H
-#define EXPRESSION_H 1
+#pragma once
 
 /*
  * calc expression for basic arithmetic.
@@ -126,5 +125,3 @@ end:
 		return parse_calc(buf);
 	}
 };
-
-#endif

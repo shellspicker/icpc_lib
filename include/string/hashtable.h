@@ -1,5 +1,4 @@
-#ifndef HASHTABLE_H
-#define HASHTABLE_H 1
+#pragma once
 
 template<typename ktp, typename htp, size_t pon, size_t mod>
 class hash_set {
@@ -130,5 +129,3 @@ public:
 };
 
 #undef USE_TICKS
-
-#endif
