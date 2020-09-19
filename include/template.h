@@ -631,6 +631,8 @@ public:
 	}
 } fio;
 
+struct fake_type {};
+
 #pragma message \
 usage_begin("debug tips!!!") \
 line("io类默认输出缓冲区大小: 1 << 20, 通过fio.set_bufsize(int)重置.") \

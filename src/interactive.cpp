@@ -26,9 +26,10 @@ public:
 			interactive();
 	}
 #undef ioend
-} gkd;
+};
 
 int main()
 {
+	new task();
 	return 0;
 }
