@@ -1,32 +1,47 @@
 #pragma once
 
-/*
- * 伪离散化.
- */
-template <typename T>
+#pragma message \
+usage_begin("") \
+line("idref.h") \
+line("synopsis:") \
+line("\tidref<tp>;") \
+line("\t\ttp到int的映射, 类似离散化(但是没有排序).") \
+line("\t\t下标起始0.") \
+line("public function:") \
+line("\tvoid init();") \
+line("\tint size();") \
+line("\tbool count(tp);") \
+line("\tint get_id(tp);") \
+line("\ttp get_orig(int);") \
+usage_end()
+
+template <typename tp>
 class idref {
-	int id_cnt;
-	map<T, int> mmp;
-	map<int, T> orig;
+	int cnt;
+	unordered_map<tp, int> mmp;
+	unordered_map<int, tp> orig;
 public:
 	void init() {
-		id_cnt = 0;
+		cnt = 0;
 		mmp.clear();
 		orig.clear();
 	}
-	int cnt() {
-		return id_cnt;
+	int size() {
+		return cnt;
 	}
-	int get_id(T s)
+	bool count(tp o) {
+		return mmp.count(o);
+	}
+	int get_id(tp o)
 	{
-		if (mmp.count(s))
-			return mmp[s];
-		int res;
-		mmp[s] = res = id_cnt++;
-		orig[res] = s;
-		return res;
+		if (count(o))
+			return mmp[o];
+		int ret;
+		mmp[o] = ret = cnt++;
+		orig[ret] = o;
+		return ret;
 	}
-	T get_orig(int id) {
+	tp get_orig(int id) {
 		assert(orig.count(id));
 		return orig[id];
 	}

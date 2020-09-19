@@ -1,5 +1,4 @@
 #define FAST_IO 1
-
 #include "template.h"
 #include "basic/idref.h"
 #include "data_structure/dsu.h"
@@ -12,9 +11,13 @@ class task {
 	struct cmd {
 		int op;
 		string name[2];
+		finput(is, cmd, o) {
+			fio.in(o.op, o.name[0], o.name[1]);
+			return is;
+		}
 	};
 	int n;
-	vector<cmd> ac;
+	vector<cmd> command;
 	vector<bool> ans;
 	idref<string> id;
 	dsu ds;
@@ -23,40 +26,32 @@ class task {
 	}
 	istream &in() {
 		ioend(fio.in(n));
-		ac.resize(n);
+		command.resize(n);
 		id.init();
-		for (auto &in : ac) {
-			int op;
-			string name[2];
-			fio.in(op, name[0], name[1]);
-			id.get_id(name[0]);
-			id.get_id(name[1]);
-			in = cmd{op, name[0], name[1]};
+		fup_range (i, 0, n) {
+			cmd &obj = command[i];
+			cin >> obj;
+			id.get_id(obj.name[0]);
+			id.get_id(obj.name[1]);
 		}
 		ioend(1);
 		return cin;
 	}
 	void deal() {
-		ds.init(id.cnt());
+		ds.init(id.size());
 		ans.clear();
-		for (auto q : ac) {
-			switch (q.op) {
-			case 0:
+		for (auto q : command) {
+			if (q.op == 0) {
 				ds.link(id.get_id(q.name[0]), id.get_id(q.name[1]));
-				break;
-			case 1:
+			} else if (q.op == 1) {
 				bool same = ds.same(id.get_id(q.name[0]), id.get_id(q.name[1]));
-				if (same)
-					ans.push_back(1);
-				else
-					ans.push_back(0);
-				break;
+				ans.push_back(same);
 			}
 		}
 	}
 	void out() {
 		for (auto qa : ans)
-			fio.out(qa ? "yes\n" : "no\n");
+			fio.msg("%s\n", qa ? "yes" : "no");
 	}
 public:
 	task(
@@ -78,9 +73,10 @@ public:
 		}
 	}
 #undef ioend
-} gkd;
+};
 
 int main()
 {
+	new task();
 	return 0;
 }
