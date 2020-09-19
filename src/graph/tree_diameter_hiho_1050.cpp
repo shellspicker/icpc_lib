@@ -1,7 +1,7 @@
 #define FAST_IO 1
-
 #include "template.h"
 #include "graph/graph.h"
+#include "graph/tree_diameter.h"
 
 struct vif {
 	int chain;
@@ -12,13 +12,12 @@ struct vif {
 	vif(int _1, bool _2) : chain(_1), vis(_2) {}
 };
 struct eif {
-	int cost;
+	int dist;
 	eif() {
-		cost = 1;
+		dist = 1;
 	}
 };
-
-#include "graph/tree_diameter.h"
+using graph_t = graph<vif, eif>;
 
 class task {
 #define ioend(cond) \
@@ -26,7 +25,7 @@ class task {
 		if (!(cond) || !fio.ok()) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
 	int n, ans;
-	graph<vif, eif> g;
+	graph_t g;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
@@ -68,9 +67,10 @@ public:
 		}
 	}
 #undef ioend
-} gkd;
+};
 
 int main()
 {
+	new task();
 	return 0;
 }
