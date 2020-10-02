@@ -1,35 +1,21 @@
 #pragma once
 
-#pragma message \
-usage_begin("graph.h") \
-line("synopsis:") \
-line("\tstruct graph<v_info, e_info>;") \
-line("\tv_info: 结点信息.") \
-line("\t\t自定义的结构体.") \
-line("\te_info: 边信息.") \
-line("\t\t自定义的结构体.") \
-line("\t\t空构造函数写好默认边信息, 加边函数省略参数用.") \
-line("public member:") \
-line("\tvector<node> nodes;") \
-line("\tvector<edge> edges;") \
-line("public function:") \
-line("\tvoid add(int, int, e_info);") \
-line("\tvoid add2(int, int, e_info);") \
-line("\tvoid resize(int);") \
-line("\tvoid clear();") \
-line("\tpair<node *, edge *> extend(int);") \
-usage_end()
+#define GRAPH_T template<typename _1, typename _2>
+#define GRAPH_C graph<_1, _2>
+#define GRAPH_NODE_T GRAPH_C::node
+#define GRAPH_NODE_C typename GRAPH_NODE_T
 
 template<typename v_info, typename e_info>
 struct graph {
-	struct edge;
 	struct node {
-		int id;
+		static node *baseaddr;
 		vector<int> link;
 		v_info meta;
-		node() {}
-		node(int _1) : id(_1) {
+		node() {
 			link.clear();
+		}
+		int id() {
+			return this - baseaddr;
 		}
 	};
 	struct edge {
@@ -40,21 +26,22 @@ struct graph {
 	};
 	vector<node> nodes;
 	vector<edge> edges;
+	node *&baseaddr = node::baseaddr;
 	graph(int vn = 0) {
 		clear();
 		nodes.resize(vn);
+		baseaddr = &nodes[0];
 		edges.reserve(vn);
-		fup_range (i, 0, vn)
-			new (&nodes[i]) node(i);
 	}
-	pair<node *, edge *> extend(int i) {
-		pair<node *, edge *> ret;
-		ret.first = &nodes[(ret.second = &edges[i])->to];
-		return ret;
+	node &operator [](int i) {
+		return nodes[i];
 	}
 	void clear() {
 		nodes.clear();
 		edges.clear();
+	}
+	int size() {
+		return nodes.size();
 	}
 	void resize(int vn) {
 		new (this) graph(vn);
@@ -69,4 +56,16 @@ struct graph {
 		add(from, to, e_if);
 		add(to, from, e_if);
 	}
+	pair<node *, edge *> extend(int i) {
+		pair<node *, edge *> ret;
+		ret.first = &nodes[(ret.second = &edges[i])->to];
+		return ret;
+	}
 };
+GRAPH_T
+GRAPH_NODE_C *GRAPH_NODE_T::baseaddr;
+
+#undef GRAPH_T
+#undef GRAPH_C
+#undef GRAPH_NODE_T
+#undef GRAPH_NODE_C

@@ -1,5 +1,4 @@
-#ifndef TEMPLATE_H
-#define TEMPLATE_H
+#pragma once
 
 #pragma GCC optimize(2)
 #pragma GCC optimize("inline")
@@ -317,6 +316,7 @@ int bitcount(tp x)
 	else
 		return __builtin_popcount(x);
 }
+// notice: ctz(), clz() undefined behavior when x == 0.
 template<typename tp>
 tp clz(tp x)
 {
@@ -354,6 +354,10 @@ tp roundup_pow_of_2(tp x) { return x ? clo(x) << bool(x - clo(x)) : 0; }
 template<typename tp>
 tp rounddown_pow_of_2(tp x) { return x ? clo(x) : 0; }
 bool is_power_of_2(ll x) { return x && !(x & (x - 1)); }
+int half2xp(int x)
+{
+	return ctz(roundup_pow_of_2(x) >> bool(x ^ 1));
+}
 ull div_roundup(ull x, ull div) { return (x + div - 1) / div; }
 ull div_rounddown(ull x, ull div) { return x / div; }
 ull div_last_offset(ull x, ull div) { return div_rounddown(x - 1, div); }
@@ -637,5 +641,3 @@ struct fake_type {};
 usage_begin("debug tips!!!") \
 line("io类默认输出缓冲区大小: 1 << 20, 通过fio.set_bufsize(int)重置.") \
 usage_end()
-
-#endif

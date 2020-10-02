@@ -1,18 +1,16 @@
 #define FAST_IO 1
 #include "template.h"
 #include "graph/graph.h"
-#include "data_structure/dsu.h"
-#include "graph/lca_tarjan.h"
+#include "graph/heavy_light.h"
 #include "basic/idref.h"
 
 struct vif {
-	bool vis;
-	vector<pair<int, int *>> lca_query;
-	vif() {
-		lca_query.clear();
-	}
+	int size, heavy, deep, fa, ac;
+	vif() {}
 };
 using graph_t = graph<vif, fake_type>;
+using node = graph_t::node;
+using edge = graph_t::edge;
 
 class task {
 #define ioend(cond) \
@@ -35,8 +33,6 @@ class task {
 			fio.in(name[0], name[1]);
 			c.pp[0] = id.get_id(name[0]);
 			c.pp[1] = id.get_id(name[1]);
-			fup_range (i, 0, 2)
-				g[c.pp[i]].meta.lca_query.push_back({c.pp[i ^ 1], &c.ans});
 		};
 		ioend(fio.in(en));
 		id.init();
@@ -53,7 +49,15 @@ class task {
 		return cin;
 	}
 	void deal() {
-		lca_tarjan(&g, &g[0]);
+		heavy_light<graph_t> hld(&g);
+		auto get_ans = [&](command &c) {
+			node *u, *v;
+			u = &g[c.pp[0]];
+			v = &g[c.pp[1]];
+			c.ans = hld.lca(u, v)->id();
+		};
+		hld.init(&g[0]);
+		for_each(it_each(cmd), get_ans);
 	}
 	void out() {
 		auto output = [&](command &c) {

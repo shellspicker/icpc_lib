@@ -1,48 +1,43 @@
 #pragma once
 
-#pragma message \
-usage_begin("lca_tarjan.h") \
-line("include:") \
-line("\tgraph/graph.h") \
-line("\tdata_structure/dsu.h") \
-line("synopsis:") \
-line("\tvoid lca_tarjan(graph *, int);") \
-line("必要信息:") \
-line("\tv_info:") \
-line("\t\tbool vis;") \
-line("\t\tvector<pair<int, int *>>lca_query;") \
-line("tip:") \
-line("\tdsu不带rank优化.") \
-usage_end()
+#define NODE_C typename graph::node
+#define EDGE_C typename graph::edge
 
 template<typename graph>
-void lca_tarjan(graph *g, int root) {
-	using node = typename graph::node;
-	using edge = typename graph::edge;
+void lca_tarjan(graph *g, NODE_C *root) {
+	using node = NODE_C;
+	using edge = EDGE_C;
+
+	node *nd = g->baseaddr;
 	dsu group;
 	function<void()> init = [&]() {
-		group.init(g->nodes.size());
+		group.init(g->size());
 		for (auto &nd : g->nodes)
 			nd.meta.vis = 0;
 	};
 	function<void(node *)> dfs = [&](node *u) {
-		auto &meta = u->meta;
+		auto &mt = u->meta;
 		node *v;
-		meta.vis = 1;
+		edge *e;
+		mt.vis = 1;
 		for (int ei : u->link) {
-			tie(v, ignore) = g->extend(ei);
+			tie(v, e) = g->extend(ei);
 			if (v->meta.vis)
 				continue;
 			dfs(v);
-			group.link(u->id, v->id);
+			group.link(u->id(), v->id());
 		}
-		for (auto qa : u->meta.lca_query) {
-			node *v = &g->nodes[qa.first];
+		for (auto qa : mt.lca_query) {
+			node *v = &qa.first[nd];
 			if (v->meta.vis)
-				*qa.second = group.set(v->id);
+				*qa.second = group.set(v->id());
 		}
-		u->meta.lca_query.clear();
+		mt.lca_query.clear();
 	};
+
 	init();
-	dfs(&g->nodes[root]);
+	dfs(root);
 }
+
+#undef NODE_C
+#undef EDGE_C
