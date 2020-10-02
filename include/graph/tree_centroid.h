@@ -1,21 +1,13 @@
 #pragma once
 
-#pragma message \
-usage_begin("tree_centroid.h") \
-line("include:") \
-line("\tgraph/graph.h") \
-line("synopsis:") \
-line("\tnode *tree_centroid(graph *);") \
-line("必要信息:") \
-line("\tv_info:") \
-line("\t\tbool vis;") \
-line("\t\tint size, heavy;") \
-usage_end()
+#define NODE_C typename graph::node
+#define EDGE_C typename graph::edge
 
 template<typename graph>
-typename graph::node *tree_centroid(graph *g) {
-	using node = typename graph::node;
-	using edge = typename graph::edge;
+NODE_C *tree_centroid(graph *g, NODE_C *root) {
+	using node = NODE_C;
+	using edge = EDGE_C;
+
 	int m2;
 	node *ret;
 	function<void()> init = [&]() {
@@ -25,28 +17,32 @@ typename graph::node *tree_centroid(graph *g) {
 		}
 	};
 	function<void(node *)> dfs = [&](node *u) {
-		auto &meta = u->meta;
+		auto &mt = u->meta;
 		node *v;
 		edge *e;
-		meta.vis = 1;
-		meta.size = 1;
-		meta.heavy = -inf32;
+		mt.vis = 1;
+		mt.size = 1;
+		mt.heavy = -inf32;
 		for (int ei : u->link) {
 			tie(v, e) = g->extend(ei);
 			if (v->meta.vis)
 				continue;
 			dfs(v);
-			meta.size += v->meta.size;
-			meta.heavy = max(meta.heavy, v->meta.size);
+			mt.size += v->meta.size;
+			mt.heavy = max(mt.heavy, v->meta.size);
 		}
-		meta.heavy = max(meta.heavy, int(g->nodes.size() - meta.size));
-		if (meta.heavy < m2) {
-			m2 = meta.heavy;
+		mt.heavy = max(mt.heavy, int(g->size() - mt.size));
+		if (mt.heavy < m2) {
+			m2 = mt.heavy;
 			ret = u;
 		}
-		meta.vis = 0;
+		mt.vis = 0;
 	};
+
 	init();
-	dfs(&g->nodes[0]);
+	dfs(root);
 	return ret;
 }
+
+#undef NODE_C
+#undef EDGE_C

@@ -4,12 +4,10 @@
 #include "graph/tree_diameter.h"
 
 struct vif {
-	int chain;
 	bool vis;
-	vif() {
-		chain = vis = 0;
-	}
-	vif(int _1, bool _2) : chain(_1), vis(_2) {}
+	int chain;
+	vif() {}
+	vif(bool _1, int _2) : vis(_1), chain(_2) {}
 };
 struct eif {
 	int dist;
@@ -42,7 +40,7 @@ class task {
 		return cin;
 	}
 	void deal() {
-		ans = tree_diameter(&g);
+		ans = tree_diameter(&g, &g[0]);
 	}
 	void out() {
 		fio.out(ans, '\n');
