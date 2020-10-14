@@ -1,25 +1,7 @@
 #pragma once
 
-vector<vector<int>> double_scale(const vector<int> &step) {
-	vector<vector<int>> ret;
-	int sz, xp;
-	sz = step.size();
-	xp = ctz(rounddown_pow_of_2(sz));
-	ret.resize(xp + 1);
-	ret[0].assign(it_each(step));
-	fup (b, 1, xp) {
-		ret[b].resize(sz);
-		fup_range (s, 0, sz)
-			if (~ret[b - 1][s])
-				ret[b][s] = ret[b - 1][ret[b - 1][s]];
-			else
-				ret[b][s] = -1;
-	}
-	return ret;
-}
-
 #if FUNC_HASH
-#define STEP 1
+#  define STEP 1
 #endif
 
 /*
@@ -36,41 +18,38 @@ vector<vector<int>> double_scale(const vector<int> &step) {
 #if FUNC_HASH
 template<
 	typename tp = ull,
-	class func_cmp = less<tp>,
-	tp seed = 131,
-	class func_comb = function<tp(tp, tp)>>
+	class fn_cmp = less<tp>,
+	tp seed = 131>
 #else
 template<
-	typename tp,
-	class func_comb = function<tp(tp, tp)>>
+	typename tp>
 #endif
 class rmq {
+	using fn_comb = function<tp(tp, tp)>;
 	vector<vector<tp>> ds;
 #if STEP
 	vector<vector<int>> step;
 #endif
 public:
-	func_comb comb;
+	fn_comb comb;
 #if FUNC_HASH
-	func_cmp cmp = func_cmp();
+	fn_cmp cmp = func_cmp();
 	vector<tp> exp;// seed ^ (2 ^ n).
 #endif
 #if STEP
-	rmq(
-		func_comb fcomb,
-		const vector<int> &nxt) :
-		comb(fcomb) {
-			step = double_scale(nxt);
-		}
+	rmq(const vector<int> &nxt) {
+		step = double_scale(nxt);
+	}
 #else
-	rmq(
-		func_comb fcomb) :
-		comb(fcomb) {}
+	rmq() {}
 #endif
+	void set_comb(fn_comb fp) {
+		comb = fp;
+	}
 	void init(const vector<tp> &v) {
 		int sz, xp;
 		sz = v.size();
-		xp = ctz(rounddown_pow_of_2(max(sz - 1, 1)));
+		xp = half2xp(sz);
 		ds.resize(xp + 1);
 		ds[0].assign(it_each(v));
 #if FUNC_HASH
@@ -124,7 +103,7 @@ public:
 	tp range_query(int l, int r) {
 		assert(l <= r);
 		int xp, len;
-		xp = ctz(rounddown_pow_of_2(max(length(l, r) - 1, 1ll)));
+		xp = half2xp(length(l, r));
 		len = 1 << xp;
 		return comb(ds[xp][l], ds[xp][rtol(r, len)]);
 	}

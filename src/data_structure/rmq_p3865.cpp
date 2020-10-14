@@ -1,5 +1,4 @@
 #define FAST_IO 1
-
 #include "template.h"
 #include "data_structure/rmq.h"
 
@@ -33,8 +32,11 @@ class task {
 		return cin;
 	}
 	void deal() {
-		rmq<int> dsm(
-				[](int a, int b) { return max(a, b); });
+		rmq<int> dsm;
+		auto fn_comb = [](int a, int b) {
+			return max(a, b);
+		};
+		dsm.set_comb(fn_comb);
 		dsm.init(v);
 		for (auto &q : qa)
 			q.ans = dsm.range_query(q.l, q.r);
@@ -66,9 +68,10 @@ public:
 		}
 	}
 #undef ioend
-} gkd(0, 0, 0);
+};
 
 int main()
 {
+	new task();
 	return 0;
 }
