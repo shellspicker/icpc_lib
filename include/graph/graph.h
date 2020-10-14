@@ -11,9 +11,7 @@ struct graph {
 		static node *baseaddr;
 		vector<int> link;
 		v_info meta;
-		node() {
-			link.clear();
-		}
+		node() : link(vector<int>()), meta(v_info()) {}
 		int id() {
 			return this - baseaddr;
 		}
@@ -29,7 +27,7 @@ struct graph {
 	node *&baseaddr = node::baseaddr;
 	graph(int vn = 0) {
 		clear();
-		nodes.resize(vn);
+		nodes.assign(vn, node());
 		baseaddr = &nodes[0];
 		edges.reserve(vn);
 	}
@@ -49,12 +47,15 @@ struct graph {
 	void add(int from, int to, e_info e_if = e_info()) {
 		assert(inrange(from, range(0, nodes.size())));
 		assert(inrange(to, range(0, nodes.size())));
-		edges.push_back({from, to, e_if});
+		add_edge_only(from, to, e_if);
 		nodes[from].link.push_back(edges.size() - 1);
 	}
 	void add2(int from, int to, e_info e_if = e_info()) {
 		add(from, to, e_if);
 		add(to, from, e_if);
+	}
+	void add_edge_only(int from, int to, e_info e_if = e_info()) {
+		edges.push_back({from, to, e_if});
 	}
 	pair<node *, edge *> extend(int i) {
 		pair<node *, edge *> ret;
