@@ -26,41 +26,66 @@ size_t hash_val(var &&...args)
 /*
  * bkdr hash.
  */
-void bkdr_hash_preprocess(const string &seq, vector<ull> &hash, ull seed, int i = 0)
-{
-	if (hash.size() < i + seq.size())
-		hash.resize(i + seq.size());
-	for (auto h : seq) {
-		hash[i] = special(0llu, hash, i - 1, 0, hash.size() - 1) * seed + h;
-		i++;
+class precalc_hash {
+	ull seed;
+	vector<ull> exp, hval;
+
+public:
+	precalc_hash(ull s) : seed(s) {}
+
+	precalc_hash(ull s, size_t len) : precalc_hash(s) {
+		exp.resize(len);
+		exp[0] = 1;
+		fup_range (i, 1, len - 1)
+			exp[i] = exp[i - 1] * seed;
 	}
-}
-template<typename tp>
-void bkdr_hash_preprocess(const vector<tp> &seq, vector<ull> &hash, ull seed, int i = 0)
-{
-	if (hash.size() < i + seq.size())
-		hash.resize(i + seq.size());
-	for (auto h : seq) {
-		hash[i] = special(0llu, hash, i - 1, 0, hash.size() - 1) * seed + h;
-		i++;
+
+	template<typename iter>
+	ull once(iter l, size_t len) {
+		ull ret = 0;
+		fup_range (i, 0, len)
+			ret = ret * seed + (*l++);
+		return ret;
 	}
-}
-ull bkdr_hash_once(const string &seq, ull seed)
-{
-	ull hash = 0;
-	for (auto h : seq)
-		hash = hash * seed + h;
-	return hash;
-}
-template<typename tp>
-ull bkdr_hash_once(const vector<tp> &seq, ull seed)
-{
-	ull hash = 0;
-	for (auto h : seq)
-		hash = hash * seed + h;
-	return hash;
-}
-ull bkdr_hash_range(const vector<ull> &hash, const vector<ull> &exp, int l, int r)
-{
-	return hash[r] - special(0llu, hash, l - 1, 0, hash.size() - 1) * exp[length(l, r)];
-}
+
+	template<typename iter>
+	void add(iter l, size_t len, size_t st = 0) {
+		hval.resize(st + len);
+		fup_range (i, 0, len)
+			hval[st + i] = special(0llu, hval, st + i - 1) * seed + (*l++);
+	}
+
+	ull get(size_t l, size_t len) {
+		return hval[ltor(l, len)] - special(0llu, hval, l - 1) * exp[len];
+	}
+
+	pair<int, bool> lcs(int p1, int p2, int dir) {
+		if (p1 == p2)
+			return {p1, 1};
+		struct table {
+			int limit;
+		} tbl[2];
+		tbl[0] = {min(p1, p2) + 1};
+		tbl[1] = {hval.size() - max(p1, p2)};
+		int idx = (dir + 1) / 2;
+		int lef = 0, rig = tbl[idx].limit, m2l = rig;
+		bool cmp;
+		while (lef <= rig) {
+			int mid = midpoint(lef, rig);
+			struct start {
+				int p1, p2;
+			} st[2];
+			st[0] = {rtol(p1, mid), rtol(p2, mid)};
+			st[1] = {p1, p2};
+			if (get(st[idx].p1, mid) == get(st[idx].p2, mid))
+				lef = mid + 1;
+			else
+				rig = mid - 1;
+		}
+		if (rig == m2l)
+			cmp = 0 < (p1 - p2) * dir;
+		else
+			cmp = get(p1 + dir * rig, 1) < get(p2 + dir * rig, 1);
+		return {rig, cmp};
+	}
+};
