@@ -1,7 +1,5 @@
 #pragma once
 
-#include "math/exgcd.h"
-
 ull mul_mod(ull a, ull b, ull mod)
 {
 	ull res = (a * b - (ll)(a / (ldb)mod * b + 1e-3) * mod + mod) % mod;
@@ -26,7 +24,7 @@ public:
 	static ll mod;
 	modulo() : x(0) {}
 	modulo(ll v) : x(v) {
-		if (mod <= abs(x))
+		if (mod <= llabs(x))
 			x %= mod;
 		if (x < 0)
 			x += mod;

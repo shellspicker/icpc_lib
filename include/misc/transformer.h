@@ -1,14 +1,45 @@
 #pragma once
 
-#include "math/gcd_lcm.h"
-#include "math/mod.h"
+#define PERMUTATAION_T template<size_t _1>
+#define PERMUTATAION_C permutation<_1>
 
-/*
- * 置换类, 魔方类...
- */
 template<size_t dn>
 class permutation {
-	static int origin[dn];
+public:
+	static void init() {
+		iota(origin, origin + dn, 0);
+	}
+	permutation() {
+		iota(mat[0], mat[0] + dn, 0);
+		gall();
+	}
+	permutation(const vector<int> &p) { assign(p); }
+	permutation(const vector<int> &pre, const vector<int> &nxt) { assign(pre, nxt); }
+	void assign(const vector<int> &p) {
+		assert(is_permutation(origin, origin + dn, p.begin()));
+		copy(p.begin(), p.end(), mat[0]);
+		gall();
+	}
+	void assign(const vector<int> &pre, const vector<int> &nxt) {
+		auto fn = [](int x) { return inrange(x, 0, int(dn - 1)); };
+		assert(find_if_not(pre.begin(), pre.end(), fn) == pre.end());
+		assert(find_if_not(nxt.begin(), nxt.end(), fn) == nxt.end());
+		assert(is_permutation(pre.begin(), pre.end(), nxt.begin()));
+		permutation();
+		fup (i, 0, pre.size() - 1)
+			mat[0][pre[i]] = nxt[i];
+		gall();
+	}
+	void compos(permutation<dn> &rhs, int tp) {
+		auto fn = [=](int x) { return rhs.mat[tp][x]; };
+		transform(mat[0], mat[0] + dn, mat[0], fn);
+		gall();
+	}
+	int mat[2][dn];
+	ull hs[2];
+	vector<int> cycle[2][dn];
+	int cycn, period;
+private:
 	void gall() { ghs(); ginv(); gcyc(); }
 	void ghs() {
 		for (int i = 0; i < 2; ++i)
@@ -41,59 +72,29 @@ class permutation {
 			}
 		}
 	}
-public:
-	static void init() {
-		iota(origin, origin + dn, 0);
-	}
-	int mat[2][dn];
-	ull hs[2];
-	vector<int> cycle[2][dn];
-	int cycn, period;
-	permutation() {
-		iota(mat[0], mat[0] + dn, 0);
-		gall();
-	}
-	permutation(const vector<int> &p) { assign(p); }
-	permutation(const vector<int> &pre, const vector<int> &nxt) { assign(pre, nxt); }
-	void assign(const vector<int> &p) {
-		assert(is_permutation(origin, origin + dn, p.begin()));
-		copy(p.begin(), p.end(), mat[0]);
-		gall();
-	}
-	void assign(const vector<int> &pre, const vector<int> &nxt) {
-		auto fn = [](int x) { return inrange(x, 0, int(dn - 1)); };
-		assert(find_if_not(pre.begin(), pre.end(), fn) == pre.end());
-		assert(find_if_not(nxt.begin(), nxt.end(), fn) == nxt.end());
-		assert(is_permutation(pre.begin(), pre.end(), nxt.begin()));
-		permutation();
-		fup (i, 0, pre.size() - 1)
-			mat[0][pre[i]] = nxt[i];
-		gall();
-	}
-	void compos(permutation<dn> &rhs, int tp) {
-		auto fn = [=](int x) { return rhs.mat[tp][x]; };
-		transform(mat[0], mat[0] + dn, mat[0], fn);
-		gall();
-	}
+	static int origin[dn];
 };
-template<size_t dn>
-int permutation<dn>::origin[];
-template<size_t dn>
-using pm = permutation<dn>;
-template<size_t dn>
-using vpm = vector<permutation<dn>>;
+PERMUTATAION_T
+int PERMUTATAION_C::origin[_1];
+
+#undef PERMUTATAION_T
+#undef PERMUTATAION_C
+
+#define CUBE_T template<size_t _1>
+#define CUBE_C cube<_1>
 
 template<size_t dn>
 class cube
 {
-	static pm<dn> origin;
 public:
+	using pm = permutation<dn>;
+	using vpm = vector<permutation<dn>>;
 	static void init() {
-		permutation<dn>::init();
-		origin = pm<dn>();
+		pm::init();
+		origin = pm();
 	}
-	static void level_bfs(vpm<dn> &misc, int limit, vpm<dn> &comb) {
-		queue<pm<dn>> qnow, qnxt;
+	static void level_bfs(vpm &comb, vpm &misc, int limit) {
+		queue<pm> qnow, qnxt;
 		set<ull> st;
 		qnow.push(origin);
 		st.insert(origin.hs[0]);
@@ -102,7 +103,7 @@ public:
 			if (qnow.empty())
 				break;
 			while (!qnow.empty()) {
-				pm<dn> x = qnow.front(); qnow.pop();
+				pm x = qnow.front(); qnow.pop();
 				for (auto y : misc) {
 					x.compos(y, 0);
 					if (!st.count(x.hs[0])) {
@@ -116,8 +117,8 @@ public:
 			qnow.swap(qnxt);
 		}
 	}
-	static void face_seq(vpm<dn> &body, vpm<dn> &face, vpm<dn> &comb) {
-		pm<dn> once = origin;
+	static void face_seq(vpm &comb, vpm &body, vpm &face) {
+		pm once = origin;
 		set<ull> st;
 		st.insert(once.hs[0]);
 		comb.push_back(once);
@@ -134,6 +135,11 @@ public:
 			}
 		}
 	}
+private:
+	static pm origin;
 };
-template<size_t dn>
-pm<dn> cube<dn>::origin;
+CUBE_T
+typename CUBE_C::pm CUBE_C::origin;
+
+#undef CUBE_T
+#undef CUBE_C
