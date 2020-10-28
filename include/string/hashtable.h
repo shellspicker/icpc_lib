@@ -27,6 +27,7 @@ public:
 #if USE_TICKS
 		ticks = 0;
 #endif
+		clear();
 	}
 	void clear() {
 		alloc.clear();
@@ -92,6 +93,7 @@ public:
 #if USE_TICKS
 		ticks = 0;
 #endif
+		clear();
 	}
 	void clear() {
 		alloc.clear();
