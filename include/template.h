@@ -50,6 +50,7 @@ using std::ios;
 using std::ios_base;
 using std::istream;
 using std::ostream;
+using std::ws;
 using std::getline;
 using std::stringstream;
 using std::streambuf;
@@ -592,8 +593,10 @@ public:
 		set_status(~ch);
 		if (ch == -1)
 			return 0;
+		if (ch == delim)
+			return 1;
 		g_cur = g_buf;
-		for (*g_cur++ = ch; ~ch && ch ^ delim; ch = getchar())
+		for (; ~ch && ch ^ delim; ch = getchar())
 			*g_cur++ = ch;
 		*g_cur = 0;
 		line.assign(g_buf);
@@ -602,6 +605,14 @@ public:
 		getline(cin, line, delim);
 		return !cin.fail();
 #endif
+	}
+	bool readline_noblank(string &line, char delim = '\n') {
+		bool ret;
+		do {
+			if (!(ret = readline(line, delim)))
+				return ret;
+		} while (!line.size());
+		return ret;
 	}
 #if 201103L <= __cplusplus
 	template<typename ...var>
