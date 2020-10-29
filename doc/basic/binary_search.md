@@ -362,9 +362,9 @@ int binary_search_greater_first(vector<int> &data, int lef, int rig, int target)
 >
 > ver.2 - 对应lower_bound.
 >
-> ver.3对应upper_bound - 1.
+> ver.3 - 对应upper_bound - 1.
 >
-> ver.4对应upper_bound.
+> ver.4 - 对应upper_bound.
 
 那么我们可以用括号来表示你搜索的需求, 括号有2个属性:
 
