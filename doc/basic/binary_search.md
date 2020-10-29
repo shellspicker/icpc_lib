@@ -336,6 +336,10 @@ int binary_search_greater_first(vector<int> &data, int lef, int rig, int target)
 并且不会和上文实现一样写4次基本一样的代码, 代码量约等于1.5个进阶版的实现.  
 只用1.5倍代码完成4倍代码的事情, 开始.
 
+以下出现的一些参数名, 默认和之前的版本一致.
+
+### 发现不同需求之间的规律
+
 首先我们构造一个数组, 用区间的括号来解释一下进阶版的需求实际上是在求什么.
 
 构造数组`1, 2, 2, 4, 5`.
@@ -381,17 +385,157 @@ int binary_search_greater_first(vector<int> &data, int lef, int rig, int target)
 
 搜索方向, 0为向左搜索, 1为向右搜索.
 
+### 规律
+
 有以上提到的一些属性, 不难列出一个表格:
 
-| 括号方向 | 括号包含 | 括号形态 | 比较条件(now op target) | if的方向(true) | else的方向(false) |
-| -------- | -------- | -------- | ----------------------- | -------------- | ----------------- |
-| 0        | 0        | `(`      | `<`                     | 1              | 0                 |
-| 0        | 1        | `[`      | `>=`                    | 0              | 1                 |
-| 1        | 1        | `]`      | `<=`                    | 1              | 0                 |
-| 1        | 0        | `)`      | `>`                     | 0              | 1                 |
+| 括号方向 | 括号包含 | 括号形态 | 比较条件(now op target) | if的方向(true) | else的方向(false) | reutrn |
+| -------- | -------- | -------- | ----------------------- | -------------- | ----------------- | ------ |
+| 0        | 0        | `(`      | `<`                     | 1              | 0                 | rig    |
+| 0        | 1        | `[`      | `>=`                    | 0              | 1                 | lef    |
+| 1        | 1        | `]`      | `<=`                    | 1              | 0                 | rig    |
+| 1        | 0        | `)`      | `>`                     | 0              | 1                 | lef    |
+
+由于表格中的关键属性值都是0或1, 我们可以用位运算来得到返回值是lef还是rig.
+
+如果不看表格中"比较条件"这列, 那么这个表格是很有规律的, 而且if...else语句块, 在方向确定的情况下, 代码是固定的.  
+不难想到, 可以用宏来精简代码.
+
+### 原型
+
+```c++
+int binary_search(vector<int> &data, int lef, int rig, int target, bool dir, bool contain);
+```
+
+把目标区间类比成括号形式, 二分搜索.
+
+#### 参数
+
+**data** - 排序好的数组, 这里我们默认其为从小到大, 之后会扩展到从大到小的情况.
+
+**lef**, **rig** - 搜索的左右边界, 需要在数组下标范围内.
+
+**target** - 需要搜索的数字.
+
+**dir** - 括号的方向.
+
+**contain** - 括号的包含.
+
+#### 返回值
+
+搜索目标在数组中的下标,.
+
+如果无符合目标条件的, 则返回[lef, rig]之外的下标.
+
+### 可能的实现
+
+```c++
+int binary_search(vector<int> &data, int lef, int rig, int target, bool dir, bool contain) {
+#define look(cond) if ((cond)) lef = mid + 1; else rig = mid - 1;
+    int pos;
+    while (lef <= rig) {
+        int mid, now;
+        mid = midpoint(lef, rig);
+        now = data[mid];
+        look((!dir && now < target) || (dir && !(target < now)));
+    }
+    pos = dir ^ contain ? lef : rig;
+    return pos;
+#undef look
+}
+```
+
+其中, 把大小判断的等于号避开了, 代码中之写了小于号, 这样写的好处之后会体会到.
+
+那么我们就完成了用1个函数写完4个函数的功能.
 
 ## 完全版
 
+记得我之前说过, 默认数组是从小到大排序的, 我们现在来扩展一下从大到小的情况.
+
+需求为:
+
+**ver.1** - 数组中大于target的数中的最后一个. 即为括号`(`对应的下标.
+
+**ver.2** - 数组中小于等于target的数中的最前一个. 即为括号`[`对应的下标.
+
+**ver.3** - 数组中大于等于target的数中的最后一个. 即为括号`]`对应的下标.
+
+**ver.4** - 数组中小于target的数中的最前一个. 即为括号`)`对应的下标.
+
+### 规律
+
+还是画一个表格找规律:
+
+| 括号方向 | 括号包含 | 括号形态 | 比较条件(now op target) | if的方向(true) | else的方向(false) | reutrn |
+| -------- | -------- | -------- | ----------------------- | -------------- | ----------------- | ------ |
+| 0        | 0        | `(`      | `>`                     | 1              | 0                 | rig    |
+| 0        | 1        | `[`      | `<=`                    | 0              | 1                 | lef    |
+| 1        | 1        | `]`      | `>=`                    | 1              | 0                 | rig    |
+| 1        | 0        | `)`      | `<`                     | 0              | 1                 | lef    |
+
+对比一下从小到大和从大到小的情况, 发现只有比较条件的`<`变成了`>`.
+
+伏笔来了, 究极版的实现中, 我们把比较条件中的`=`给避开了, 那么从小到大的版本换到从大到小的版本也就是直接把代码中的`<`换成`>`即可.
+
+其实比较的符号, std中有`less<>`和`greater<>`, 那么这里我们就要写成模板函数.
+
+### 原型
+
+```c++
+template<class fn_cmp>
+int binary_search(vector<int> &data, int lef, int rig, int target, bool dir, bool contain);
+```
+
+把目标区间类比成括号形式, 二分搜索.
+
+支持从小到大排序和从大到小排序的数组.
+
+#### 参数
+
+**fn_cmp** - 比较级, 取`less<>`或`greater<>`.
+
+**data** - 排序好的数组, 这里我们默认其为从小到大, 之后会扩展到从大到小的情况.
+
+**lef**, **rig** - 搜索的左右边界, 需要在数组下标范围内.
+
+**target** - 需要搜索的数字.
+
+**dir** - 括号的方向.
+
+**contain** - 括号的包含.
+
+#### 返回值
+
+搜索目标在数组中的下标,.
+
+如果无符合目标条件的, 则返回[lef, rig]之外的下标.
+
+### 可能的实现
+
+```c++
+template<class fn_cmp>
+int binary_search(vector<int> &data, int lef, int rig, int target, bool dir, bool contain) {
+#define look(cond) if ((cond)) lef = mid + 1; else rig = mid - 1;
+    int pos;
+    fn_cmp cmp = fn_cmp();
+    while (lef <= rig) {
+        int mid, now;
+        mid = midpoint(lef, rig);
+        now = data[mid];
+        look((!dir && cmp(now, target)) || (dir && !cmp(target, now)));
+    }
+    pos = dir ^ contain ? lef : rig;
+    return pos;
+#undef look
+}
+```
+
 ## 结尾的话
 
-我知道一定会有人抓住我这里的midpoint一顿批判, 这个函数我记得似乎是从linux内核源码里抄来的(也可能是别的地方), 不过找不到出处在哪里了.
+关于midpoint, 可能的函数原型其实是`long long midpoint(long long lef, long long rig)`, 可支持64位有/无符号整数任意2个值取中点.  
+其实现就请读者自行摸索.
+
+浮点数区间的二分搜索, 也可以套用本文的规则, 只不过把单位从1换成了一个很小的浮点数(如1e-6).
+
+二叉平衡搜索树上的二分也可以把4个二分函数写成1个, 请会实现二叉平衡搜索树的读者自行思考.
