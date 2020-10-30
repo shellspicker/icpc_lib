@@ -71,6 +71,8 @@
 int binary_search(vector<int> &data, int lef, int rig, int target);
 ```
 
+找到一个值, 等于target.
+
 #### 参数
 
 **data** - 排序好的数组, 这里我们默认其为从小到大, 之后会扩展到从大到小的情况.
@@ -355,7 +357,7 @@ int binary_search_greater_first(vector<int> &data, int lef, int rig, int target)
 
 ## 究极版
 
-回顾一下[](#本文目的), 还有数组大小现在是默认从小到大.
+回顾一下本文目的, 我说过要把4个二分函数写成1个.
 
 这里我们来完成: 把进阶版4个函数, 合并成1个函数.  
 并且不会和上文实现一样写4次基本一样的代码, 代码量约等于1.5个进阶版的实现.  
@@ -448,7 +450,7 @@ int binary_search(vector<int> &data, int lef, int rig, int target, bool dir, boo
 
 #### 返回值
 
-搜索目标在数组中的下标,.
+根据不同需求在有序数组中搜索数字, 并返回其下标.
 
 如果无符合目标条件的, 则返回[lef, rig]之外的下标.
 
