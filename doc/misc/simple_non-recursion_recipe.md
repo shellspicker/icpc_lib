@@ -155,11 +155,12 @@ void func(...) {
 
 ```c++
 // 递归版.
-return_type func_name_recursion() {
+return_type func_name_recursion(arg_type args[]) {
     // 片段1.
     func_name_recursion(...);
     // 片段2.
 }
+
 // 非递归版.
 return_type func_name_non_recursion(arg_type args[]) {
     // 这个结构体即保存上下文.
