@@ -17,6 +17,7 @@
 #include <cstdio>
 #include <iostream>
 #include <sstream>
+#include <limits>
 #include <utility>
 #include <functional>
 #include <algorithm>
@@ -67,6 +68,7 @@ using std::tie;
 using std::get;
 using std::ignore;
 #endif
+using std::numeric_limits;
 using std::pair;
 using std::make_pair;
 using std::valarray;
@@ -365,8 +367,15 @@ ull div_last_offset(ull x, ull div) { return div_rounddown(x - 1, div); }
 ll ltor(ll l, ll len) { return l + len - 1; }
 ll rtol(ll r, ll len) { return r - len + 1; }
 ll length(ll l, ll r) { return (r < l) ? 0 : r - l + 1; }
-// when length is even, return exactly right segment's start.
-ll midpoint(ll l, ll r) { return l + (length(l, r) >> 1); }
+/*
+ * when length is even, return exactly right segment's start.
+ * this implementation is ceil((l + r) / 2).
+ * if want floor((l + r) / 2), use (l & r) + ((l ^ r) >> 1).
+ */
+template<typename tp>
+tp midpoint(tp l, tp r) {
+	return (l | r) - ((l ^ r) >> 1);
+}
 template<typename tp>
 void range_normalize(tp &l, tp &r) { if (r < l) swap(l, r); }
 ll round_shift(ll x, ll dist, ll l, ll r)
