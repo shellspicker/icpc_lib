@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma GCC optimize(2)
-#pragma GCC optimize("inline")
 #include <cstddef>
 #if 201103L <= __cplusplus
 #include <cstdint>
