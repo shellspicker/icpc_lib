@@ -564,7 +564,7 @@ int binary_search(vector<int> &data, int lef, int rig, int target, bool dir, boo
 }
 ```
 
-## todolist
+## todo
 
 定义一下什么是标准的二分写法.
 
