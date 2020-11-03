@@ -32,14 +32,13 @@ class task {
 		return cin;
 	}
 	void deal() {
-		rmq<int> dsm;
-		auto fn_comb = [](int a, int b) {
+		auto comb = [](int a, int b) {
 			return max(a, b);
 		};
-		dsm.set_comb(fn_comb);
+		rmq<int> dsm{comb};
 		dsm.init(v);
 		for (auto &q : qa)
-			q.ans = dsm.range_query(q.l, q.r);
+			q.ans = dsm.query(q.l, q.r);
 	}
 	void out() {
 		for (auto &q : qa)
