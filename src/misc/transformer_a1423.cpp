@@ -12,21 +12,21 @@ class task {
 		if (!(cond) || !fio.ok()) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
 	ll n, p, mmp[35], ans;
-	typename cube<30>::vpm face, buf;
+	using perm = permutation<30>;
+	typename cube<perm>::vpm face, buf;
 	void preprocess() {
 		fio.set_output_float_digit(12);
-		cube<30>::init();
-		face.resize(3);
-		face[0].assign(
-			{9,10,11,12,13,14,15,16,17,0,1,2,3,4,5,6,7,8,20,19,18,29,28,27,26,25,24,23,22,21});
-		face[1].assign(
-			{2,5,8,1,4,7,0,3,6,15,12,9,16,13,10,17,14,11,21,22,23,24,25,26,27,28,29,18,19,20});
-		face[2].assign(
-			{9,10,11,3,4,5,6,7,8,0,1,2,12,13,14,15,16,17,20,19,18,29,22,23,24,25,26,27,28,21});
-		cube<30>::level_bfs(buf, face, 100233);
+		cube<perm>::init();
+		face.push_back({{9,10,11,12,13,14,15,16,17,0,1,2,3,4,5,6,7,8,20,19,18,29,28,27,26,25,24,23,22,21}});
+		face.push_back({{2,5,8,1,4,7,0,3,6,15,12,9,16,13,10,17,14,11,21,22,23,24,25,26,27,28,29,18,19,20}});
+		face.push_back({{9,10,11,3,4,5,6,7,8,0,1,2,12,13,14,15,16,17,20,19,18,29,22,23,24,25,26,27,28,21}});
+		cube<perm>::level_bfs(buf, face, 100233);
 		memset(mmp, 0, sizeof mmp);
-		for (auto &o : buf)
-			mmp[o.cycn]++;
+		for (auto &o : buf) {
+			vector<vector<int>> cycle;
+			tie(cycle, ignore) = o.cycle();
+			mmp[cycle.size()]++;
+		}
 	}
 	istream &in() {
 		fio.in(n, p);

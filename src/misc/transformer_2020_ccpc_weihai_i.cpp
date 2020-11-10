@@ -1,5 +1,4 @@
 #define FAST_IO 1
-#include <unistd.h>
 #include "template.h"
 #include "data_structure/allocator.h"
 #include "math/gcd_lcm.h"
@@ -25,20 +24,19 @@ class task {
 		fio.set_output_float_digit(12);
 		pm::init();
 		cube<pm>::init();
-		ys.resize(1);
-		face.resize(1);
-		body.resize(2);
-		ys[0].assign({0,1,2,3,4,5,8,9,12,13,16,17,6,7,10,11,14,15,18,19,20,21,22,23});
-		face[0].assign({2,3,12,14,21,20,7,5,8,9,10,11}, {7,5,2,3,12,14,21,20,10,8,11,9});
-		body[0].assign(
+		ys.push_back({{0,1,2,3,4,5,8,9,12,13,16,17,6,7,10,11,14,15,18,19,20,21,22,23}});
+		face.push_back({{2,3,12,14,21,20,7,5,8,9,10,11}, {7,5,2,3,12,14,21,20,10,8,11,9}});
+		body.push_back({
 				{4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,0,1,2,3,20,21,22,23},
-				{8,9,10,11,12,13,14,15,16,17,18,19,4,5,6,7,2,0,3,1,21,23,20,22});
-		body[1].assign(
+				{8,9,10,11,12,13,14,15,16,17,18,19,4,5,6,7,2,0,3,1,21,23,20,22}});
+		body.push_back({
 				{0,1,2,3,8,9,10,11,20,21,22,23,19,18,17,16,4,5,6,7,12,13,14,15},
-				{8,9,10,11,20,21,22,23,19,18,17,16,0,1,2,3,5,7,4,6,14,12,15,13});
-		level_bfs(body_comb, body, 233);
+				{8,9,10,11,20,21,22,23,19,18,17,16,0,1,2,3,5,7,4,6,14,12,15,13}});
+		cube<pm>::level_bfs(body_comb, body, 233);
 		cube<pm>::face_seq(face_comb, body_comb, face);
 		level_bfs(all, face_comb, 233);
+		assert(all.size() == 3674160);
+		assert(mmp.size() == 3674160);
 	}
 	istream &in() {
 		vs.clear();
@@ -86,7 +84,6 @@ class task {
 		pair<int, int> match[2];
 		fup_range (i, 0, vs.size()) {
 			string &s = vs[i];
-			ull hs;
 			for (auto &x : body_comb) {
 				ull hs = perm2hash(x, s);
 				if (mmp.count(hs)) {
@@ -110,7 +107,7 @@ class task {
 		return ret;
 	}
 	ull perm2hash(pm &x, string &std) {
-		return hash_val(perm2str(x, std));
+		return self_hash(perm2str(x, std));
 	}
 	void level_bfs(vpm &comb, vpm &misc, int limit) {
 		int tail = 0;

@@ -11,14 +11,14 @@ public:
 	}
 	permutation() {
 		iota(mat, mat + dn, 0);
-		gall();
+		ghs();
 	}
 	permutation(const vector<int> &p) { assign(p); }
 	permutation(const vector<int> &pre, const vector<int> &nxt) { assign(pre, nxt); }
 	void assign(const vector<int> &p) {
 		assert(is_permutation(origin, origin + dn, p.begin()));
 		copy(p.begin(), p.end(), mat);
-		gall();
+		ghs();
 	}
 	void assign(const vector<int> &pre, const vector<int> &nxt) {
 		auto fn = [](int x) { return inrange(x, 0, int(dn - 1)); };
@@ -28,7 +28,7 @@ public:
 		permutation();
 		fup_range (i, 0, pre.size())
 			mat[pre[i]] = nxt[i];
-		gall();
+		ghs();
 	}
 	void compos(permutation<dn> &rhs, int tp) {
 		int cp[dn];
@@ -39,7 +39,7 @@ public:
 		else
 			fup_range (i, 0, dn)
 				mat[rhs.mat[i]] = cp[i];
-		gall();
+		ghs();
 	}
 	permutation<dn> inv() {
 		vector<int> v(dn);
@@ -47,6 +47,27 @@ public:
 			v[mat[i]] = i;
 		permutation<dn> ret;
 		ret.assign(v);
+		return ret;
+	}
+	tuple<vector<vector<int>>, int> cycle() {
+		tuple<vector<vector<int>>, int> ret;
+		vector<bool> vis(dn, 0);
+		vector<vector<int>> &cycle = get<0>(ret);
+		int &period = get<1>(ret);
+		period = 1;
+		fup_range (x, 0, dn) {
+			if (!vis[x]) {
+				int nx = x;
+				cycle.push_back(vector<int>());
+				cycle.back().clear();
+				while (!vis[nx]) {
+					vis[nx] = 1;
+					cycle.back().push_back(nx);
+					nx = mat[nx];
+				};
+				period = lcm(period, int(cycle.back().size()));
+			}
+		}
 		return ret;
 	}
 	int diff() {
@@ -82,50 +103,10 @@ public:
 	}
 	int mat[dn];
 	ull hs;
-	/*
-	int mat[2][dn];
-	ull hs[2];
-	vector<int> cycle[2][dn];
-	int cycn, period;
-	*/
 private:
-	void gall() {
-		ghs();
-		//ginv();
-		//gcyc();
-	}
 	void ghs() {
-		hs = hash_val(vector<int>(mat, mat + dn));
+		hs = self_hash(vector<int>(mat, mat + dn));
 	}
-	/*
-	void ginv() {
-		int i = 0;
-		auto fn = [&](int x) { mat[1][x] = i++; };
-		for_each(mat[0], mat[0] + dn, fn);
-	}
-	void gcyc() {
-		bool vis[dn];
-		cycn = 0;
-		period = 1;
-		memset(vis, 0, sizeof vis);
-		fup (x, 0, dn - 1) {
-			cycle[0][x].clear();
-			cycle[1][x].clear();
-			if (!vis[x]) {
-				int nx = x;
-				while (!vis[nx]) {
-					vis[nx] = 1;
-					cycle[0][cycn].push_back(nx);
-					cycle[1][cycn].push_back(nx);
-					nx = mat[0][nx];
-				};
-				reverse(cycle[1][cycn].begin(), cycle[1][cycn].end());
-				period = lcm(period, int(cycle[0][cycn].size()));
-				cycn++;
-			}
-		}
-	}
-	*/
 	static int origin[dn];
 };
 PERMUTATAION_T

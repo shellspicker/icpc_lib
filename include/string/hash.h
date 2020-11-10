@@ -3,25 +3,53 @@
 /*
  * normal hash.
  */
+ull self_hash(const string &s)
+{
+	ull ret = 0;
+	for (auto c : s)
+		ret = ret * 3137 + c;
+	return ret;
+}
 template<typename tp>
-void combine(size_t &seed, const tp &x)
+ull self_hash(const vector<tp> &v)
+{
+	ull ret = 0;
+	for (auto x : v)
+		ret = ret * 3137 + x;
+	return ret;
+}
+template<typename tp>
+ull self_hash(const tp &x)
+{
+	return hash<tp>()(x);
+}
+template<typename tp>
+void combine(ull &seed, const tp &x)
 {
 	seed ^= hash<tp>()(x) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 template<typename tp>
-size_t hash_val(vector<tp> &&vec)
+ull hash_val(const vector<tp> &vec)
 {
-	size_t seed = 0;
+	ull ret = 0;
 	for (auto x : vec)
-		combine(seed, x);
-	return seed;
+		combine(ret, x);
+	return ret;
+}
+template<typename tp>
+ull hash_val(vector<tp> &&vec)
+{
+	ull ret = 0;
+	for (auto x : vec)
+		combine(ret, x);
+	return ret;
 }
 template<typename ...var>
-size_t hash_val(var &&...args)
+ull hash_val(var &&...args)
 {
-	size_t seed = 0;
-	initializer_list<int>{(combine(seed, forward<var>(args)), 0)...};
-	return seed;
+	ull ret = 0;
+	initializer_list<int>{(combine(ret, forward<var>(args)), 0)...};
+	return ret;
 }
 /*
  * bkdr hash.
