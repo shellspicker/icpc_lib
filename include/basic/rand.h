@@ -93,6 +93,7 @@ public:
 /*
  * 随机二叉树
  */
+/*
 class random_binary_tree {
 	random_int<int> rd_int;
 	undigraph<int> g;
@@ -158,3 +159,4 @@ public:
 		}
 	}
 };
+*/
