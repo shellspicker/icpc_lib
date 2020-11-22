@@ -48,7 +48,8 @@ tuple<bool, pair<ll, tp>> binary_search(
 	tp fd_value;
 	bool found = 0;
 	while (lo <= hi) {
-		int mid = midpoint(lo, hi), now = v[mid];
+		int mid = midpoint(lo, hi);
+		tp now = v[mid];
 		look((!dir && cmp(now, key)) || (dir && !cmp(key, now)));
 	}
 	int pos = dir ^ contain ? lo : hi;
