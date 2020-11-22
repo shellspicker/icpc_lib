@@ -45,6 +45,7 @@
 #include <ext/pb_ds/hash_policy.hpp>
 #include <ext/pb_ds/priority_queue.hpp>
 #endif
+#include <iterator>
 using std::ios;
 using std::ios_base;
 using std::istream;
@@ -90,6 +91,7 @@ using std::unordered_map;
 using std::unordered_multiset;
 using std::unordered_multimap;
 using std::initializer_list;
+using std::iterator_traits;
 using std::all_of;
 using std::any_of;
 using std::none_of;
@@ -276,6 +278,7 @@ using pairing_heap = __gnu_pbds::priority_queue<tp, cmp, __gnu_pbds::pairing_hea
 #define it_range_r_rev(obj, ed, off) it_seg_rev2(obj, range_r(obj, ed, off))
 #define it_prefix(obj, i) (obj).begin(), it_i(obj, i)
 #define it_suffix(obj, i) it_i(obj, i), (obj).end()
+#define it_vtp(it) typename iterator_traits<it>::value_type
 #define i_rev(len, i) ((len) - 1 - (i))
 #define seg_rev2(len, lr) seg_rev(len, lr)
 #define seg_rev(len, a, b) i_rev(len, b), i_rev(len, a)
