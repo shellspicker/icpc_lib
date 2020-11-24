@@ -1,8 +1,7 @@
 #pragma once
 
 /*
- * 求所有因子.
- * 包括1和本身.
+ * 求所有因子, 包括1和本身.
  */
 vector<ll> normal_factor(ll n)
 {
@@ -19,14 +18,27 @@ vector<ll> normal_factor(ll n)
 }
 
 /*
- * 求素因子, 且分解.
- * 不包括1和本身.
+ * 求素因子的幂次积表示.
  */
-map<ll, ll> prime_factor(ll n)
+map<ll, int> prime_factor(ll n)
 {
-	map<ll,ll> res;
-	// 这里可以换成素数表.
+	map<ll, int> res;
 	for (ll fac = 2; fac * fac <= n; ++fac) {
+		while (n % fac == 0) {
+			++res[fac];
+			n /= fac;
+		}
+	}
+	if (n ^ 1)
+		res[n] = 1;
+	return res;
+}
+map<ll, int> prime_factor(ll n, vector<int> &ptb)
+{
+	map<ll, int> res;
+	for (ll fac : ptb) {
+		if (n < fac * fac)
+			break;
 		while (n % fac == 0) {
 			++res[fac];
 			n /= fac;
