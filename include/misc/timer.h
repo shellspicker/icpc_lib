@@ -1,8 +1,12 @@
 #pragma once
 
+using std::chrono::microseconds;
+using std::chrono::steady_clock;
+using std::chrono::duration_cast;
+
 class timer {
-	typedef std::chrono::microseconds ms;
-	typedef std::chrono::steady_clock clk;
+	typedef microseconds ms;
+	typedef steady_clock clk;
 	typedef clk::time_point tick;
 
 	tick start;
@@ -19,7 +23,7 @@ public:
 	}
 
 	void pause() {
-		flow += std::chrono::duration_cast<ms>(clk::now() - start);
+		flow += duration_cast<ms>(clk::now() - start);
 		now();
 	}
 
