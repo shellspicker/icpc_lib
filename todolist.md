@@ -9,6 +9,8 @@
 - [ ] 整理一份全局符号表, 或者写关键头文件或者函数的help(现在用宏可以方便写).  
   不写宏了, 有些oj不支持(比如洛谷). 还是写md, 类似cppreference的格式.
 - [ ] div_t, round之类的math.h或stdlib.h的好东西.
+- [ ] 涉及到数组的代码, 目前是vector参数, 之后改为iterator + len的形式.
+- [ ] 加一些(st, len)的宏, 包括反转的表示.
 - [ ] direct_io.msg, 要和debuger类输出一起使用, 才能在assert之前输出东西.  
 测试的话使用一个无限递归函数, 每层输出函数名, assert固定层数.  
 如果不用bug输出, 那么fio.msg不会显示, 最后只有assert的显示.  
