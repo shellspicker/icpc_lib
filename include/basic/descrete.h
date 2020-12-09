@@ -8,6 +8,9 @@ public:
 		sorted.assign(it_each(v));
 		sort(it_each(sorted));
 		sorted.erase(unique(it_each(sorted)), sorted.end());
+		get_pos(v);
+	}
+	void get_pos(vector<tp> &v) {
 		for (auto &x : v)
 			x = lower_bound(it_each(sorted), x) - sorted.begin();
 	}
