@@ -9,7 +9,7 @@ class bit {
 public:
 	void init(int len) { ds.resize(len); clear(); }
 	void clear() { fill(it_each(ds), 0); }
-	void add(int x, int v) {
+	void add(int x, tp v) {
 		assert(0 < x); // notice.
 		while (x < ds.size()) {
 			ds[x] += v;
