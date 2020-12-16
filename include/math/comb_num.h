@@ -14,6 +14,9 @@ struct comb_num_static {
 			}
 		}
 	}
+	ull calc(ull n, ull k) {
+		return ret[n][k];
+	}
 };
 
 ull comb_num_calc(ull n, ull k)
@@ -22,7 +25,7 @@ ull comb_num_calc(ull n, ull k)
 		return 0;
 	k = min(k, n - k);
 	double ret = 0;
-	fwn_range (x, rtol(n, k), k)
+	fwn_range_r (x, n, k)
 		ret += log(x);
 	fup_range (x, 1, k)
 		ret -= log(x);
