@@ -304,6 +304,10 @@ const int inf32 = 1 << 30;
 const ll inf64 = 1ll << 60;
 const double pi = acos(-1);
 const double eps = 1e-6;
+int fcmp(double x)
+{
+	return fabs(x) < eps ? 0 : x < 0 ? -1 : 1;
+}
 template<typename tp>
 tp get_inf() {
 	tp ret;
