@@ -574,7 +574,7 @@ int binary_search(vector<int> &data, int lef, int rig, int target, bool dir, boo
 
 ## 结尾的话
 
-关于midpoint, cpp20标准里面有这个函数, 或者也有另外的实现.
+关于midpoint, cpp20标准里面有这个函数, 或者也有另外的[实现](https://zhuanlan.zhihu.com/p/144589742).
 
 浮点数区间的二分搜索, 也可以套用本文的规则, 只不过把单位从1换成了一个很小的浮点数(如1e-6).
 
