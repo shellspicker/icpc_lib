@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SELECT_MODE
 #define SELECT_MODE TOP_DOWN
 #endif
@@ -9,8 +7,6 @@
 #if SELECT_MODE == DOWN_TOP
 #define FATHER 1
 #endif
-
-#include "data_structure/bst.h"
 
 /*
  * splay.
@@ -367,3 +363,4 @@ typename splay<tp, dsn, pon>::node *splay<tp, dsn, pon>::node::null;
 #undef FATHER
 #undef FUNC_RANGE
 #undef FUNC_BST
+

@@ -6,8 +6,6 @@
 #define SPLIT 0
 #define ROTATE 1
 
-#include "data_structure/bst.h"
-
 /*
  * treap.
  * 宏: (FUNC_RANGE, FUNC_BST), BST_MODE(SPLIT, ROTATE), FATHER.
@@ -351,3 +349,4 @@ typename treap<tp, dsn, pon>::node *treap<tp, dsn, pon>::node::null;
 #undef FATHER
 #undef FUNC_RANGE
 #undef FUNC_BST
+

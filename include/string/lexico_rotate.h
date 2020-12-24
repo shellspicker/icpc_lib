@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * 最(小/大)表示法.
  * first, 可求第一个或最后一个位置.
@@ -89,3 +87,4 @@ pair<int, string> lexico_rotate(const string &s, bool first) {
 }
 
 #undef STEP
+

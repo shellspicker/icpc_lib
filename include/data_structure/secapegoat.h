@@ -1,7 +1,4 @@
-#pragma once
-
 #define FATHER 0
-#include "data_structure/bst.h"
 
 /*
  * 替罪羊树.
@@ -152,3 +149,4 @@ public:
 };
 template<typename tp, size_t dsn, size_t pon>
 typename secapegoat<tp, dsn, pon>::node *secapegoat<tp, dsn, pon>::node::null;
+

@@ -1,5 +1,3 @@
-#pragma once
-
 void double_scale(vector<vector<int>> &ret) {
 	int sz, xp;
 	sz = ret[0].size();
@@ -19,3 +17,4 @@ vector<vector<int>> double_scale(const vector<int> &step) {
 	double_scale(ret);
 	return ret;
 }
+

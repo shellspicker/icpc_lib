@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * 求所有因子, 包括1和本身.
  */
@@ -48,3 +46,4 @@ map<ll, int> prime_factor(ll n, vector<int> &ptb)
 		res[n] = 1;
 	return res;
 }
+

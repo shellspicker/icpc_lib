@@ -1,5 +1,3 @@
-#pragma once
-
 template<typename tp>
 void radix_sort(vector<tp> &v, uint blk = 1 << 8)
 {
@@ -37,3 +35,4 @@ void radix_sort(vector<tp> &v, uint blk = 1 << 8)
 		}
 	}
 }
+

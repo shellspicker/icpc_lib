@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * z algorithm, 国内一些憨憨称为exkmp...
  *
@@ -67,3 +65,4 @@ public:
 		return ret;
 	}
 };
+

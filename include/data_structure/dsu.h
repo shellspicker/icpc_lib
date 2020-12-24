@@ -1,20 +1,3 @@
-#pragma once
-
-#pragma message \
-usage_begin("dsu.h") \
-line("synopsis:") \
-line("\tclass dsu;") \
-line("macro:") \
-line("\tRANK") \
-line("\t\t带层数优化.") \
-line("\t\t注意: 默认link的2个点有严格的上下关系, 开启之后, 不含上下关系.") \
-line("public function:") \
-line("\tvoid init(int);") \
-line("\tint set(int);") \
-line("\tbool link(int, int);") \
-line("\tbool same(int, int);") \
-usage_end()
-
 class dsu {
 	vector<int> fa;
 #if RANK
@@ -56,3 +39,4 @@ public:
 		return set(x) == set(y);
 	}
 };
+

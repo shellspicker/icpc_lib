@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * normal hash.
  */
@@ -117,3 +115,4 @@ public:
 		return {rig, cmp};
 	}
 };
+

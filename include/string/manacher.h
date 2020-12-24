@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * manacher, 最长回文串.
  *
@@ -36,3 +34,4 @@ end:
 		return ret;
 	}
 };
+

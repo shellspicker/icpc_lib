@@ -1,5 +1,3 @@
-#pragma once
-
 #include <cstddef>
 #if 201103L <= __cplusplus
 #include <cstdint>
@@ -289,13 +287,6 @@ using pairing_heap = __gnu_pbds::priority_queue<tp, cmp, __gnu_pbds::pairing_hea
 #define range_r_rev(len, ed, off) seg_rev2(len, range_r(ed, off))
 #define finput(is, cls, obj) friend istream &operator >>(istream &is, cls &obj)
 #define foutput(os, cls, obj) friend ostream &operator <<(ostream &os, const cls &obj)
-#define usage_begin(title) \
-"\n\033[45;36;1;5m" title "\033[0m\n" \
-"\033[37m"
-#define usage_end() \
-"\033[0m" \
-"\n"
-#define line(msg) msg "\n"
 typedef unsigned int uint;
 typedef long long ll;
 typedef unsigned long long ull;
@@ -668,7 +659,4 @@ public:
 
 struct fake_type {};
 
-#pragma message \
-usage_begin("debug tips!!!") \
-line("io类默认输出缓冲区大小: 1 << 20, 通过fio.set_bufsize(int)重置.") \
-usage_end()
+

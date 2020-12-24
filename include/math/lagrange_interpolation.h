@@ -1,5 +1,3 @@
-#pragma once
-
 // 求多项式系数.
 vector<double> lagrange_interpolate(vector<double> x, vector<double> y)
 {
@@ -17,3 +15,4 @@ vector<double> lagrange_interpolate(vector<double> x, vector<double> y)
 	}
 	return res;
 }
+

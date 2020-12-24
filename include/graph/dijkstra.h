@@ -1,5 +1,3 @@
-#pragma once
-
 #define NODE_C typename graph::node
 #define EDGE_C typename graph::edge
 
@@ -46,3 +44,4 @@ struct dijkstra {
 		return dist;
 	}
 };
+

@@ -1,5 +1,3 @@
-#pragma once
-
 template<size_t dn>
 struct comb_num_static {
 	ull ret[dn + 1][dn + 1];
@@ -50,3 +48,4 @@ struct comb_num_mod {
 		return fac[n] * inv[k] * inv[n - k];
 	}
 };
+

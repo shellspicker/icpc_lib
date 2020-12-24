@@ -1,5 +1,3 @@
-#pragma once
-
 template<typename ktp, typename htp, size_t pon, size_t mod>
 class hash_set {
 	class node {
@@ -129,3 +127,4 @@ public:
 };
 
 #undef USE_TICKS
+

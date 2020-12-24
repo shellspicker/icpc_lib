@@ -1,8 +1,3 @@
-#pragma once
-
-#include "graph/graph.h"
-#include "data_structure/dsu.h"
-
 /*
  * 随机数生成器, 整数版本.
  */
@@ -160,3 +155,4 @@ public:
 	}
 };
 */
+

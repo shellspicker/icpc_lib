@@ -1,5 +1,3 @@
-#pragma once
-
 using std::chrono::microseconds;
 using std::chrono::steady_clock;
 using std::chrono::duration_cast;
@@ -40,3 +38,4 @@ public:
 		return 1. * flow.count() / 1000;
 	}
 };
+

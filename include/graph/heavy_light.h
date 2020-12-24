@@ -1,5 +1,3 @@
-#pragma once
-
 #define NODE_C typename graph::node
 #define EDGE_C typename graph::edge
 
@@ -82,3 +80,4 @@ struct heavy_light {
 #undef EDGE_C
 
 #undef ID
+

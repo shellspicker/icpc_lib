@@ -1,5 +1,3 @@
-#pragma once
-
 #if 201103L <= __cplusplus
 template<typename tp>
 class zip_vector {
@@ -86,3 +84,4 @@ public:
 	}
 };
 #endif
+

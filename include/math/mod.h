@@ -1,5 +1,3 @@
-#pragma once
-
 ull mul_mod(ull a, ull b, ull mod)
 {
 	ull res = (a * b - (ll)(a / (ldb)mod * b + 1e-3) * mod + mod) % mod;
@@ -54,3 +52,4 @@ public:
 	bool operator >=(const modulo &y) const { return x >= y; }
 };
 ll modulo::mod;
+

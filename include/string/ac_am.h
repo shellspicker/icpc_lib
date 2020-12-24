@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef FIND_MODE
 #define FIND_MODE LIST
 #endif
@@ -249,3 +247,4 @@ typename ac_am<pon, sigma>::node *ac_am<pon, sigma>::node::null;
 #undef TABLE
 #undef FUNC_AM
 #undef AM_COMPLETE
+

@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * rmq.
  * 宏: STEP.
@@ -58,3 +56,4 @@ public:
 };
 
 #undef STEP
+

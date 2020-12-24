@@ -1,5 +1,3 @@
-#pragma once
-
 #define NODE_C typename graph::node
 #define EDGE_C typename graph::edge
 
@@ -41,3 +39,4 @@ void lca_tarjan(graph *g, NODE_C *root) {
 
 #undef NODE_C
 #undef EDGE_C
+

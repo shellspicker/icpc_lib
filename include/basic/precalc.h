@@ -1,5 +1,3 @@
-#pragma once
-
 template<typename tp>
 struct precalc_sum_op {
 	using fn = function<tp(tp, tp)>;
@@ -51,3 +49,4 @@ struct precalc {
 #undef fail
 #undef chk
 };
+

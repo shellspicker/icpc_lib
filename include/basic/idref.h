@@ -1,20 +1,3 @@
-#pragma once
-
-#pragma message \
-usage_begin("") \
-line("idref.h") \
-line("synopsis:") \
-line("\tidref<tp>;") \
-line("\t\ttp到int的映射, 类似离散化(但是没有排序).") \
-line("\t\t下标起始0.") \
-line("public function:") \
-line("\tvoid init();") \
-line("\tint size();") \
-line("\tbool count(tp);") \
-line("\tint get_id(tp);") \
-line("\ttp get_orig(int);") \
-usage_end()
-
 template <typename tp>
 class idref {
 	int cnt;
@@ -46,3 +29,4 @@ public:
 		return orig[id];
 	}
 };
+

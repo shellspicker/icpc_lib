@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * 大整数模板
  * 含有进制, 默认10, 可以设置成2~62.
@@ -264,3 +262,4 @@ struct bignum {
 };
 string bignum::table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 int bignum::base = 10;
+

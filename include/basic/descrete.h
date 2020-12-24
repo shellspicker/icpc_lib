@@ -1,5 +1,3 @@
-#pragma once
-
 template<typename tp>
 class descrete {
 	vector<tp> sorted;
@@ -27,3 +25,4 @@ public:
 		return sorted.back();
 	}
 };
+

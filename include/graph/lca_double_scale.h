@@ -1,5 +1,3 @@
-#pragma once
-
 #define NODE_C typename graph::node
 #define EDGE_C typename graph::edge
 
@@ -58,3 +56,4 @@ struct lca_double_scale {
 
 #undef NODE_C
 #undef EDGE_C
+

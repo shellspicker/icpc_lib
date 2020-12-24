@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef STEP
 #define STEP 0
 #endif
@@ -126,3 +124,4 @@ public:
 		}
 	}
 };
+

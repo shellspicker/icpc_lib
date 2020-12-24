@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * kmp.
  * 宏: KNUTH.
@@ -72,3 +70,4 @@ public:
 		return ret;
 	}
 };
+

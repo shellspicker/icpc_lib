@@ -1,5 +1,3 @@
-#pragma once
-
 #define GRAPH_T template<typename _1, typename _2>
 #define GRAPH_C graph<_1, _2>
 #define GRAPH_NODE_T GRAPH_C::node
@@ -70,3 +68,4 @@ GRAPH_NODE_C *GRAPH_NODE_T::baseaddr;
 #undef GRAPH_C
 #undef GRAPH_NODE_T
 #undef GRAPH_NODE_C
+

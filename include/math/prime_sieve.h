@@ -1,5 +1,3 @@
-#pragma once
-
 vector<int> prime_sieve(ll n)
 {
 	vector<int> ret;
@@ -13,3 +11,4 @@ vector<int> prime_sieve(ll n)
 		ret.push_back(x);
 	return ret;
 }
+

@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * calc expression for basic arithmetic.
  * judge and deal illegal situation.
@@ -125,3 +123,4 @@ end:
 		return parse_calc(buf);
 	}
 };
+

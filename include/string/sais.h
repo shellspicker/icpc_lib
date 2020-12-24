@@ -1,5 +1,3 @@
-#pragma once
-
 class sais {
 public:
 	string origin;
@@ -111,3 +109,4 @@ public:
 		}
 	}
 };
+

@@ -1,7 +1,3 @@
-#pragma once
-
-#include "data_structure/bst.h"
-
 /*
  * sbt.
  * 详细参考陈启锋论文"Size Balanced Tree".
@@ -132,3 +128,4 @@ public:
 };
 template<typename tp, size_t dsn, size_t pon>
 typename sbt<tp, dsn, pon>::node *sbt<tp, dsn, pon>::node::null;
+

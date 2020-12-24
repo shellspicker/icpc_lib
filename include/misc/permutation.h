@@ -1,5 +1,3 @@
-#pragma once
-
 template<typename iter>
 vector<vector<it_vtp(iter)>> circulation(iter st, size_t len)
 {
@@ -18,3 +16,4 @@ vector<vector<it_vtp(iter)>> circulation(iter st, size_t len)
 	}
 	return ret;
 }
+

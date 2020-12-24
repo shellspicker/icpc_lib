@@ -1,13 +1,3 @@
-#pragma once
-
-#pragma message \
-usage_begin("allocator.h") \
-line("template<tp, pon>") \
-line("tp: 分配类型.") \
-line("pon: 预留空间大小.") \
-line("\t可以非常大, 只有使用到的才会分配内存.") \
-usage_end()
-
 template<typename tp, size_t pon>
 class allocator {
 	size_t cur;
@@ -40,3 +30,4 @@ public:
 	}
 	int size() { return cur; }
 };
+

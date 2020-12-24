@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * dir: find in left or right.
  * contain: can be equal or not.
@@ -61,3 +59,4 @@ tuple<bool, pair<ll, tp>> binary_search(
 #undef look
 }
 #endif
+

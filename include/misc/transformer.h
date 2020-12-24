@@ -1,5 +1,3 @@
-#pragma once
-
 #define PERMUTATAION_T template<size_t _1>
 #define PERMUTATAION_C permutation<_1>
 
@@ -198,3 +196,4 @@ _1 CUBE_C::origin;
 
 #undef CUBE_T
 #undef CUBE_C
+

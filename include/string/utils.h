@@ -1,5 +1,3 @@
-#pragma once
-
 vector<int> naive_search(string &big, string &small) {
 	vector<int> ret;
 	int pre = 0;
@@ -20,3 +18,4 @@ vector<string> get_token(const string &text, const string &delim)
 	free(scp);
 	return ret;
 }
+

@@ -1,5 +1,3 @@
-#pragma once
-
 struct rectangle {
 	pov low, high;
 	rectangle() {}
@@ -17,3 +15,4 @@ struct rectangle {
 			pov(min(high.x, r.high.x), min(high.y, r.high.y))};
 	}
 };
+

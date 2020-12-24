@@ -1,5 +1,3 @@
-#pragma once
-
 // 差商, 这个结果不会很大.
 double difference_quotient(vector<double> x, vector<double> y, int k)
 {
@@ -28,3 +26,4 @@ ull newton_interpolation(vector<double> x, vector<double> y, ull X)
 	}
 	return result;
 }
+

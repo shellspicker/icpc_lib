@@ -1,5 +1,3 @@
-#pragma once
-
 double to_rad(double deg) {
 	return deg * pi / 180.;
 }
@@ -122,3 +120,4 @@ struct ray {
 		return p + v * t;
 	}
 };
+
