@@ -8,29 +8,47 @@ class task {
 	do {\
 		if (!(cond) || !fio.ok()) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
-	pov pt[2];
-	int gn;
-	vector<pov> vp, ans;
+	pov v0;
+	int gq;
+	struct query {
+		pov v;
+		int ans;
+	};
+	vector<query> qry;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
 	istream &in() {
-		fio.in(pt[0].x, pt[0].y, pt[1].x, pt[1].y);
-		fio.in(gn);
-		vp.resize(gn);
-		for (auto &o : vp)
-			fio.in(o.x, o.y);
+		double p[4];
+		ioend(fio.in(p[0], p[1], p[2], p[3]));
+		v0 = pov(p[2], p[3]) - pov(p[0], p[1]);
+		fio.in(gq);
+		qry.resize(gq);
+		for (auto &o : qry) {
+			fio.in(p[2], p[3]);
+			o.v = pov(p[2], p[3]) - pov(p[0], p[1]);
+		}
 		ioend(1);
 		return cin;
 	}
 	void deal() {
-		ans.resize(gn);
-		fup_range (i, 0, gn)
-			ans[i] = segment(pt[0], pt[1]).projection(vp[i]);
+		for (auto &o : qry)
+			o.ans = v0.ccw(o.v);
 	}
 	void out() {
-		fup_range (i, 0, ans.size())
-			fio.out(ans[i].x, ' ', ans[i].y, '\n');
+		for (auto &o : qry) {
+			if (o.ans == 0) {
+				fio.msg("COUNTER_CLOCKWISE\n");
+			} else if (o.ans == 1) {
+				fio.msg("CLOCKWISE\n");
+			} else if (o.ans == 2) {
+				fio.msg("ONLINE_BACK\n");
+			} else if (o.ans == 3) {
+				fio.msg("ONLINE_FRONT\n");
+			} else if (o.ans == 4) {
+				fio.msg("ON_SEGMENT\n");
+			}
+		}
 	}
 public:
 	task(

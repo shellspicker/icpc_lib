@@ -26,7 +26,7 @@ class task {
 	void deal() {
 		ans.resize(gn);
 		fup_range (i, 0, gn)
-			ans[i] = segment(pt[0], pt[1]).projection(vp[i]);
+			ans[i] = segment(pt[0], pt[1]).reflection(vp[i]);
 	}
 	void out() {
 		fup_range (i, 0, ans.size())

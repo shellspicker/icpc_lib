@@ -67,6 +67,18 @@ struct pov {
 		double l = len();
 		return pov(-y / l, x / l);
 	}
+	int ccw(const pov &r) {
+		int cmp = fcmp(cross(r));
+		if (0 < cmp)
+			return 0; // ccw.
+		if (cmp < 0)
+			return 1; // cw.
+		if (fcmp(dot(r)) < 0)
+			return 2; // online_back.
+		if (len() < r.len())
+			return 3; // online_front.
+		return 4; // on_segment.
+	}
 };
 
 struct segment {
@@ -91,6 +103,10 @@ struct segment {
 		pov v = b - a;
 		return a + v * (v.dot(r - a) / v.dot(v));
 	}
+	pov reflection(const pov &r) {
+		pov m = projection(r);
+		return r + (m - r) * 2;
+	}
 	bool intersection(const segment &r) {
 		pov u = r.a - a, v = r.b - b;
 		double c1 = u.cross(b - a), c2 = u.cross(r.b - a),
@@ -113,6 +129,10 @@ struct ray {
 	}
 	pov projection(const pov &r) {
 		return p + v * (v.dot(r - p) / v.dot(v));
+	}
+	pov reflection(const pov &r) {
+		pov m = projection(r);
+		return r + (m - r) * 2;
 	}
 	pov intersection(const ray &r) {
 		pov u = p - r.p;
