@@ -525,9 +525,9 @@ end:
 	template<typename tp>
 	void output(tp x) {
 		g_cur = g_buf;
-		ll xn = ll(x);
-		if (xn < 0)
-			putchar('-'), xn = -xn;
+		if (x < 0)
+			putchar('-');
+		ll xn = x < 0 ? ll(-x) : ll(x);
 		do {
 			*g_cur++ = xn % 10 | 48;
 			xn /= 10;
@@ -542,6 +542,8 @@ end:
 		{
 			putchar('.');
 			x -= ll(x);
+			if (x < 0)
+				x *= -1;
 			fup (t, 1, output_float_digit) {
 				putchar(char(x *= 10) | 48);
 				x -= char(x);
@@ -571,6 +573,9 @@ public:
 	}
 	void set_output_float_digit(int d) {
 		output_float_digit = d;
+#if !FAST_IO
+		cout.precision(output_float_digit);
+#endif
 	}
 	void set_bufsize(int size) {
 		g_buf = (char *)realloc(g_buf, size);
