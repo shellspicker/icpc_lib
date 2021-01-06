@@ -23,7 +23,6 @@ public:
 		const char *fmt_case = 0,
 		bool blankline = 0) {
 		static int testcase = 1 << 30;
-		static stringstream tid;
 		preprocess();
 		if (multicase)
 			fio.in(testcase);

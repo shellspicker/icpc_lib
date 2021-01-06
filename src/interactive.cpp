@@ -18,7 +18,6 @@ class task {
 public:
 	task(bool multicase = 0) {
 		static int testcase = 1 << 30;
-		static stringstream tid;
 		preprocess();
 		if (multicase)
 			fio.in(testcase);
