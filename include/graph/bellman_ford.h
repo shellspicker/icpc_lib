@@ -1,38 +1,37 @@
-#define NODE_C typename graph::node
-#define EDGE_C typename graph::edge
-
 template<typename graph>
 struct bellman_ford {
-	using node = NODE_C;
-	using edge = EDGE_C;
-
-	graph *g;
+	using node = typename graph::node_t;
+	using edge = typename graph::edge_t;
+	graph &g;
 	node *nd;
-
-	bellman_ford(graph *_1) : g(_1), nd(&g->nodes[0]) {}
-
+	bellman_ford(graph &_1) : g(_1), nd(g.node_base) {}
 	template<typename dtp>
-	tuple<bool, vector<dtp>> get(int ss) {
-		vector<bool> inq(g->size(), 0);
-		vector<int> cnt(g->size(), 0);
-		bool negative = 0;
-		vector<dtp> dist(g->size(), get_inf<dtp>());
+	bool get(int source) {
 		node *v;
 		edge *e;
+		fup_range (i, 0, g.size()) {
+			auto &mt = nd[i].meta;
+			mt.inq = 0;
+			mt.cnt = 0;
+			mt.dist = get_inf<dtp>();
+		}
+		bool negative = 0;
 		queue<int> que;
-		dist[ss] = 0;
-		que.push(ss);
+		nd[source].meta.dist = 0;
+		que.push(source);
 		while (!que.empty()) {
-			int u = que.front(); que.pop();
-			inq[u] = 0;
-			for (int ei : g->nodes[u].link) {
-				tie(v, e) = g->extend(ei);
-				if (dist[u] + e->meta.cost < dist[v->id()]) {
-					dist[v->id()] = dist[u] + e->meta.cost;
-					if (!inq[v->id()]) {
-						inq[v->id()] = 1;
+			int u = que.front();
+			que.pop();
+			auto &mt = nd[u].meta;
+			mt.inq = 0;
+			for (int ei : g[u].link) {
+				tie(v, e) = g.extend(ei);
+				if (mt.dist + e->meta.cost < nd[v->id()].meta.dist) {
+					nd[v->id()].meta.dist = mt.dist + e->meta.cost;
+					if (!nd[v->id()].meta.inq) {
+						nd[v->id()].meta.inq = 1;
 						que.push(v->id());
-						if (++cnt[v->id()] == g->size()) {
+						if (++nd[v->id()].meta.cnt == g.size()) {
 							negative = 1;
 							goto end;
 						}
@@ -41,7 +40,7 @@ struct bellman_ford {
 			}
 		}
 end:
-		return make_tuple(negative, dist);
+		return negative;
 	}
 };
 

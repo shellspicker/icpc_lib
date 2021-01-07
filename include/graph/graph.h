@@ -1,35 +1,43 @@
-#define GRAPH_T template<typename _1, typename _2>
-#define GRAPH_C graph<_1, _2>
-#define GRAPH_NODE_T GRAPH_C::node
-#define GRAPH_NODE_C typename GRAPH_NODE_T
+template<typename info>
+struct graph_node {
+	typedef info info_t;
+	static graph_node *base_addr;
+	vector<int> link;
+	info meta;
+	graph_node() : link(vector<int>()), meta(info()) {}
+	int id() {
+		return this - base_addr;
+	}
+};
+template<typename _1>
+graph_node<_1> *graph_node<_1>::base_addr;
 
-template<typename v_info, typename e_info>
+template<typename info>
+struct graph_edge {
+	typedef info info_t;
+	int from, to;
+	info meta;
+	graph_edge() {}
+	graph_edge(int _1, int _2, info _3 = info()) : from(_1), to(_2), meta(_3) {}
+};
+
+template<typename node, typename edge>
 struct graph {
-	struct node {
-		static node *baseaddr;
-		vector<int> link;
-		v_info meta;
-		node() : link(vector<int>()), meta(v_info()) {}
-		int id() {
-			return this - baseaddr;
-		}
-	};
-	struct edge {
-		int from, to;
-		e_info meta;
-		edge() {}
-		edge(int _1, int _2, e_info _3) : from(_1), to(_2), meta(_3) {}
-	};
+	typedef node node_t;
+	typedef edge edge_t;
+	typedef typename node::info_t nif;
+	typedef typename edge::info_t eif;
 	vector<node> nodes;
 	vector<edge> edges;
-	node *&baseaddr = node::baseaddr;
-	graph(int vn = 0) {
+	node *&node_base;
+	graph(int vn = 0) : node_base(node::base_addr) {
 		clear();
 		nodes.assign(vn, node());
-		baseaddr = &nodes[0];
+		node_base = &nodes[0];
 		edges.reserve(vn);
 	}
 	node &operator [](int i) {
+		node_base = &nodes[0];
 		return nodes[i];
 	}
 	void clear() {
@@ -42,18 +50,18 @@ struct graph {
 	void resize(int vn) {
 		new (this) graph(vn);
 	}
-	void add(int from, int to, e_info e_if = e_info()) {
+	void add(int from, int to, eif meta = eif()) {
 		assert(inrange(from, range(0, nodes.size())));
 		assert(inrange(to, range(0, nodes.size())));
-		add_edge_only(from, to, e_if);
+		add_edge_only(from, to, meta);
 		nodes[from].link.push_back(edges.size() - 1);
 	}
-	void add2(int from, int to, e_info e_if = e_info()) {
-		add(from, to, e_if);
-		add(to, from, e_if);
+	void add2(int from, int to, eif meta = eif()) {
+		add(from, to, meta);
+		add(to, from, meta);
 	}
-	void add_edge_only(int from, int to, e_info e_if = e_info()) {
-		edges.push_back({from, to, e_if});
+	void add_edge_only(int from, int to, eif meta = eif()) {
+		edges.push_back({from, to, meta});
 	}
 	pair<node *, edge *> extend(int i) {
 		pair<node *, edge *> ret;
@@ -61,11 +69,4 @@ struct graph {
 		return ret;
 	}
 };
-GRAPH_T
-GRAPH_NODE_C *GRAPH_NODE_T::baseaddr;
-
-#undef GRAPH_T
-#undef GRAPH_C
-#undef GRAPH_NODE_T
-#undef GRAPH_NODE_C
 

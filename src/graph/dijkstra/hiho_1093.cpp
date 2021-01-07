@@ -3,47 +3,48 @@
 #include "graph/graph.h"
 #include "graph/dijkstra.h"
 
-struct eif {
-	ll cost;
-	eif() { cost = 0; }
-	eif(ll _1) : cost(_1) {}
+struct vif {
+	bool vis;
+	int dist;
+	vif() { vis = 0; dist = inf32; }
 };
-using graph_t = graph<fake_type, eif>;
-using node = graph_t::node;
-using edge = graph_t::edge;
+struct eif {
+	int cost;
+	eif() {}
+	eif(int _1) : cost(_1) {}
+};
+using graph_t = graph<graph_node<vif>, graph_edge<eif>>;
 
 class task {
 #define ioend(cond) \
 	do {\
 		if (!(cond) || !fio.ok()) { cin.setstate(ios_base::badbit); return cin; }\
 	} while(0)
-	int vn, en, ss;
-	vector<ll> ans;
-	graph_t g;
-	dijkstra<graph_t> minpath{&g};
+	int gn, gm, gs, gt, ans;
+	graph_t grp;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
 	istream &in() {
-		ioend(fio.in(vn, en, ss));
-		ss--;
-		g.resize(vn);
-		fup_range (i, 0, en) {
-			int from, to;
-			ll cost;
-			fio.in(from, to, cost);
-			from--, to--;
-			g.add(from, to, eif(cost));
+		ioend(fio.in(gn, gm, gs, gt));
+		grp.resize(gn);
+		gs--, gt--;
+		fup (t, 1, gm) {
+			int a, b, c;
+			fio.in(a, b, c);
+			a--, b--;
+			grp.add2(a, b, eif(c));
 		}
 		ioend(1);
 		return cin;
 	}
 	void deal() {
-		ans = minpath.get<ll>(ss);
+		dijkstra<graph_t> short_path(grp);
+		short_path.get<int>(gs);
+		ans = grp[gt].meta.dist;
 	}
 	void out() {
-		fup_range (i, 0, ans.size())
-			fio.msg("%lld%c", ans[i], " \n"[i == ans.size() - 1]);
+		fio.msg("%d\n", ans);
 	}
 public:
 	task(
@@ -51,7 +52,6 @@ public:
 		const char *fmt_case = 0,
 		bool blankline = 0) {
 		static int testcase = 1 << 30;
-		static stringstream tid;
 		preprocess();
 		if (multicase)
 			fio.in(testcase);
