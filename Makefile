@@ -20,6 +20,7 @@ init_all:
 #     表示目标的名字.
 # src:
 #     编译目标所需要的源文件. 如果文件比较多, 可以考虑定义一个变量.
+	$(eval $(call dim_file_relevant,1,exe,ttt,test.cpp))
 	@$(foreach id,$(aimid_all),\
 		$(eval $(call preprocess,$(id)))\
 		$(eval REQ_$(id) = $(OBJS_$(id)))\

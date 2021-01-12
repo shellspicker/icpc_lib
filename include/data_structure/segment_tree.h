@@ -1,5 +1,3 @@
-#pragma once
-
 #ifdef SUB_QUERY
 template<typename _1, typename _2, typename _3>
 #else
