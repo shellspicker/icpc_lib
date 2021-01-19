@@ -1,36 +1,39 @@
 #include "template.h"
-
-debuger bug;
+#include "basic/zip.h"
 
 void test_43()
 {
-	bug("\n---test---");
-	bug("4 * 3 grid");
-	zip<int> arr({4,3});
+	fio.msg("\n---test---\n");
+	fio.msg("4 * 3 grid\n");
+	zip_vector<int> arr({4,3});
 	int t = 0;
 	fup (i, 0, 4 - 1) {
 		fup (j, 0, 3 - 1) {
 			arr(i, j) = ++t;
 		}
 	}
-	bug(arr.data);
-	fup (i, 0, 12 - 1) {
-		bug(arr.get_dim(i));
+	fup_range (i, 0, 4 * 3)
+		fio.msg("%d%c", arr.data[i], " \n"[i == 4 * 3 - 1]);
+	fup (idx, 0, 12 - 1) {
+		auto dm = arr.dimension(idx);
+		fio.msg("[%d]:", idx);
+		fup_range (i, 0, 2)
+			fio.msg("%d%c", dm[i], " \n"[i == 2 - 1]);
 	}
-	bug("---PASS---");
+	fio.msg("---PASS---\n");
 }
 
 const int dim = 5000;
 vector<vector<int>> arr_vv(dim, vector<int>(dim, 0));
-zip<int> arr_zip({dim, dim});
+zip_vector<int> arr_zip({dim, dim});
 int arr_normal[dim][dim];
 void test_1000()
 {
-	bug("\n---test---");
-	bug("for each");
+	fio.msg("\n---test---\n");
+	fio.msg("for each\n");
 	double t1, t2;
 
-	bug("vv arr");
+	fio.msg("vv arr\n");
 	t1 = clock();
 	fup (i, 0, dim - 1) {
 		fup (j, 0, dim - 1) {
@@ -38,9 +41,9 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	bug((t2 - t1) / 1000);
+	fio.msg("%.4f\n", (t2 - t1) / 1000);
 
-	bug("vv arr inverse");
+	fio.msg("vv arr inverse\n");
 	t1 = clock();
 	fup (j, 0, dim - 1) {
 		fup (i, 0, dim - 1) {
@@ -48,9 +51,9 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	bug((t2 - t1) / 1000);
+	fio.msg("%.4f\n", (t2 - t1) / 1000);
 
-	bug("zip arr");
+	fio.msg("zip_vector arr\n");
 	t1 = clock();
 	fup (i, 0, dim - 1) {
 		fup (j, 0, dim - 1) {
@@ -58,9 +61,9 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	bug((t2 - t1) / 1000);
+	fio.msg("%.4f\n", (t2 - t1) / 1000);
 
-	bug("zip arr inverse");
+	fio.msg("zip_vector arr inverse\n");
 	t1 = clock();
 	fup (j, 0, dim - 1) {
 		fup (i, 0, dim - 1) {
@@ -68,9 +71,9 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	bug((t2 - t1) / 1000);
+	fio.msg("%.4f\n", (t2 - t1) / 1000);
 
-	bug("normal arr");
+	fio.msg("normal arr\n");
 	memset(arr_normal, 0, sizeof(arr_normal));
 	t1 = clock();
 	fup (i, 0, dim - 1) {
@@ -79,9 +82,9 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	bug((t2 - t1) / 1000);
+	fio.msg("%.4f\n", (t2 - t1) / 1000);
 
-	bug("normal arr inverse");
+	fio.msg("normal arr inverse\n");
 	t1 = clock();
 	fup (j, 0, dim - 1) {
 		fup (i, 0, dim - 1) {
@@ -89,32 +92,32 @@ void test_1000()
 		}
 	}
 	t2 = clock();
-	bug((t2 - t1) / 1000);
-	bug("---PASS---");
+	fio.msg("%.4f\n", (t2 - t1) / 1000);
+	fio.msg("---PASS---\n");
 }
 
 void test_constructor_zip()
 {
 	double t1, t2;
-	bug("\n---test---");
-	bug("constructor of zip arr");
+	fio.msg("\n---test---\n");
+	fio.msg("constructor of zip_vector arr\n");
 	t1 = clock();
-	zip<int> arr_zip({5000, 5000});
+	zip_vector<int> arr_zip({5000, 5000});
 	t2 = clock();
-	bug((t2 - t1) / 1000);
-	bug("---PASS---");
+	fio.msg("%.4f\n", (t2 - t1) / 1000);
+	fio.msg("---PASS---\n");
 }
 
 void test_constructor_vv()
 {
 	double t1, t2;
-	bug("\n---test---");
-	bug("constructor of vv arr");
+	fio.msg("\n---test---\n");
+	fio.msg("constructor of vv arr\n");
 	t1 = clock();
 	vector<vector<int>> arr_vv(5000, vector<int>(5000, 0));
 	t2 = clock();
-	bug((t2 - t1) / 1000);
-	bug("---PASS---");
+	fio.msg("%.4f\n", (t2 - t1) / 1000);
+	fio.msg("---PASS---\n");
 }
 
 

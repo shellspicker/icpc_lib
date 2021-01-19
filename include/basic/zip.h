@@ -1,10 +1,10 @@
 #if 201103L <= __cplusplus
 template<typename tp>
 class zip_vector {
-public:
 	int tot;
-	vector<tp> data;
 	vector<int> dim;
+public:
+	vector<tp> data;
 	zip_vector(const vector<int> &v) {
 		dim.resize(v.size());
 		copy(it_each(v), dim.begin());
@@ -19,6 +19,9 @@ public:
 	template<typename ...var>
 	tp &operator ()(var &&...args) {
 		return data[index(args...)];
+	}
+	tp &operator [](int i) {
+		return data[i];
 	}
 	template<typename ...var>
 	int index(var &&...args) {
@@ -43,10 +46,10 @@ public:
 };
 template<typename tp>
 class zip_valarray {
-public:
 	int tot;
-	valarray<tp> data;
 	valarray<int> dim;
+public:
+	valarray<tp> data;
 	zip_valarray(const vector<int> &v) {
 		dim.resize(v.size());
 		copy(it_each(v), begin(dim));
@@ -61,6 +64,9 @@ public:
 	template<typename ...var>
 	tp &operator ()(var &&...args) {
 		return data[index(args...)];
+	}
+	tp &operator [](int i) {
+		return data[i];
 	}
 	template<typename ...var>
 	int index(var &&...args) {
