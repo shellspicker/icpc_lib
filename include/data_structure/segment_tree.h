@@ -1,7 +1,7 @@
 #ifdef SUB_QUERY
 template<typename info, typename oper, typename squery>
 #else
-template<typename info, typename oper>
+template<typename info, typename oper, typename derive>
 #endif
 struct segment_tree_node {
 	using info_t = info;
@@ -9,12 +9,16 @@ struct segment_tree_node {
 #ifdef SUB_QUERY
 	using sbq_t = squery;
 #endif
-	static segment_tree_node *null;
-	segment_tree_node *ls, *rs;
+	static derive *null;
+	derive *ls, *rs;
 	int lef, rig;
 	info meta;
-	segment_tree_node() {};
-	segment_tree_node(int l, int r) : lef(l), rig(r) {}
+	segment_tree_node() {
+		ls = rs = null;
+	}
+	segment_tree_node(int l, int r) {
+		lef = l, rig = r;
+	}
 	virtual void release(const oper &) {}
 	virtual void push() {}
 	virtual void pull() {}
@@ -22,8 +26,8 @@ struct segment_tree_node {
 	virtual void pull(const squery &) {}
 #endif
 };
-template<typename _1, typename _2>
-segment_tree_node<_1, _2> *segment_tree_node<_1, _2>::null;
+template<typename _1, typename _2, typename _3>
+_3 *segment_tree_node<_1, _2, _3>::null;
 
 template<class node, size_t pon>
 class segment_tree {
@@ -57,8 +61,8 @@ public:
 				o->meta = point(l);
 			} else {
 				int m = midpoint(l, r);
-				helper((node *&)o->ls, l, m - 1);
-				helper((node *&)o->rs, m, r);
+				helper(o->ls, l, m - 1);
+				helper(o->rs, m, r);
 				o->pull();
 			}
 		};
@@ -74,8 +78,8 @@ public:
 				o->release(ch);
 			} else {
 				o->push();
-				helper((node *)o->ls);
-				helper((node *)o->rs);
+				helper(o->ls);
+				helper(o->rs);
 				o->pull();
 			}
 		};
@@ -124,8 +128,8 @@ public:
 				} else {
 					ret = new (alloc_query()) node();
 					o->push();
-					ret->ls = helper((node *)o->ls);
-					ret->rs = helper((node *)o->rs);
+					ret->ls = helper(o->ls);
+					ret->rs = helper(o->rs);
 #ifdef SUB_QUERY
 					if (!sbq)
 						ret->pull();
@@ -170,7 +174,7 @@ typename segment_tree<_1, _2>::alloc_node_t segment_tree<_1, _2>::alloc;
 template<class _1, size_t _2>
 typename segment_tree<_1, _2>::alloc_query_t segment_tree<_1, _2>::alloc_query;
 template<class _1, size_t _2>
-_1 *&segment_tree<_1, _2>::null = (_1 *&)_1::null;
+_1 *&segment_tree<_1, _2>::null = _1::null;
 
 #undef SUB_QUERY
 #undef PERSISTENT

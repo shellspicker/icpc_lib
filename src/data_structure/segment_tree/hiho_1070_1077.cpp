@@ -2,6 +2,7 @@
 #include "template.h"
 #include "data_structure/allocator.h"
 #include "data_structure/segment_tree.h"
+
 struct nif {
 	int m1;
 	nif() : m1(inf32) {}
@@ -11,9 +12,9 @@ struct uif {
 	int v;
 	uif(int v_) : v(v_) {}
 };
-using base_node = segment_tree_node<nif, uif>;
+#define base_node segment_tree_node<nif, uif, node>
 struct node : public base_node {
-	node() { ls = rs = null; }
+	node() {}
 	node(int l, int r) : base_node(l, r) {}
 	void release(const uif &upd) {
 		meta.m1 = upd.v;
@@ -22,6 +23,7 @@ struct node : public base_node {
 		meta.m1 = min(ls->meta.m1, rs->meta.m1);
 	}
 };
+#undef base_node
 
 class task {
 #define ioend(cond) \
@@ -38,25 +40,22 @@ class task {
 			struct {
 				int l, r;
 			} que;
-		} c;
+		};
 		finput(is, command, o) {
 			fio.in(o.op);
 			if (o.op == 0) {
-				fio.in(o.c.que.l, o.c.que.r);
-				o.c.que.l--;
-				o.c.que.r--;
+				fio.in(o.que.l, o.que.r);
+				o.que.l--;
+				o.que.r--;
 			} else {
-				fio.in(o.c.upd.x, o.c.upd.v);
-				o.c.upd.x--;
+				fio.in(o.upd.x, o.upd.v);
+				o.upd.x--;
 			}
 			return is;
 		}
 	};
 	vector<command> cmd;
 	vector<int> data, ans;
-	function<nif(int)> point = [=](int i) {
-		return nif(data[i]);
-	};
 	segment_tree<node, 1000233> dsm;
 	void preprocess() {
 		fio.set_output_float_digit(12);
@@ -75,16 +74,16 @@ class task {
 	}
 	void deal() {
 		decltype(dsm)::init();
-		dsm.build(0, data.size() - 1, point);
+		dsm.build(0, data.size() - 1, [&](int i) { return nif(data[i]); });
 		ans.clear();
 		fup_range (qi, 0, q) {
 			command c = cmd[qi];
 			if (c.op == 0) {
-				node que_i = dsm.query(c.c.que.l, c.c.que.r);
+				node que_i = dsm.query(c.que.l, c.que.r);
 				ans.push_back(que_i.meta.m1);
 			} else {
-				uif upd_i{c.c.upd.v};
-				dsm.update(c.c.upd.x, c.c.upd.x, upd_i);
+				uif upd_i{c.upd.v};
+				dsm.update(c.upd.x, c.upd.x, upd_i);
 			}
 		}
 	}
