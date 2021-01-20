@@ -1,5 +1,4 @@
 #define FAST_IO 1
-
 #include "template.h"
 #include "data_structure/allocator.h"
 #include "data_structure/segment_tree.h"
@@ -12,11 +11,10 @@ struct uif {
 	int v;
 	uif(int v_) : v(v_) {}
 };
-#define basenode segment_tree_node<nif, uif>
-struct node : public basenode {
-	static node *null;
-	node() {}
-	node(int l, int r) : basenode(l, r) {}
+using base_node = segment_tree_node<nif, uif>;
+struct node : public base_node {
+	node() { ls = rs = null; }
+	node(int l, int r) : base_node(l, r) {}
 	void release(const uif &upd) {
 		meta.m1 = upd.v;
 	}
@@ -24,8 +22,6 @@ struct node : public basenode {
 		meta.m1 = min(ls->meta.m1, rs->meta.m1);
 	}
 };
-node *node::null;
-#undef basenode
 
 class task {
 #define ioend(cond) \
@@ -61,7 +57,7 @@ class task {
 	function<nif(int)> point = [=](int i) {
 		return nif(data[i]);
 	};
-	segment_tree<node, 10233> dsm;
+	segment_tree<node, 1000233> dsm;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
@@ -78,7 +74,7 @@ class task {
 		return cin;
 	}
 	void deal() {
-		dsm.init();
+		decltype(dsm)::init();
 		dsm.build(0, data.size() - 1, point);
 		ans.clear();
 		fup_range (qi, 0, q) {
@@ -93,8 +89,8 @@ class task {
 		}
 	}
 	void out() {
-		for (auto e : ans)
-			fio.out(e, '\n');
+		fup_range (i, 0, ans.size())
+			fio.msg("%d\n", ans[i]);
 	}
 public:
 	task(
@@ -102,7 +98,6 @@ public:
 		const char *fmt_case = 0,
 		bool blankline = 0) {
 		static int testcase = 1 << 30;
-		static stringstream tid;
 		preprocess();
 		if (multicase)
 			fio.in(testcase);
@@ -116,9 +111,10 @@ public:
 		}
 	}
 #undef ioend
-} gkd;
+};
 
 int main()
 {
+	new task();
 	return 0;
 }
