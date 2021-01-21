@@ -38,7 +38,7 @@ public:
 	using squery = typename node::sbq_t;
 #endif
 #if PERSISTENT
-	using alloc_node_t = allocator<node, pon * (2 + size_t(log2(pon)) * 2)>;
+	using alloc_node_t = allocator<node, pon * (2 + size_t(ceil(log2(pon))) * 2)>;
 #else
 	using alloc_node_t = allocator<node, pon * 2>;
 #endif
@@ -93,18 +93,17 @@ public:
 			if (len == 0) {
 				now = pre;
 				return;
+			}
+			now = new (alloc()) node();
+			if (len == length(pre->lef, pre->rig)) {
+				*now = *pre;
+				now->release(ch);
 			} else {
-				now = new (alloc()) node();
-				if (len == length(pre->lef, pre->rig)) {
-					*now = *pre;
-					now->release(ch);
-				} else {
-					pre->push();// now or pre ?
-					*now = *pre;
-					helper((node *)pre->ls, (node *&)now->ls);
-					helper((node *)pre->rs, (node *&)now->rs);
-					now->pull();
-				}
+				pre->push();// now or pre ?
+				*now = *pre;
+				helper(pre->ls, now->ls);
+				helper(pre->rs, now->rs);
+				now->pull();
 			}
 		};
 		helper(pre, root);
@@ -158,10 +157,10 @@ public:
 			assert(0 <= cc);
 			if (cnt <= cc) {
 				fup_range (i, 0, 2)
-					nd[i] = (node *)nd[i]->ls;
+					nd[i] = nd[i]->ls;
 			} else {
 				fup_range (i, 0, 2)
-					nd[i] = (node *)nd[i]->rs;
+					nd[i] = nd[i]->rs;
 				cnt -= cc;
 			}
 		}
