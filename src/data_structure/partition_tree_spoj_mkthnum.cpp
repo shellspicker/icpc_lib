@@ -1,6 +1,7 @@
 #define FAST_IO 1
 
 #include "template.h"
+#include "data_structure/allocator.h"
 #include "data_structure/partition_tree.h"
 
 class task {
@@ -11,19 +12,15 @@ class task {
 	struct query {
 		int l, r, k;
 		finput(is, query, o) {
-			fio.in(o.l);
-			fio.in(o.r);
-			fio.in(o.k);
+			fio.in(o.l, o.r, o.k);
 			o.l--, o.r--;
 			return is;
 		}
 	};
-	char buf[1024];
 	int n, q;
 	vector<int> data, ans;
 	vector<query> que;
-	using part_t = partition_tree<int, 100233>;
-	part_t dsm;
+	partition_tree<int, 100233> dsm;
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
@@ -56,7 +53,6 @@ public:
 		const char *fmt_case = 0,
 		bool blankline = 0) {
 		static int testcase = 1 << 30;
-		static stringstream tid;
 		preprocess();
 		if (multicase)
 			fio.in(testcase);
@@ -70,9 +66,10 @@ public:
 		}
 	}
 #undef ioend
-} gkd;
+};
 
 int main()
 {
+	new task();
 	return 0;
 }
