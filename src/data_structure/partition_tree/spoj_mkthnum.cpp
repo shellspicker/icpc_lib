@@ -1,5 +1,4 @@
 #define FAST_IO 1
-
 #include "template.h"
 #include "data_structure/allocator.h"
 #include "data_structure/partition_tree.h"
