@@ -1,3 +1,12 @@
+/*
+ * node.meta:
+ *   bool inq;
+ *   int cnt;
+ *   dtp dist;
+ *
+ * edge.meta:
+ *   dtp cost;
+ */
 template<typename graph>
 struct bellman_ford {
 	using node = typename graph::node_t;

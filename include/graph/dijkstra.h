@@ -1,3 +1,11 @@
+/*
+ * node.meta:
+ *   bool vis;
+ *   dtp dist;
+ *
+ * edge.meta:
+ *   dtp cost;
+ */
 template<typename graph>
 struct dijkstra {
 	using node = typename graph::node_t;
