@@ -6,10 +6,9 @@ class zip_vector {
 public:
 	vector<tp> data;
 	zip_vector(const vector<int> &v) {
-		dim.resize(v.size());
-		copy(it_each(v), dim.begin());
+		dim = v;
 		tot = 1;
-		fwn (i, 0, dim.size() - 1) {
+		fwn_range (i, 0, dim.size()) {
 			int suf = tot;
 			tot *= dim[i];
 			dim[i] = suf;
@@ -51,10 +50,9 @@ class zip_valarray {
 public:
 	valarray<tp> data;
 	zip_valarray(const vector<int> &v) {
-		dim.resize(v.size());
-		copy(it_each(v), begin(dim));
+		dim = v;
 		tot = 1;
-		fwn (i, 0, dim.size() - 1) {
+		fwn_range (i, 0, dim.size()) {
 			int suf = tot;
 			tot *= dim[i];
 			dim[i] = suf;
