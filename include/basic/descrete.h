@@ -2,17 +2,19 @@ template<typename tp>
 class descrete {
 	vector<tp> sorted;
 public:
-	void init(vector<tp> &v) {
+	void init(const vector<tp> &v) {
 		sorted.assign(it_each(v));
 		sort(it_each(sorted));
 		sorted.erase(unique(it_each(sorted)), sorted.end());
-		get_pos(v);
 	}
 	void get_pos(vector<tp> &v) {
 		for (auto &x : v)
-			x = lower_bound(it_each(sorted), x) - sorted.begin();
+			x = this->operator()(x);
 	}
-	tp get(int i) {
+	int operator ()(tp x) {
+		return lower_bound(it_each(sorted), x) - sorted.begin();
+	}
+	tp operator [](int i) {
 		return sorted[i];
 	}
 	int size() {
