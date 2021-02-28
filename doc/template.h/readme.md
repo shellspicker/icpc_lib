@@ -96,6 +96,7 @@ public:
     bool readline_noblank(string &, char);
     template<typename ...var>
     void out(var &&...);
+    void scan(const string &, const char *, ...);
     void msg(const char *, ...);
 };
 ```

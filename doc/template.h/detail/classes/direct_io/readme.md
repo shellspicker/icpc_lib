@@ -23,10 +23,9 @@ class direct_io;
 | [readline]()                  | 输入一行.                 |
 | [readline\_noblank]()         | 输入一行, 无视空行.       |
 | [out]()                       | 输出.                     |
+| [scan]() | 兼容scanf格式的输入. |
 | [msg]()                       | 兼容printf格式的输出.     |
 
 ## todo
 
 现在只支持`stdin`和`stdout`, `stderr`待支持.
-
-兼容scanf格式输入?

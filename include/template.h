@@ -647,6 +647,12 @@ public:
 #  endif
 #endif
 	}
+	void scan(const string &buf, const char *fmt, ...) {
+		va_list args;
+		va_start(args, fmt);
+		vsscanf(buf.data(), fmt, args);
+		va_end(args);
+	}
 	void msg(const char *fmt, ...) {
 		assert(g_buf);
 		va_list args;
