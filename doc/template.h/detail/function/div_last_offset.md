@@ -14,4 +14,4 @@ ull div_last_offset(ull x, ull div);
 
 ## return value
 
-返回最后一个块号.
+返回最后一个块号(起始0).

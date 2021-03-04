@@ -358,9 +358,6 @@ int half2xp(int x)
 {
 	return ctz(roundup_pow_of_2(x) >> bool(x ^ 1));
 }
-ull div_roundup(ull x, ull div) { return (x + div - 1) / div; }
-ull div_rounddown(ull x, ull div) { return x / div; }
-ull div_last_offset(ull x, ull div) { return div_rounddown(x - 1, div); }
 ll ltor(ll l, ll len) { return l + len - 1; }
 ll rtol(ll r, ll len) { return r - len + 1; }
 ll length(ll l, ll r) { return (r < l) ? 0 : r - l + 1; }
@@ -369,6 +366,15 @@ ll length(ll l, ll r) { return (r < l) ? 0 : r - l + 1; }
  * this implementation is ceil((l + r) / 2).
  * if want floor((l + r) / 2), use (l & r) + ((l ^ r) >> 1).
  */
+ull div_roundup(ull x, ull div) { return (x + div - 1) / div; }
+ull div_rounddown(ull x, ull div) { return x / div; }
+ull div_last_offset(ull x, ull div) { return div_rounddown(x - 1, div); }
+ull div_point_count(ull l, ull r, ull d) {
+	ull pos[2] = {l, r};
+	pos[0] = div_roundup(pos[0], d);
+	pos[1] = div_rounddown(pos[1], d);
+	return length(pos[0], pos[1]);
+}
 template<typename tp>
 tp midpoint(tp l, tp r) {
 	return (l | r) - ((l ^ r) >> 1);

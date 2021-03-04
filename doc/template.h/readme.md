@@ -52,6 +52,7 @@
 | [div\_roundup](detail/function/div_roundup.md)      | 对齐到分块的右边界的块号. |
 | [div\_rounddown](detail/function/div_rounddown.md)    | 对齐到分块的左边界的块号. |
 | [div\_last\_offset](detail/function/div_last_offset.md) | 最后一个块号.             |
+| [div\_point\_count](detail/function/div_point_count.md) | 区间内的分块起始点的个数. |
 
 ### 闭区间端点运算
 
