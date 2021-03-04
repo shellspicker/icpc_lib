@@ -668,6 +668,28 @@ public:
 		out((const char *)g_buf);
 	}
 } fio;
+class debuger {
+	static const int bsz = 1 << 20;
+	char *g_buf;
+public:
+	debuger() {
+		cerr.setf(ios::fixed);
+		cerr.precision(12);
+		g_buf = (char *)malloc(1 << 20);
+	}
+	template<typename ...var>
+	void out(var &&...args) {
+		initializer_list<int>{(cerr << forward<var>(args), 0)...};
+	}
+	void msg(const char *fmt, ...) {
+		assert(g_buf);
+		va_list args;
+		va_start(args, fmt);
+		vsprintf(g_buf, fmt, args);
+		va_end(args);
+		out((const char *)g_buf);
+	}
+} bug;
 
 struct fake_type {};
 
