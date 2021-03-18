@@ -1,3 +1,4 @@
+/*
 #define NODE_C typename graph::node
 #define EDGE_C typename graph::edge
 
@@ -34,27 +35,23 @@ int tree_diameter(graph *g, NODE_C *root) {
 	dfs(root);
 	return ret;
 }
+*/
 
+/*
+ * node.meta:
+ *   int dist, pre;
+ */
 template<typename graph>
-class tree_diameter_bfs {
-	using node = NODE_C;
-	using edge = EDGE_C;
-
+struct diameter {
+	using node = typename graph::node;
+	using edge = typename graph::edge;
 	graph &g;
-	bool print;
+	node *nd;
 public:
-	tree_diameter_bfs(graph &_1, bool _2) : g(_1), print(_2) {}
-	tuple<int, vector<int>> run() {
+	diameter(graph &_1) : g(_1), nd(&g[0]) {}
+	tuple<int, vector<int>> run(int source, bool print) {
 		int diameter;
 		vector<int> path;
-		auto find = [&]() {
-			int ret = 0;
-			fup_range (u, 0, g.size()) {
-				if (g[ret].meta.dist < g[u].meta.dist)
-					ret = u;
-			}
-			return ret;
-		};
 		auto bfs = [&](int st, bool perm) {
 			int m2, id;
 			queue<int> que;
@@ -80,6 +77,7 @@ public:
 				}
 			}
 			diameter = m2;
+			source = id;
 			if (perm) {
 				int cur = id;
 				while (cur ^ -1) {
@@ -88,13 +86,9 @@ public:
 				}
 			}
 		};
-		bfs(0, 0);
-		int m1 = find();
-		bfs(m1, print);
+		bfs(source, 0);
+		bfs(source, print);
 		return tie(diameter, path);
 	}
 };
-
-#undef NODE_C
-#undef EDGE_C
 
