@@ -396,9 +396,9 @@ pair<ll, pair<ll, ll> > range_ins(ll lef_l, ll lef_r, ll rig_l, ll rig_r)
 	if (!length(lef_l, lef_r) || !length(rig_l, rig_r) ||
 		(lef_r < rig_l || rig_r < lef_l))
 #if 201103L <= __cplusplus
-		return make_tuple(0, make_pair(-1, -1));
+		return make_tuple(0, make_pair(1, -1));
 #else
-		return make_pair(0, make_pair(-1, -1));
+		return make_pair(0, make_pair(1, -1));
 #endif
 	if (rig_l <= lef_l && lef_r <= rig_r)
 #if 201103L <= __cplusplus
