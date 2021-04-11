@@ -22,49 +22,53 @@
 
 class kmp {
 public:
-	string small;
-	vector<int> suf;
-	kmp() {}
-	kmp(string &p) : small(p) {
-		suf.resize(p.length() + 1);
-		build();
-	}
-private:
-	void build() {
-		suf[0] = -1;
-		fup_range (cur, 0, small.length()) {
-			int pre = suf[cur];
-			while (~pre && small[cur] != small[pre])
-				pre = suf[pre];
-			suf[cur + 1] = pre + 1;
+	template<typename iter>
+	static
+	vector<int> build(iter st, size_t len) {
+		vector<int> ret(len + 1);
+		ret[0] = -1;
+		fup_range (cur, 0, len) {
+			int pre = ret[cur];
+			while (~pre && st[cur] ^ st[pre])
+				pre = ret[pre];
+			ret[cur + 1] = pre + 1;
 		}
 #if KNUTH
-		fup_range (cur, 0, small.length()) {
+		fup_range (cur, 0, len) {
 			int &pre = suf[cur];
-			while (0 <= pre && small[cur] == small[pre])
-				pre = suf[pre];
+			while (~pre && st[cur] == st[pre])
+				pre = ret[pre];
 		}
 #endif
-	}
-public:
-	vector<int> search(string &big) {
-		vector<int> ret;
-		int pre = 0;
-		fup_range (cur, 0, big.length()) {
-			while (0 <= pre && big[cur] != small[pre])
-				pre = suf[pre];
-			if (++pre == small.length())
-				ret.push_back(rtol(cur, small.length()));
-		}
 		return ret;
 	}
-	vector<int> search(string &big, string &small) {
+	template<typename iter>
+	static
+	vector<int> search(
+			iter big, int blen,
+			iter small, int slen,
+			const vector<int> &tbl) {
+		vector<int> occ;
+		int pre = 0;
+		fup_range (cur, 0, blen) {
+			while (~pre && big[cur] ^ small[pre])
+				pre = tbl[pre];
+			if (++pre == slen)
+				occ.push_back(rtol(cur, slen));
+		}
+		return occ;
+	}
+	template<typename iter>
+	static
+	vector<int> search(
+			iter big, int blen,
+			iter small, int slen) {
 		vector<int> ret;
-		string comb = small + '$' + big;
-		new (this) kmp(comb);
-		int offset = small.length() * 2 + 1;
-		fup (i, offset, comb.length()) {
-			if (suf[i] == small.length())
+		string comb = string(small, small + slen) + '$' + string(big, big + blen);
+		vector<int> tbl = build(comb.begin(), comb.size());
+		int offset = slen * 2 + 1;
+		fup (i, offset, comb.size()) {
+			if (tbl[i] == slen)
 				ret.push_back(i - offset);
 		}
 		return ret;
