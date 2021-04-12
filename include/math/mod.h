@@ -38,7 +38,7 @@ public:
 	modulo operator *(const modulo &y) const { return x * ll(y); }
 #endif
 	modulo operator /(const modulo &y) const { return *this * y.inverse(); }
-	modulo operator ^(const modulo &y) const { return pow_mod(x, ll(y), mod); }
+	modulo operator ^(ll y) const { return pow_mod(x, y, mod); }
 	modulo operator +=(const modulo &y) { *this = *this + y; return *this; }
 	modulo operator -=(const modulo &y) { *this = *this - y; return *this; }
 	modulo operator *=(const modulo &y) { *this = *this * y; return *this; }
