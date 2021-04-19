@@ -1,32 +1,20 @@
-template<typename info>
-struct graph_node {
-	typedef info info_t;
-	static graph_node *base_addr;
-	vector<int> link;
-	info meta;
-	graph_node() : link(vector<int>()), meta(info()) {}
-	int id() {
-		return this - base_addr;
-	}
-};
-template<typename _1>
-graph_node<_1> *graph_node<_1>::base_addr;
-
-template<typename info>
-struct graph_edge {
-	typedef info info_t;
-	int from, to;
-	info meta;
-	graph_edge() {}
-	graph_edge(int _1, int _2, info _3 = info()) : from(_1), to(_2), meta(_3) {}
-};
-
-template<typename node, typename edge>
+template<typename nif, typename eif>
 struct graph {
-	typedef node node_t;
-	typedef edge edge_t;
-	typedef typename node::info_t nif;
-	typedef typename edge::info_t eif;
+	struct node {
+		static node *base_addr;
+		vector<int> link;
+		nif meta;
+		node() : link(vector<int>()), meta(nif()) {}
+		int id() {
+			return this - base_addr;
+		}
+	};
+	struct edge {
+		int from, to;
+		eif meta;
+		edge() {}
+		edge(int _1, int _2, eif _3 = eif()) : from(_1), to(_2), meta(_3) {}
+	};
 	vector<node> nodes;
 	vector<edge> edges;
 	node *&node_base;
@@ -69,4 +57,6 @@ struct graph {
 		return ret;
 	}
 };
+template<typename _1, typename _2>
+typename graph<_1, _2>::node *graph<_1, _2>::node::base_addr;
 

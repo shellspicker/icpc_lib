@@ -8,8 +8,10 @@
  */
 template<typename graph>
 struct dijkstra {
-	using node = typename graph::node_t;
-	using edge = typename graph::edge_t;
+	//using node = typename graph::node_t;
+	//using edge = typename graph::edge_t;
+	using node = typename graph::node;
+	using edge = typename graph::edge;
 	graph &g;
 	node *nd;
 	dijkstra(graph &_1) : g(_1), nd(g.node_base) {}

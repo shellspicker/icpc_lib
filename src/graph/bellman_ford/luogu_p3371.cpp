@@ -14,7 +14,7 @@ struct eif {
 	eif() { cost = 0; }
 	eif(ll _1) : cost(_1) {}
 };
-using graph_t = graph<graph_node<vif>, graph_edge<eif>>;
+using graph_t = graph<vif, eif>;
 
 class task {
 #define ioend(cond) \

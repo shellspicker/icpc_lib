@@ -10,8 +10,8 @@
 #if BFS
 template<typename graph>
 class topo_bfs {
-	using node = typename graph::node_t;
-	using edge = typename graph::edge_t;
+	using node = typename graph::node;
+	using edge = typename graph::edge;
 	graph &g;
 	node *nd;
 public:
@@ -56,8 +56,8 @@ public:
 #if DFS
 template<typename graph>
 class topo_dfs {
-	using node = typename graph::node_t;
-	using edge = typename graph::edge_t;
+	using node = typename graph::node;
+	using edge = typename graph::edge;
 	graph &g;
 	node *nd;
 public:

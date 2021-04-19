@@ -10,7 +10,7 @@ struct nif {
 		in = 0;
 	}
 };
-using graph_t = graph<graph_node<nif>, graph_edge<fake_type>>;
+using graph_t = graph<nif, fake_type>;
 
 class task {
 #define ioend(cond) \
