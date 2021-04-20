@@ -17,15 +17,14 @@ struct graph {
 	};
 	vector<node> nodes;
 	vector<edge> edges;
-	node *&node_base;
-	graph(int vn = 0) : node_base(node::base_addr) {
+	graph(int vn = 0) {
 		clear();
 		nodes.assign(vn, node());
-		node_base = &nodes[0];
+		node::base_addr = &nodes[0];
 		edges.reserve(vn);
 	}
 	node &operator [](int i) {
-		node_base = &nodes[0];
+		node::base_addr = &nodes[0];
 		return nodes[i];
 	}
 	void clear() {
