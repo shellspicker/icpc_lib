@@ -149,6 +149,18 @@ void func(...) {
 
 关于上下文具体要保存什么东西, 仔细查看代码, 不难想到.
 
+---
+
+考虑单一函数的处理过程.  
+没有递归的话, 单一函数栈处理就是取栈顶函数, 处理, 弹出函数栈.
+
+再考虑函数栈的弹入(push)和弹出(pop)的过程, 其只做2件事:
+
+1. 执行本层函数的代码, 执行到函数最后, 就弹出本层函数.
+2. 调用其他函数, 弹入一层函数并做一些变量的初始化. 跳转到1.
+
+那么这整个过程就是一个循环, 不难实现.
+
 ### 框架
 
 这里给出一个非递归的大致框架:
@@ -168,32 +180,31 @@ return_type func_name_non_recursion(arg_type args[]) {
       int phase; // 必要变量, 表示代码片段, 我称之为阶段, 英文phase.
       // 自己找函数里出现的所有变量存进去. 如果函数有返回值, 也要存返回值.
     };
-    vector<context> reg;
-    reg.push_back({1, ...}); // 初次函数调用的上下文.
-    for (;;) {
-push:
-        auto &now = reg.back(); // 取得当前层函数的上下文.
-phase:
+    stack<context> reg;
+    reg.push({1, ...}); // 初次函数调用的上下文.
+    while (!st.empty()) {
+        auto &now = reg.top(); // 取得当前层函数的上下文.
         switch (now.phase) {
             case 1:
                 // 片段1.
-                reg.push_back({1, ...}); // 准备递归, 初始化递归函数的上下文.
+                reg.push({1, ...}); // 准备递归, 初始化递归函数的上下文.
                 now.phase = 2; // 递归之后去执行代码片段2.
-                goto push; // 进栈跳到push.
+                continue; // 已经弹入新函数栈, 继续取栈顶. continue一定配合函数栈push用.
             case 2:
                 // 片段2.
-                now.phase = 3; // 这里随便设置一个没有在任何case里的phase即可, 表示这个函数结束了.
-                goto phase; // 如果是去下一个阶段, 那么跳到phase. 如果是直接return了, 那么跳到pop.
+                now.phase = -1; // 这里随便设置一个没有在任何case里的phase即可, 表示这个函数结束了.
+                continue; // 这里让其设置phase, continue之后跳转到default去break或者直接break都行.
+            default:
+                break;
         }
-pop:
-        reg.pop_back();
-        if (reg.empty())
-            break;
+        reg.pop();
     }
 }
 ```
 
 以上是伪代码, 大概了解一下框架.
+
+我个人觉得这种代码有点像状态机.
 
 直接快进到非递归二叉树3种遍历的实现.
 
@@ -206,89 +217,80 @@ struct context {
 };
 
 void dfs_pre(binary_node *o) {
-    vector<context> reg;
-    reg.push_back({0, o});
-    for (;;) {
-push:
-        auto &now = reg.back();
-phase:
+    stack<context> reg;
+    reg.push({0, o});
+    while (!st.empty()) {
+        auto &now = reg.top();
         switch (now.phase) {
             case 0:
                 if (!o || o->vis)
-                    goto pop;
+                    break;
                 o->vis = 1;
                 printf("%d\n", o->id);
                 reg.push({0, o->ls});
                 now.phase = 1;
-                goto push;
+                continue;
             case 1:
                 reg.push({0, o->rs});
-                now.phase = 2;
-                goto push;
+                now.phase = -1;
+                continue;
+            default:
+                break;
         }
-pop:
-        reg.pop_back();
-        if (reg.empty())
-            break;
+        reg.pop();
     }
 }
 
 void dfs_in(binary_node *o) {
-    vector<context> reg;
-    reg.push_back({0, o});
-    for (;;) {
-push:
-        auto &now = reg.back();
-phase:
+    stack<context> reg;
+    reg.push({0, o});
+    while (!st.empty()) {
+        auto &now = reg.top();
         switch (now.phase) {
             case 0:
                 if (!o || o->vis)
-                    goto pop;
+                    break;
                 o->vis = 1;
-                reg.push_back({0, o->ls});
+                reg.push({0, o->ls});
                 now.phase = 1;
-                goto push;
+                continue;
             case 1:
                 printf("%d\n", o->id);
-                reg.push_back({0, o->rs});
-                now.phase = 2;
-                goto push;
+                reg.push({0, o->rs});
+                now.phase = -1;
+                continue;
+            default:
+                break;
         }
-pop:
-        reg.pop_back();
-        if (reg.empty())
-            break;
+        reg.pop();
     }
 }
 
 void dfs_post(binary_node *o) {
-    vector<context> reg;
-    reg.push_back({0, o});
-    for (;;) {
-push:
-        auto &now = reg.back();
-phase:
+    stack<context> reg;
+    reg.push({0, o});
+    while (!st.empty()) {
+        auto &now = reg.top();
         switch (now.phase) {
             case 0:
                 if (!o || o->vis)
-                    goto pop;
+                    break;
                 o->vis = 1;
-                reg.push_back({0, o->ls});
+                reg.push({0, o->ls});
                 now.phase = 1;
-                goto push;
+                continue;
             case 1:
-                reg.push_back({0, o->rs});
+                reg.push({0, o->rs});
                 now.phase = 2;
-                goto push;
+                continue;
             case 2:
                 printf("%d\n", o->id);
-                now.phase = 3;
-                goto phase;
+                now.phase = -1;
+                continue;
+            default:
+                break;
         }
-pop:
-        reg.pop_back();
-        if (reg.empty())
-            break;
+        reg.pop();
     }
 }
 ```

@@ -3,9 +3,12 @@
 #include "template.h"
 #include "graph/graph.h"
 
-undigraph<int> g;
+using graph_t = graph<fake_type, fake_type>;
+using node = graph_t::node;
+using edge = graph_t::edge;
+
 int root, vn;
-vector<int> vis;
+graph_t grp;
 struct binary_node {
 	binary_node() {
 		ls = rs = 0;
@@ -17,225 +20,240 @@ struct binary_node {
 };
 vector<binary_node> tree;
 
-void dfs_pre(binary_node *u) {
-	if (!u || u->vis)
-		return;
-	u->vis = 1;
-	fio.msg("%d\n", u->id);
-	dfs_pre(u->ls);
-	dfs_pre(u->rs);
-}
-
-void dfs_in(binary_node *u) {
-	if (!u || u->vis)
-		return;
-	u->vis = 1;
-	dfs_in(u->ls);
-	fio.msg("%d\n", u->id);
-	dfs_in(u->rs);
-}
-
-void dfs_post(binary_node *u) {
-	if (!u || u->vis)
-		return;
-	u->vis = 1;
-	dfs_post(u->ls);
-	dfs_post(u->rs);
-	fio.msg("%d\n", u->id);
-}
-
-void norec_pre(binary_node *u) {
-	struct rgst {
-		int phase;
-		binary_node *o;
-	};
-	vector<rgst> st;
-	st.push_back({0, u});
-
-	/*
-	 * 此为非递归框架, phase要自己从递归的代码拆分, phase之间转移类似自动机.
-	 * push在phase前, 且phase标记后没有while(1)套着switch.
-	 * 继续当前层: phase.
-	 * 下一层: push.
-	 * 上一层: pop.
-	 */
-	for (;;) {
-push:
-		auto &reg = st.back();
-phase:
-		switch (reg.phase) {
-		case 0:
-			if (!reg.o || reg.o->vis)
-				goto pop;
-			reg.o->vis = 1;
-			reg.phase = 1;
-			fio.msg("%d\n", reg.o->id);
-			goto phase;
-		case 1:
-			st.push_back({0, reg.o->ls});
-			reg.phase = 2;
-			goto push;
-		case 2:
-			st.push_back({0, reg.o->rs});
-			reg.phase = 3;
-			goto push;
-		case 3:
-		}
-pop:
-		st.pop_back();
-		if (st.empty())
-			break;
+class test_dfs_pre {
+public:
+	static
+	vector<int>
+	run() {
+		vector<int> ret;
+		function<void(binary_node *)> dfs = [&](binary_node *u) {
+			if (!u || u->vis)
+				return;
+			u->vis = 1;
+			ret.push_back(u->id);
+			dfs(u->ls);
+			dfs(u->rs);
+		};
+		fup_range (i, 0, vn)
+			tree[i].vis = 0;
+		dfs(&tree[root]);
+		return ret;
 	}
-}
+};
 
-void norec_in(binary_node *u) {
-	struct rgst {
-		int phase;
-		binary_node *o;
-	};
-	vector<rgst> st;
-	st.push_back({0, u});
-
-	/*
-	 * 此为非递归框架, phase要自己从递归的代码拆分, phase之间转移类似自动机.
-	 * push在phase前, 且phase标记后没有while(1)套着switch.
-	 * 继续当前层: phase.
-	 * 下一层: push.
-	 * 上一层: pop.
-	 */
-	for (;;) {
-push:
-		auto &reg = st.back();
-phase:
-		switch (reg.phase) {
-		case 0:
-			if (!reg.o || reg.o->vis)
-				goto pop;
-			reg.o->vis = 1;
-			reg.phase = 1;
-			goto phase;
-		case 1:
-			st.push_back({0, reg.o->ls});
-			reg.phase = 2;
-			goto push;
-		case 2:
-			fio.msg("%d\n", reg.o->id);
-			st.push_back({0, reg.o->rs});
-			reg.phase = 3;
-			goto push;
-		case 3:
-		}
-pop:
-		st.pop_back();
-		if (st.empty())
-			break;
+class test_dfs_in {
+public:
+	static
+	vector<int>
+	run() {
+		vector<int> ret;
+		function<void(binary_node *)> dfs = [&](binary_node *u) {
+			if (!u || u->vis)
+				return;
+			u->vis = 1;
+			dfs(u->ls);
+			ret.push_back(u->id);
+			dfs(u->rs);
+		};
+		fup_range (i, 0, vn)
+			tree[i].vis = 0;
+		dfs(&tree[root]);
+		return ret;
 	}
-}
+};
 
-void norec_post(binary_node *u) {
-	struct rgst {
-		int phase;
-		binary_node *o;
-	};
-	vector<rgst> st;
-	st.push_back({0, u});
-
-	/*
-	 * 此为非递归框架, phase要自己从递归的代码拆分, phase之间转移类似自动机.
-	 * push在phase前, 且phase标记后没有while(1)套着switch.
-	 * 继续当前层: phase.
-	 * 下一层: push.
-	 * 上一层: pop.
-	 */
-	for (;;) {
-push:
-		auto &reg = st.back();
-phase:
-		switch (reg.phase) {
-		case 0:
-			if (!reg.o || reg.o->vis)
-				goto pop;
-			reg.o->vis = 1;
-			reg.phase = 1;
-			goto phase;
-		case 1:
-			st.push_back({0, reg.o->ls});
-			reg.phase = 2;
-			goto push;
-		case 2:
-			st.push_back({0, reg.o->rs});
-			reg.phase = 3;
-			goto push;
-		case 3:
-			fio.msg("%d\n", reg.o->id);
-		}
-pop:
-		st.pop_back();
-		if (st.empty())
-			break;
+class test_dfs_post {
+public:
+	static
+	vector<int>
+	run() {
+		vector<int> ret;
+		function<void(binary_node *)> dfs = [&](binary_node *u) {
+			if (!u || u->vis)
+				return;
+			u->vis = 1;
+			dfs(u->ls);
+			dfs(u->rs);
+			ret.push_back(u->id);
+		};
+		fup_range (i, 0, vn)
+			tree[i].vis = 0;
+		dfs(&tree[root]);
+		return ret;
 	}
-}
+};
 
-void debug_graph() {
-	assert(g.n == vn);
-	assert(g.edges.size() == (vn - 1) * 2);
-	fup_range (i, 0, g.n) {
-		fio.msg("size %d: %d\n", i, g[i].size());
-		for (auto ei : g[i]) {
-			auto e = g.info(ei);
-			fio.msg("link %d->%d\n", e.from, e.to);
-		}
+class test_norec_pre {
+public:
+	static
+	vector<int>
+	run() {
+		vector<int> ret;
+		auto norec = [&](binary_node *u) {
+			struct rgst {
+				int phase;
+				binary_node *o;
+			};
+			stack<rgst> st;
+			st.push({0, u});
+			while (!st.empty()) {
+				auto &reg = st.top();
+				switch (reg.phase) {
+				case 0:
+					if (!reg.o || reg.o->vis)
+						break;
+					reg.o->vis = 1;
+					ret.push_back(reg.o->id);
+					st.push({0, reg.o->ls});
+					reg.phase = 1;
+					continue;
+				case 1:
+					st.push({0, reg.o->rs});
+					reg.phase = -1;
+					continue;
+				default:
+					break;
+				}
+				st.pop();
+			}
+		};
+		fup_range (i, 0, vn)
+			tree[i].vis = 0;
+		norec(&tree[root]);
+		return ret;
 	}
-}
+};
 
-void make_binary_tree() {
+class test_norec_in {
+public:
+	static
+	vector<int>
+	run() {
+		vector<int> ret;
+		auto norec = [&](binary_node *u) {
+			struct rgst {
+				int phase;
+				binary_node *o;
+			};
+			stack<rgst> st;
+			st.push({0, u});
+			while (!st.empty()) {
+				auto &reg = st.top();
+				switch (reg.phase) {
+				case 0:
+					if (!reg.o || reg.o->vis)
+						break;
+					reg.o->vis = 1;
+					st.push({0, reg.o->ls});
+					reg.phase = 1;
+					continue;
+				case 1:
+					ret.push_back(reg.o->id);
+					st.push({0, reg.o->rs});
+					reg.phase = -1;
+					continue;
+				default:
+					break;
+				}
+				st.pop();
+			}
+		};
+		fup_range (i, 0, vn)
+			tree[i].vis = 0;
+		norec(&tree[root]);
+		return ret;
+	}
+};
+
+class test_norec_post {
+public:
+	static
+	vector<int>
+	run() {
+		vector<int> ret;
+		auto norec = [&](binary_node *u) {
+			struct rgst {
+				int phase;
+				binary_node *o;
+			};
+			stack<rgst> st;
+			st.push({0, u});
+			while (!st.empty()) {
+				auto &reg = st.top();
+				switch (reg.phase) {
+				case 0:
+					if (!reg.o || reg.o->vis)
+						break;
+					reg.o->vis = 1;
+					st.push({0, reg.o->ls});
+					reg.phase = 1;
+					continue;
+				case 1:
+					st.push({0, reg.o->rs});
+					reg.phase = 2;
+					continue;
+				case 2:
+					ret.push_back(reg.o->id);
+					reg.phase = -1;
+				default:
+					break;
+				}
+				st.pop();
+			}
+		};
+		fup_range (i, 0, vn)
+			tree[i].vis = 0;
+		norec(&tree[root]);
+		return ret;
+	}
+};
+
+void make_binary_tree()
+{
 	queue<int> que;
 	tree.assign(vn, binary_node());
 	que.push(root);
+	node *v;
+	edge *e;
 	while (!que.empty()) {
 		int u = que.front();
 		que.pop();
 		binary_node *o = &tree[u];
 		o->vis = 1;
 		o->id = u;
-		for (auto ei : g[u]) {
-			auto e = g.info(ei);
-			binary_node *x = &tree[e.to];
+		for (int ei : grp[u].link) {
+			tie(v, e) = grp.extend(ei);
+			binary_node *x = &tree[v->id()];
 			if (x->vis)
 				continue;
 			if (!o->ls)
 				o->ls = x;
 			else
 				o->rs = x;
-			que.push(e.to);
+			que.push(v->id());
 		}
 	}
 }
 
-void test_dfs() {
-	make_binary_tree();
-	fup_range (i, 0, vn)
-		tree[i].vis = 0;
-	dfs_in(&tree[root]);
-}
-
-void test_dfs_norec() {
-	make_binary_tree();
-	fup_range (i, 0, vn)
-		tree[i].vis = 0;
-	norec_post(&tree[root]);
+void print(const vector<int> &v)
+{
+	fup_range (i, 0, v.size())
+		fio.msg("%d%c", v[i], " \n"[i == v.size() - 1]);
 }
 
 int main(int argc, char **argv)
 {
 	fio.in(root, vn);
-	g.resize(vn);
+	grp.resize(vn);
 	fup (t, 1, vn - 1) {
 		int a, b;
 		fio.in(a, b);
-		g.add(a, b);
+		grp.add2(a, b);
 	}
-	//test_dfs();
-	test_dfs_norec();
+	make_binary_tree();
+
+	assert(test_dfs_pre::run() == test_norec_pre::run());
+	assert(test_dfs_in::run() == test_norec_in::run());
+	assert(test_dfs_post::run() == test_norec_post::run());
 	return 0;
 }
