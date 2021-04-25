@@ -7,21 +7,13 @@
  */
 template<typename tp>
 class expression {
-	tp mod = 0;
 public:
-	void set_mod(int m) {
-		mod = m;
-	}
 	tp parse_calc(const string &exp) {
 		stack<char> cop;
 		stack<tp> nop;
 		int cur = 0, len = exp.length(), minus = 1;
 		char ch;
-		bool flag = 0;
-		auto push_num = [&](stack<tp> &nop, tp x) {
-			nop.push(x);
-			flag = 1;
-		};
+		bool flag = 1; // 0: accept numer. 1: accept operator.
 		auto calc = [&](stack<char> &cop, stack<tp> &nop) {
 			tp ret, e1, e2;
 			char op;
@@ -54,14 +46,7 @@ public:
 					ok = 0;
 					break;
 			}
-			if (mod) {
-				if (ret < 0)
-					ret += mod;
-				if (mod < ret)
-					ret %= mod;
-			}
-			if (ok)
-				push_num(nop, ret);
+			nop.push(ret);
 		};
 		auto can_push = [](char lef, char rig) {
 			bool ok;
@@ -78,24 +63,27 @@ public:
 				if (ed == string::npos)
 					ed = len;
 				if (sizeof(tp) - 4)
-					push_num(nop, stoll(exp.substr(cur, ed - cur)) * minus);
+					nop.push(stoll(exp.substr(cur, ed - cur)) * minus);
 				else
-					push_num(nop, stoi(exp.substr(cur, ed - cur)) * minus);
+					nop.push(stoi(exp.substr(cur, ed - cur)) * minus);
+				flag = 0;
 				minus = 1;
 				cur = ed;
 			} else {
-				if (ch == '-' && !flag) {
-					flag = 0;
+				if (flag && ch == '-') {
 					minus *= -1;
 					goto end;
 				}
 				if (ch == ')') {
+					flag = 0;
+					minus = 1;
 					while (!cop.empty() && cop.top() != '(')
 						calc(cop, nop);
 					if (cop.empty())
 						goto end;
 					cop.pop();
 				} else {
+					flag = 1;
 					if (ch != '(')
 						while (!cop.empty() && !can_push(cop.top(), ch))
 							calc(cop, nop);
@@ -113,14 +101,6 @@ end:
 		}
 		assert(nop.size() == 1);
 		return nop.top();
-	}
-	tp va_exp(const char *fmt, ...) {
-		static char buf[1 << 10];
-		va_list args;
-		va_start(args, fmt);
-		vsprintf(buf, fmt, args);
-		va_end(args);
-		return parse_calc(buf);
 	}
 };
 
