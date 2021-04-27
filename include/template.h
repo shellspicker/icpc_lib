@@ -287,6 +287,7 @@ using pairing_heap = __gnu_pbds::priority_queue<tp, cmp, __gnu_pbds::pairing_hea
 #define range_r_rev(len, ed, off) seg_rev2(len, range_r(ed, off))
 #define finput(is, cls, obj) friend istream &operator >>(istream &is, cls &obj)
 #define foutput(os, cls, obj) friend ostream &operator <<(ostream &os, const cls &obj)
+#define redef(o,...) new (&o) decltype(o)(__VA_ARGS__)
 typedef unsigned int uint;
 typedef long long ll;
 typedef unsigned long long ull;
