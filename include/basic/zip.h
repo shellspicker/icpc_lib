@@ -22,6 +22,7 @@ public:
 	tp &operator [](int i) {
 		return data[i];
 	}
+	size_t size() { return tot; }
 	template<typename ...var>
 	int index(var &&...args) {
 		assert(sizeof...(args) == dim.size());
@@ -43,6 +44,7 @@ public:
 		return ret;
 	}
 };
+
 template<typename tp>
 class zip_valarray {
 	int tot;
@@ -66,6 +68,7 @@ public:
 	tp &operator [](int i) {
 		return data[i];
 	}
+	size_t size() { return tot; }
 	template<typename ...var>
 	int index(var &&...args) {
 		assert(sizeof...(args) == dim.size());
