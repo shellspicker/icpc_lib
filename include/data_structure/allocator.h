@@ -1,12 +1,11 @@
-template<typename tp, size_t pon>
+template<typename tp>
 class allocator {
 	size_t cur;
 	vector<tp> mem;
 	queue<tp *> cache;
 public:
 	allocator() {
-		cur = 0;
-		mem.reserve(pon);
+		clear();
 	}
 	tp *operator ()() {
 		tp *ret;
@@ -22,6 +21,9 @@ public:
 	}
 	void operator ()(tp *o) {
 		cache.push(o);
+	}
+	void resize(size_t n) {
+		mem.reserve(n);
 	}
 	void clear() {
 		cur = 0;
