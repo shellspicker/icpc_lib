@@ -2,16 +2,17 @@
 #include "template.h"
 
 class task {
-#define ioend(cond) \
-	do {\
-		if (!(cond) || !fio.ok()) { cin.setstate(ios_base::badbit); return cin; }\
-	} while(0)
 	void preprocess() {
 		fio.set_output_float_digit(12);
 	}
 	istream &in() {
+#define ioend(cond) \
+		do {\
+			if (!(cond) || !fio.ok()) { cin.setstate(ios_base::badbit); return cin; }\
+		} while(0)
 		ioend(1);
 		return cin;
+#undef ioend
 	}
 	void deal() {
 	}
@@ -35,7 +36,6 @@ public:
 			out();
 		}
 	}
-#undef ioend
 };
 
 int main()
