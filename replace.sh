@@ -74,9 +74,33 @@ $1d
 	echo "$ret"
 }
 
+# delete already occured "xxx.h".
+# (line, buf) -> (buf)
+delete() {
+	ret=$(
+echo "$2" |
+sed "
+$1d
+")
+	echo "$ret"
+}
+
+declare -A filemap
+
+# do...while
 arr=($(search "$file"))
 until [ ${#arr[*]} -eq 0 ]; do
-	file=$(replace ${arr[0]} ${arr[1]} "$file")
+	if [ ! -f $include_path/${arr[1]} ]; then
+		echo "file ${arr[1]} not found in $include_path."
+		exit 1
+	fi
+	if [[ ${filemap[${arr[1]}]} == "used" ]]; then
+		echo "file ${arr[1]} occ again!"
+		file=$(delete ${arr[0]} "$file")
+	else
+		file=$(replace ${arr[0]} ${arr[1]} "$file")
+		filemap[${arr[1]}]="used"
+	fi
 	arr=($(search "$file"))
 done
 
