@@ -1,0 +1,4 @@
+clang++
+%h --include=template.h
+%h %cpp -std=c++17
+-Iinclude
