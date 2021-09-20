@@ -1,3 +1,5 @@
+#pragma once
+
 template<typename tp>
 class allocator {
 	size_t cur;
