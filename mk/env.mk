@@ -16,7 +16,7 @@ LIBS = -L./\
 LDFLAGS = $(LIBS) -Wl,-rpath=$(subst $(space),:,$(subst -L,,$(LIBS)))
 DEFINES =
 CFLAGS = -g -Wall -O2 $(INCLUDE) $(DEFINES)
-CXXFLAGS = -std=c++11 $(CFLAGS) -DHAVE_CONFIG_H
+CXXFLAGS = -std=c++17 $(CFLAGS) -DHAVE_CONFIG_H
 
 # make工具, Makefile指定.
 MAKE = make

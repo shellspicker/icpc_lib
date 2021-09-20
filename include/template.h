@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstddef>
 #if 201103L <= __cplusplus
 #include <cstdint>
@@ -91,6 +93,8 @@ using std::unordered_multiset;
 using std::unordered_multimap;
 using std::initializer_list;
 using std::iterator_traits;
+using std::is_base_of_v;
+using std::conditional_t;
 using std::all_of;
 using std::any_of;
 using std::none_of;
@@ -669,7 +673,4 @@ public:
 		out((const char *)g_buf);
 	}
 } fio;
-
-struct fake_type {};
-
 
