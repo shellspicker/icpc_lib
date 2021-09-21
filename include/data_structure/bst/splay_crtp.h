@@ -156,8 +156,8 @@ public:
 				magic_go(lr[d], d, o->ch[d ^ 1]);
 				o->ch[d ^ 1]->pull();
 			}
-		if constexpr (node::has_fa())
-			link(o, d ^ 1, o->ch[d ^ 1]);
+			if constexpr (node::has_fa())
+				link(o, d ^ 1, o->ch[d ^ 1]);
 		}
 		(t = o)->pull();
 		if constexpr (node::has_fa())
