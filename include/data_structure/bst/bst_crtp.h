@@ -114,7 +114,7 @@ protected:
 			if (k == s)
 				return o;
 			bool ok = s < k;
-			o = o->ch[ok];
+			o = o->ch[d ^ ok];
 			if (ok)
 				k -= s;
 		}
